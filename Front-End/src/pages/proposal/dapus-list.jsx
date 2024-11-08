@@ -1,30 +1,26 @@
-// src/Table.js
-import { display } from '@mui/system';
 import React, { useEffect, useState } from 'react';
 
-
-
-
 const Table = ({ data, onSendData, onRealData }) => {
-  const [newData, setNewData] = useState([])
+  const [newData, setNewData] = useState([]);
   //const [IsEdit, setIsEdit] = useState(false)
 
-  useEffect(()=>{
-    setNewData(data)
-  }, [data])
+  useEffect(() => {
+    setNewData(data);
+  }, [data]);
 
   const HandleEdit = (dataToSend, index) => {
     onSendData(dataToSend, index);
     //setIsEdit(true)
     //console.log(IsEdit);
-  }; 
+  };
 
-
- const HandleDelete = (e) => {
-  const deletedata = data.filter((item, index) => { return index !== e })
-  setNewData(deletedata)
-  onRealData(deletedata)
- }; 
+  const HandleDelete = (e) => {
+    const deletedata = data.filter((item, index) => {
+      return index !== e;
+    });
+    setNewData(deletedata);
+    onRealData(deletedata);
+  };
 
   return (
     <table>
@@ -42,13 +38,15 @@ const Table = ({ data, onSendData, onRealData }) => {
       <tbody>
         {...newData.map((item, index) => (
           <tr key={index}>
-            <td>{index+1}</td>
+            <td>{index + 1}</td>
             <td>{item.author}</td>
             <td>{item.title_journal}</td>
             <td>{item.publisher}</td>
             <td>{item.publish_year}</td>
             <td>{item.volume}</td>
-            <td><button onClick={()=>HandleEdit(item, index)}>Edit</button> <button onClick={()=>HandleDelete(index)}>Delete</button></td>
+            <td>
+              <button onClick={() => HandleEdit(item, index)}>Edit</button> <button onClick={() => HandleDelete(index)}>Delete</button>
+            </td>
           </tr>
         ))}
       </tbody>

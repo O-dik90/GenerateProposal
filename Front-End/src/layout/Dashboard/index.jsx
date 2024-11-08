@@ -1,19 +1,15 @@
-import { useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
+import { handlerDrawerOpen, useGetMenuMaster } from 'api/menu';
 
-// material-ui
-import useMediaQuery from '@mui/material/useMediaQuery';
-import Toolbar from '@mui/material/Toolbar';
 import Box from '@mui/material/Box';
-
-// project import
+import Breadcrumbs from 'components/@extended/Breadcrumbs';
 import Drawer from './Drawer';
 import Header from './Header';
-import navigation from 'menu-items';
 import Loader from 'components/Loader';
-import Breadcrumbs from 'components/@extended/Breadcrumbs';
-
-import { handlerDrawerOpen, useGetMenuMaster } from 'api/menu';
+import { Outlet } from 'react-router-dom';
+import Toolbar from '@mui/material/Toolbar';
+import navigation from 'menu-items';
+import { useEffect } from 'react';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 // ==============================|| MAIN LAYOUT ||============================== //
 

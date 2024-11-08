@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import { forwardRef, useEffect } from 'react';
 import { Link, useLocation, matchPath } from 'react-router-dom';
 
-// material-ui
 import { useTheme } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
 import Chip from '@mui/material/Chip';
@@ -11,7 +10,6 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 
-// project import
 import { handlerActiveItem, useGetMenuMaster } from 'api/menu';
 
 export default function NavItem({ item, level }) {
@@ -36,7 +34,6 @@ export default function NavItem({ item, level }) {
   const { pathname } = useLocation();
   const isSelected = !!matchPath({ path: item.url, end: false }, pathname) || openItem === item.id;
 
-  // active menu item on page load
   useEffect(() => {
     if (pathname === item.url) handlerActiveItem(item.id);
     // eslint-disable-next-line

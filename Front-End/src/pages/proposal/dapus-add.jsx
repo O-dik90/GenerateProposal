@@ -1,14 +1,10 @@
-// src/Form.js
-import React, { useEffect,useState } from 'react';
+//** DAPUS ADD PAGE */
 
-// material-ui
-import TextField from '@mui/material/TextField';
+import React, { useEffect, useState } from 'react';
+
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
-import FormHelperText from '@mui/material/FormHelperText';
-
-import * as Yup from 'yup';
-import { Formik } from 'formik';
+import TextField from '@mui/material/TextField';
 
 const Form = ({ onAdd, onEdit, onUpdate }) => {
   const [formData, setFormData] = useState({
@@ -18,25 +14,29 @@ const Form = ({ onAdd, onEdit, onUpdate }) => {
     publisher: 'Airlangga',
     publish_year: '2011',
     volume: 'VII'
-
   });
 
-  const [isVisible, setisVisible] =useState(true)
+  const [isVisible, setisVisible] = useState(true);
 
-  useEffect(()=>{
+  useEffect(() => {
     const length = Object.keys(onEdit).length;
-    if(length > 0){
-      setFormData({author: onEdit.author, title_journal: onEdit.title_journal, publisher: onEdit.publisher, publish_year : onEdit.publish_year, volume : onEdit.volume });
+    if (length > 0) {
+      setFormData({
+        author: onEdit.author,
+        title_journal: onEdit.title_journal,
+        publisher: onEdit.publisher,
+        publish_year: onEdit.publish_year,
+        volume: onEdit.volume
+      });
       setisVisible(false);
     }
-    
-  }, [onEdit])
+  }, [onEdit]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: value
     }));
   };
 
@@ -45,21 +45,21 @@ const Form = ({ onAdd, onEdit, onUpdate }) => {
     onAdd(formData);
     //console.log(formData);
     //setFormData({ author: 'Fakhruddin Zuhri', title_journal: 'Jiwa Yang Kesepian', publisher: 'Airlangga', publish_year : '2012', volume : 'X' });
-    setFormData({author: '', title_journal: '', publisher: '', publish_year : '', volume : '' });
+    setFormData({ author: '', title_journal: '', publisher: '', publish_year: '', volume: '' });
     setisVisible(true);
   };
 
   const handleUpdate = (e) => {
     e.preventDefault();
-    console.log(formData)
+    console.log(formData);
     onUpdate(formData);
-    setFormData({author: '', title_journal: '', publisher: '', publish_year : '', volume : '' });
+    setFormData({ author: '', title_journal: '', publisher: '', publish_year: '', volume: '' });
     setisVisible(true);
-  }
+  };
 
   return (
     <>
-    {/* <Formik
+      {/* <Formik
         initialValues={{
           author: '',
           publish_year: '',
@@ -70,9 +70,9 @@ const Form = ({ onAdd, onEdit, onUpdate }) => {
           publish_year: Yup.string().max(255).required('Tahun Terbit Harus Diisi')
         })}
       > */}
-    {/* {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => ( */}
-    <form noValidate onSubmit={handleSubmit}>
-      <Grid container spacing={2}>
+      {/* {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => ( */}
+      <form noValidate onSubmit={handleSubmit}>
+        <Grid container spacing={2}>
           <Grid item xs={12} sm={10}>
             <TextField
               label="Daftar Penulis"
@@ -135,28 +135,27 @@ const Form = ({ onAdd, onEdit, onUpdate }) => {
             />
           </Grid>
         </Grid>
-      <br />
-      <Button
-            variant="contained"
-            color="success"
-            onClick={handleSubmit}
-            style={{ display: isVisible ? 'block' : 'none', marginTop: '16px', marginBottom : '16px' }}
-        >
-        Tambah Daftar Pustaka
-        </Button> 
+        <br />
         <Button
-            variant="contained"
-            color="success"
-            onClick={handleUpdate}
-            style={{ display: isVisible ? 'none' : 'block', marginTop: '16px', marginBottom : '16px' }}
+          variant="contained"
+          color="success"
+          onClick={handleSubmit}
+          style={{ display: isVisible ? 'block' : 'none', marginTop: '16px', marginBottom: '16px' }}
         >
-        Update
+          Tambah Daftar Pustaka
         </Button>
-    </form>
-    {/* )}
+        <Button
+          variant="contained"
+          color="success"
+          onClick={handleUpdate}
+          style={{ display: isVisible ? 'none' : 'block', marginTop: '16px', marginBottom: '16px' }}
+        >
+          Update
+        </Button>
+      </form>
+      {/* )}
     </Formik> */}
     </>
-    
   );
 };
 

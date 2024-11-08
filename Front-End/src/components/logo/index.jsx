@@ -1,12 +1,10 @@
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
-// material-ui
 import { ButtonBase } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Chip from '@mui/material/Chip';
 
-// project import
 import Logo from './LogoMain';
 import config from 'config';
 

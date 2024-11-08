@@ -1,14 +1,12 @@
-// assets
 import {
-  AppstoreAddOutlined,
   AntDesignOutlined,
+  AppstoreAddOutlined,
   BarcodeOutlined,
   BgColorsOutlined,
   FontSizeOutlined,
   LoadingOutlined
 } from '@ant-design/icons';
 
-// icons
 const icons = {
   FontSizeOutlined,
   BgColorsOutlined,

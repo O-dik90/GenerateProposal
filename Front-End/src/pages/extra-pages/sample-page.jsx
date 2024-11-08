@@ -1,10 +1,5 @@
-// material-ui
-import Typography from '@mui/material/Typography';
-
-// project import
 import MainCard from 'components/MainCard';
-
-// ==============================|| SAMPLE PAGE ||============================== //
+import Typography from '@mui/material/Typography';
 
 export default function SamplePage() {
   return (

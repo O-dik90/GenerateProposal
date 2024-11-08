@@ -1,18 +1,13 @@
-import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 
-// material-ui
+import Box from '@mui/material/Box';
+import ComponentWrapper from './ComponentWrapper';
 import Grid from '@mui/material/Grid';
+import MainCard from 'components/MainCard';
+import PropTypes from 'prop-types';
 import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-
-// project import
-import MainCard from 'components/MainCard';
-import ComponentWrapper from './ComponentWrapper';
-
-// ===============================|| COMPONENT - SKELETON ||=============================== //
 
 export default function ComponentSkeleton({ children }) {
   const [isLoading, setLoading] = useState(true);

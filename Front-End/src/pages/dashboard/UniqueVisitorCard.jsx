@@ -1,17 +1,11 @@
-import { useState } from 'react';
-
-// material-ui
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
+import IncomeAreaChart from './IncomeAreaChart';
+import MainCard from 'components/MainCard';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-
-// project import
-import MainCard from 'components/MainCard';
-import IncomeAreaChart from './IncomeAreaChart';
-
-// ==============================|| DEFAULT - UNIQUE VISITOR ||============================== //
+import { useState } from 'react';
 
 export default function UniqueVisitorCard() {
   const [slot, setSlot] = useState('week');

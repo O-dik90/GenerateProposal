@@ -1,23 +1,17 @@
 import { useEffect, useState } from 'react';
 
-// material-ui
-import { useTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
+import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
 import FormControl from '@mui/material/FormControl';
-import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import MainCard from 'components/MainCard';
+import ReactApexChart from 'react-apexcharts';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 
-// project import
-import MainCard from 'components/MainCard';
-
-// third-party
-import ReactApexChart from 'react-apexcharts';
-
-// chart options
 const columnChartOptions = {
   chart: {
     type: 'bar',
@@ -83,8 +77,6 @@ const initialSeries = [
     data: [120, 45, 78, 150, 168, 99]
   }
 ];
-
-// ==============================|| SALES COLUMN CHART ||============================== //
 
 export default function SalesChart() {
   const theme = useTheme();

@@ -1,15 +1,12 @@
 import PropTypes from 'prop-types';
 import { forwardRef } from 'react';
 
-// material-ui
 import { useTheme } from '@mui/material/styles';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
-import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 
-// header style
 const headerSX = {
   p: 2.5,
   '& .MuiCardHeader-action': { m: '0px auto', alignSelf: 'center' }

@@ -1,21 +1,16 @@
-import { useMemo } from 'react';
-
-// material-ui
-import { useTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-
-// project import
-import AppBarStyled from './AppBarStyled';
-import HeaderContent from './HeaderContent';
-
 import { handlerDrawerOpen, useGetMenuMaster } from 'api/menu';
 
-// assets
+import AppBar from '@mui/material/AppBar';
+import AppBarStyled from './AppBarStyled';
+import HeaderContent from './HeaderContent';
+import IconButton from '@mui/material/IconButton';
+
 import MenuFoldOutlined from '@ant-design/icons/MenuFoldOutlined';
 import MenuUnfoldOutlined from '@ant-design/icons/MenuUnfoldOutlined';
+import Toolbar from '@mui/material/Toolbar';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useMemo } from 'react';
+import { useTheme } from '@mui/material/styles';
 
 // ==============================|| MAIN LAYOUT - HEADER ||============================== //
 

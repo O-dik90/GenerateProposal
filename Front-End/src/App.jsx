@@ -6,7 +6,7 @@ import ThemeCustomization from 'themes';
 
 import ScrollTop from 'components/ScrollTop';
 
-import 'App.css'
+import 'App.css';
 
 // ==============================|| APP - THEME, ROUTER, LOCAL ||============================== //
 

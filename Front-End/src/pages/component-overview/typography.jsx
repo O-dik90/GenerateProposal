@@ -1,14 +1,11 @@
-// material-ui
 import Breadcrumbs from '@mui/material/Breadcrumbs';
+import ComponentSkeleton from './ComponentSkeleton';
 import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
 import Link from '@mui/material/Link';
+import MainCard from 'components/MainCard';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-
-// project import
-import MainCard from 'components/MainCard';
-import ComponentSkeleton from './ComponentSkeleton';
 
 // ==============================|| COMPONENTS - TYPOGRAPHY ||============================== //
 

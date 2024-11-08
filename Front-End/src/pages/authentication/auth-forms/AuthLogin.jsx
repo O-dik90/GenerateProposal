@@ -1,37 +1,30 @@
-import PropTypes from 'prop-types';
-import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import * as Yup from 'yup';
 
-// material-ui
+import AnimateButton from 'components/@extended/AnimateButton';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import Divider from '@mui/material/Divider';
+import EyeInvisibleOutlined from '@ant-design/icons/EyeInvisibleOutlined';
+import EyeOutlined from '@ant-design/icons/EyeOutlined';
+import FirebaseSocial from './FirebaseSocial';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
+import { Formik } from 'formik';
 import Grid from '@mui/material/Grid';
-import Link from '@mui/material/Link';
-import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
 import InputLabel from '@mui/material/InputLabel';
+import Link from '@mui/material/Link';
 import OutlinedInput from '@mui/material/OutlinedInput';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
-// third party
-import * as Yup from 'yup';
-import { Formik } from 'formik';
-
-// project import
-import AnimateButton from 'components/@extended/AnimateButton';
-
-// assets
-import EyeOutlined from '@ant-design/icons/EyeOutlined';
-import EyeInvisibleOutlined from '@ant-design/icons/EyeInvisibleOutlined';
-import FirebaseSocial from './FirebaseSocial';
-
 // ============================|| JWT - LOGIN ||============================ //
 
-export default function AuthLogin({ isDemo = false }) {
+export default function AuthLogin() {
   const [checked, setChecked] = React.useState(false);
 
   const [showPassword, setShowPassword] = React.useState(false);

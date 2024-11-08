@@ -1,13 +1,10 @@
-import { useState } from 'react';
+import { CommentOutlined, LockOutlined, QuestionCircleOutlined, UnorderedListOutlined, UserOutlined } from '@ant-design/icons';
 
-// material-ui
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-
-// assets
-import { CommentOutlined, LockOutlined, QuestionCircleOutlined, UserOutlined, UnorderedListOutlined } from '@ant-design/icons';
+import { useState } from 'react';
 
 // ==============================|| HEADER PROFILE - SETTING TAB ||============================== //
 

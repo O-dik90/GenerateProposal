@@ -1,13 +1,9 @@
-import { Link } from 'react-router-dom';
-
-// material-ui
+import AuthLogin from './auth-forms/AuthLogin';
+import AuthWrapper from './AuthWrapper';
 import Grid from '@mui/material/Grid';
+import { Link } from 'react-router-dom';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-
-// project import
-import AuthWrapper from './AuthWrapper';
-import AuthLogin from './auth-forms/AuthLogin';
 
 // ================================|| LOGIN ||================================ //
 

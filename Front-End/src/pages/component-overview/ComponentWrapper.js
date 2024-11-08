@@ -1,8 +1,5 @@
-// material-ui
-import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
-
-// ==============================|| COMPONENTS - CONTENT WRAPPER ||============================== //
+import { styled } from '@mui/material/styles';
 
 const ComponentWrapper = styled(Box)(({ theme }) => ({
   paddingLeft: theme.spacing(3),

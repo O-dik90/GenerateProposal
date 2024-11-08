@@ -1,18 +1,14 @@
-import PropTypes from 'prop-types';
-import { useState } from 'react';
-
-// material-ui
+import EditOutlined from '@ant-design/icons/EditOutlined';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-
-// assets
-import EditOutlined from '@ant-design/icons/EditOutlined';
-import ProfileOutlined from '@ant-design/icons/ProfileOutlined';
 import LogoutOutlined from '@ant-design/icons/LogoutOutlined';
+import ProfileOutlined from '@ant-design/icons/ProfileOutlined';
+import PropTypes from 'prop-types';
 import UserOutlined from '@ant-design/icons/UserOutlined';
 import WalletOutlined from '@ant-design/icons/WalletOutlined';
+import { useState } from 'react';
 
 // ==============================|| HEADER PROFILE - PROFILE TAB ||============================== //
 

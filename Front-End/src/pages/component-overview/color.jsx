@@ -1,15 +1,11 @@
-import PropTypes from 'prop-types';
-// material-ui
+import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
+import ComponentSkeleton from './ComponentSkeleton';
 import Grid from '@mui/material/Grid';
+import MainCard from 'components/MainCard';
+import PropTypes from 'prop-types';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-
-// project import
-import MainCard from 'components/MainCard';
-import ComponentWrapper from './ComponentWrapper';
-import ComponentSkeleton from './ComponentSkeleton';
 
 function ColorBox({ bgcolor, title, data, dark, main }) {
   return (

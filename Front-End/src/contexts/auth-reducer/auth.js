@@ -1,7 +1,5 @@
-// action - state management
 import { REGISTER, LOGIN, LOGOUT } from './actions';
 
-// initial state
 export const initialState = {
   isLoggedIn: false,
   isInitialized: false,

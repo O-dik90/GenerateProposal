@@ -1,12 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
-const Table = ({ data, onSendData, onRealData }) => {
+const Table = () => {
   const [newData, setNewData] = useState([]);
-  //const [IsEdit, setIsEdit] = useState(false)
-
-  useEffect(() => {
-    setNewData(data);
-  }, [data]);
 
   const HandleEdit = (dataToSend, index) => {
     onSendData(dataToSend, index);

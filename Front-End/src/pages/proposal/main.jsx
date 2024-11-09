@@ -21,6 +21,7 @@ import Form from './dapus-add';
 import MainCard from 'components/MainCard';
 import Pendahuluan from './bab1';
 import Table from './dapus-list';
+import TableGrid from 'components/table/TableGrid';
 import { saveAs } from 'file-saver';
 
 const Proposal = () => {
@@ -115,15 +116,11 @@ const Proposal = () => {
             basedOn: 'Normal',
             quickFormat: true,
             paragraph: {
-              //spacing: { line: 276, before: 20 * 72 * 0.1, after: 20 * 72 * 0.05 },
               spacing: {
                 line: 276,
                 before: 0,
                 after: 0
               }
-              //indent: {
-              //firstLine: convertInchesToTwip(0.5)
-              //}
             }
           },
           {
@@ -208,17 +205,17 @@ const Proposal = () => {
           children: [
             new Paragraph({
               text: 'DAFTAR ISI',
-              heading: HeadingLevel.HEADING_1, // Apply the custom heading1 style
+              heading: HeadingLevel.HEADING_1,
               pageBreakBefore: true
             }),
             new Paragraph({
               text: 'DAFTAR GAMBAR',
-              heading: HeadingLevel.HEADING_1, // Apply the custom heading1 style
+              heading: HeadingLevel.HEADING_1,
               pageBreakBefore: true
             }),
             new Paragraph({
               text: 'DAFTAR TABLE',
-              heading: HeadingLevel.HEADING_1, // Apply the custom heading1 style
+              heading: HeadingLevel.HEADING_1,
               pageBreakBefore: true
             })
           ],
@@ -252,7 +249,7 @@ const Proposal = () => {
           children: [
             new Paragraph({
               text: 'BAB 1 PENDAHULUAN',
-              heading: HeadingLevel.HEADING_1, // Apply the custom heading1 style
+              heading: HeadingLevel.HEADING_1,
               pageBreakBefore: true
             }),
             new Paragraph({
@@ -264,18 +261,6 @@ const Proposal = () => {
               style: 'wellSpaced'
             }),
 
-            /*  new Paragraph({
-                text: '1.1. Latar Belakang',
-                heading: HeadingLevel.HEADING_2
-              }),
-              new Paragraph({
-                text: text1_1,
-                style: 'wellSpaced', // Apply the custom style
-              }),*/
-            /*new Paragraph({
-                text: 'Salah satu penjualan terbesar di industri mamin adalah penjualan daging ayam broiler. Konsumsi daging broiler di Indonesia tergolong tinggi. Indonesia adalah negara ke-12 di dunia dengan konsumsi domestik daging broiler terbanyak (Index Mundi, 2022). Menurut laporan Badan Pusat Statistik, pada tahun 2021, jumlah produksi ayam broiler mencapai hampir 160 ribu ton (BPS, 2022). Menurut Pusat Data dan Sistem Informasi Pertanian (2022), populasi ayam ras pedaging mencapai 3,17 miliar ekor pada tahun 2022, dan pada tahun 2025 dan 2026 diperkirakan mencapai 3,28 miliar ekor dan 3,35 miliar ekor. Dari populasi tersebut, pada tahun 2025 produksi daging ayam ras diperkirakan mencapai 3,56 juta ton, dan pada tahun 2026 mencapai 3,65 juta ton. ',
-                style: 'wellSpaced', // Apply the custom style
-              }),*/
             new Paragraph({
               text: '1.2. Rumusan Masalah',
               heading: HeadingLevel.HEADING_2
@@ -296,17 +281,6 @@ const Proposal = () => {
                   style: 'aside'
                 })
             ),
-
-            // {...dataPendahuluan.rumusan_masalah_items.map((item, index) => (
-            //   new Paragraph({
-            //     text: item,
-            //     numbering: {
-            //         reference: "my-crazy-numbering",
-            //         level: 0,
-            //     },
-            //     style: "aside",
-            //   })
-            //  ))},
 
             new Paragraph({
               text: '1.3. Tujuan',
@@ -411,6 +385,17 @@ const Proposal = () => {
     setData(updatedItems);
   };
 
+  const columns = [
+    { name: 'Name', field: 'name' },
+    { name: 'Age', field: 'age' }
+  ];
+
+  const rows = [
+    { name: 'John Doe', age: 30 },
+    { name: 'Jane Smith', age: 25 },
+    { name: 'Alice Johnson', age: 35 }
+  ];
+
   return (
     <div>
       <Pendahuluan onSendData={handleDataPendahuluan} />
@@ -422,6 +407,7 @@ const Proposal = () => {
       <Button variant="contained" color="primary" onClick={GenerateDocx} style={{ marginTop: '16px', marginBottom: '16px' }}>
         Generate Docx
       </Button>
+      <TableGrid key="grid-1" columns={columns} rows={rows} expand={false} />
     </div>
   );
 };

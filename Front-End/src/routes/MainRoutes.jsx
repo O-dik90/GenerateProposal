@@ -1,8 +1,7 @@
-import { lazy } from 'react';
-
+import Dashboard from 'layout/Dashboard';
 // project import
 import Loadable from 'components/Loadable';
-import Dashboard from 'layout/Dashboard';
+import { lazy } from 'react';
 
 const Color = Loadable(lazy(() => import('pages/component-overview/color')));
 const Typography = Loadable(lazy(() => import('pages/component-overview/typography')));
@@ -11,7 +10,10 @@ const DashboardDefault = Loadable(lazy(() => import('pages/dashboard/index')));
 
 // render - sample page
 const SamplePage = Loadable(lazy(() => import('pages/extra-pages/sample-page')));
-const Proposal = Loadable(lazy(() => import('pages/proposal/main')));
+const OldProposal = Loadable(lazy(() => import('pages/old-proposal/main')));
+// render - proposal Page
+const ProposalTable = Loadable(lazy(() => import('pages/proposal/index')));
+const ProposalDetail = Loadable(lazy(() => import('pages/proposal/detail')));
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -41,16 +43,24 @@ const MainRoutes = {
       element: <SamplePage />
     },
     {
-      path: 'proposal',
-      element: <Proposal />
-    },
-    {
       path: 'shadow',
       element: <Shadow />
     },
     {
+      path: 'old-proposal',
+      element: <OldProposal />
+    },
+    {
       path: 'typography',
       element: <Typography />
+    },
+    {
+      path: 'proposal-table',
+      element: <ProposalTable />
+    },
+    {
+      path: 'proposal-table/:name',
+      element: <ProposalDetail />
     }
   ]
 };

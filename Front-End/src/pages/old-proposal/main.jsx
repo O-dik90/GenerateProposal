@@ -21,10 +21,9 @@ import Form from './dapus-add';
 import MainCard from 'components/MainCard';
 import Pendahuluan from './bab1';
 import Table from './dapus-list';
-import TableGrid from 'components/table/TableGrid';
 import { saveAs } from 'file-saver';
 
-const Proposal = () => {
+const OldProposal = () => {
   const [data, setData] = useState([]);
   const [dataSelected, setdataSelected] = useState([]);
   const [editIndex, seteditIndex] = useState(null);
@@ -385,17 +384,6 @@ const Proposal = () => {
     setData(updatedItems);
   };
 
-  const columns = [
-    { name: 'Name', field: 'name' },
-    { name: 'Age', field: 'age' }
-  ];
-
-  const rows = [
-    { name: 'John Doe', age: 30 },
-    { name: 'Jane Smith', age: 25 },
-    { name: 'Alice Johnson', age: 35 }
-  ];
-
   return (
     <div>
       <Pendahuluan onSendData={handleDataPendahuluan} />
@@ -407,9 +395,8 @@ const Proposal = () => {
       <Button variant="contained" color="primary" onClick={GenerateDocx} style={{ marginTop: '16px', marginBottom: '16px' }}>
         Generate Docx
       </Button>
-      <TableGrid key="grid-1" columns={columns} rows={rows} expand={false} />
     </div>
   );
 };
 
-export default Proposal;
+export default OldProposal;

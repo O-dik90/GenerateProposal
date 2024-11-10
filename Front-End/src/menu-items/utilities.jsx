@@ -43,13 +43,6 @@ const utilities = {
       type: 'item',
       url: '/shadow',
       icon: icons.BarcodeOutlined
-    },
-    {
-      id: 'proposal',
-      title: 'Generate Proposal',
-      type: 'item',
-      url: '/proposal',
-      icon: icons.BarcodeOutlined
     }
   ]
 };

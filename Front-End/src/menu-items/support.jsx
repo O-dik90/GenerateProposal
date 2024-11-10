@@ -27,6 +27,13 @@ const support = {
       icon: icons.QuestionOutlined,
       external: true,
       target: true
+    },
+    {
+      id: 'old-proposal',
+      title: 'Old Proposal',
+      type: 'item',
+      url: '/old-proposal',
+      icon: icons.QuestionOutlined
     }
   ]
 };

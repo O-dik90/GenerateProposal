@@ -7,10 +7,10 @@ import TableGrid from 'components/table/TableGrid';
 
 const Pendahuluan = () => {
   const [rumusan, setRumusan] = useState({
-    no: 1,
-    data: '',
-    status: false
-  }),
+      no: 1,
+      data: '',
+      status: false
+    }),
     [tujuan, setTujuan] = useState({
       no: 1,
       data: '',
@@ -206,9 +206,9 @@ const Pendahuluan = () => {
             value={rumusan.data}
             onChange={handleRumusan.onchange}
             fullWidth
-          // error={!!errors[field.name]}
-          // helperText={errors[field.name]}
-          // InputProps={field.inputProps}
+            // error={!!errors[field.name]}
+            // helperText={errors[field.name]}
+            // InputProps={field.inputProps}
           />
           {!rumusan.status && (
             <Button variant="contained" color="primary" onClick={handleRumusan.tambah} sx={{ marginY: 2 }}>
@@ -237,9 +237,9 @@ const Pendahuluan = () => {
             value={tujuan.data}
             onChange={handleTujuan.onchange}
             fullWidth
-          // error={!!errors[field.name]}
-          // helperText={errors[field.name]}
-          // InputProps={field.inputProps}
+            // error={!!errors[field.name]}
+            // helperText={errors[field.name]}
+            // InputProps={field.inputProps}
           />
           {!tujuan.status && (
             <Button variant="contained" color="primary" onClick={handleTujuan.tambah} sx={{ marginY: 2 }}>
@@ -268,9 +268,9 @@ const Pendahuluan = () => {
             value={luaran.data}
             onChange={handleLuaran.onchange}
             fullWidth
-          // error={!!errors[field.name]}
-          // helperText={errors[field.name]}
-          // InputProps={field.inputProps}
+            // error={!!errors[field.name]}
+            // helperText={errors[field.name]}
+            // InputProps={field.inputProps}
           />
           {!luaran.status && (
             <Button variant="contained" color="primary" onClick={handleLuaran.tambah} sx={{ marginY: 2 }}>
@@ -299,9 +299,9 @@ const Pendahuluan = () => {
             value={manfaat.data}
             onChange={handleManfaat.onchange}
             fullWidth
-          // error={!!errors[field.name]}
-          // helperText={errors[field.name]}
-          // InputProps={field.inputProps}
+            // error={!!errors[field.name]}
+            // helperText={errors[field.name]}
+            // InputProps={field.inputProps}
           />
           {!manfaat.status && (
             <Button variant="contained" color="primary" onClick={handleManfaat.tambah} sx={{ marginY: 2 }}>

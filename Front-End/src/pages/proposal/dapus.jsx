@@ -6,7 +6,7 @@ import Stack from '@mui/material/Stack';
 import TableGrid from 'components/table/TableGrid';
 
 export const selector = {
-  gaya: ['apa', 'mla'],
+  gaya: ['mla'], // mla, apa, chicago
   referensi: ['jurnal', 'buku', 'url']
 };
 export const ref_penulis = {
@@ -25,7 +25,7 @@ const Dapus = () => {
       no: 1,
       nama_pengarang: '',
       judul: '',
-      penerbit: '',
+      penerbit: 0,
       tahun_terbit: '',
       volume: '',
       status: false
@@ -51,19 +51,21 @@ const Dapus = () => {
     ]
   };
   const handlePengarang = {
-    onchange: (e) => {
-      setObject({ ...object, nama_pengarang: e.target.value });
+    onchange: (param) => {
+      setObject({ ...object, nama_pengarang: param.target.value });
     },
     tambah: () => {
-      console.log(object.nama_pengarang);
       setData({ ...data, pengarang: [...data.pengarang, { no: data.pengarang.length + 1, nama_pengarang: object.nama_pengarang }] });
       setObject({ ...object, nama_pengarang: '' });
     },
-    edit: (e) => {
-      setObject({ ...object, no: e.no, nama_pengarang: e.nama_pengarang, status: true });
+    edit: (param) => {
+      setObject({ ...object, no: param.no, nama_pengarang: param.nama_pengarang, status: !object.status });
     },
-    delete: (e) => {
-      console.log(e);
+    delete: (param) => {
+      setData({
+        ...data,
+        pengarang: data.pengarang.filter((item) => item.no !== param.no)
+      });
     },
     update: () => {
       setData({
@@ -76,6 +78,29 @@ const Dapus = () => {
         })
       });
       setObject({ ...object, no: 1, nama_pengarang: '', status: false });
+    }
+  };
+
+  const handleDapus = {
+    onchange: (param) => {
+      setObject({ ...object, [param.target.name]: param.target.value });
+    },
+    tambah: () => {
+      setData({
+        ...data,
+        dapus: [
+          ...data.dapus,
+          {
+            no: data.dapus.length + 1,
+            nama_pengarang: object.nama_pengarang,
+            judul: object.judul,
+            penerbit: object.penerbit,
+            tahun_terbit: object.tahun_terbit,
+            volume: object.volume
+          }
+        ]
+      });
+      setObject({ ...object, nama_pengarang: '', judul: '', penerbit: 0, tahun_terbit: '', volume: '' });
     }
   };
 
@@ -155,33 +180,22 @@ const Dapus = () => {
             // helperText={errors[field.name]}
             // InputProps={field.inputProps}
           />
-          {!object.status && (
-            <Button variant="contained" color="primary" onClick={handlePengarang.tambah} sx={{ marginY: 2 }}>
-              Tambah Pengarang
-            </Button>
-          )}
-          {object.status && (
-            <Button variant="contained" color="info" onClick={handlePengarang.update} sx={{ marginY: 2 }}>
-              Update Pengarang
-            </Button>
-          )}
-          <TableGrid key="grid-1" columns={columns.pengarang} rows={data.pengarang} expand={false} action onEdit={handlePengarang.edit} />
-        </Grid>
-        <Grid item xs={6} sx={{ marginTop: 2 }}>
-          <TextField
-            label="Tahun Terbit"
-            name="tahun_terbit"
-            type="number"
-            variant="outlined"
-            value={object.tahun_terbit}
-            onChange={(e) => setObject(e.target.value)}
-            fullWidth
-            // error={!!errors[field.name]}
-            // helperText={errors[field.name]}
-            // InputProps={field.inputProps}
+          <Button variant="contained" color="primary" onClick={handlePengarang.tambah} sx={{ marginY: 2 }}>
+            Tambah Pengarang
+          </Button>
+          <TableGrid
+            key="grid-1"
+            columns={columns.pengarang}
+            rows={data.pengarang}
+            expand={false}
+            action
+            onEdit={handlePengarang.edit}
+            onDelete={handlePengarang.delete}
+            onUpdate={handlePengarang.update}
+            actionEdit={object.status}
           />
         </Grid>
-        <Grid item xs={6} sx={{ marginTop: 2 }}>
+        <Grid item xs={5} sx={{ marginTop: 2 }}>
           <TextField
             label="Judul"
             name="judul"
@@ -195,21 +209,45 @@ const Dapus = () => {
             // InputProps={field.inputProps}
           />
         </Grid>
-        <Grid item xs={6} sx={{ marginTop: 2 }}>
+        <Grid item xs={2} sx={{ marginTop: 2 }}>
           <TextField
-            label="Volume"
-            name="volume  "
+            label="Tahun Terbit"
+            name="tahun_terbit"
             type="text"
-            variant="outlined"
-            value={object.volume}
-            onChange={(e) => setObject(e.target.value)}
+            value={object.tahun_terbit}
+            onChange={(e) => {
+              const value = e.target.value.replace(/[^0-9]/g, '');
+              if (value.length <= 4) {
+                setObject({ ...object, tahun_terbit: value });
+              }
+            }}
             fullWidth
-            // error={!!errors[field.name]}
-            // helperText={errors[field.name]}
-            // InputProps={field.inputProps}
+            inputProps={{
+              maxLength: 4,
+              placeholder: `years`
+            }}
           />
         </Grid>
-        <Grid item xs={6} sx={{ marginTop: 2 }}>
+        <Grid item xs={2} sx={{ marginTop: 2 }}>
+          <TextField
+            label="Volume"
+            name="volume"
+            type="number"
+            variant="outlined"
+            value={object.volume}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value >= 0) {
+                setObject({ ...object, volume: value });
+              }
+            }}
+            fullWidth
+            inputProps={{
+              min: '0'
+            }}
+          />
+        </Grid>
+        <Grid item xs={3} sx={{ marginTop: 2 }}>
           <TextField
             label="Tempat Publikasi"
             name="tempat_publikasi"
@@ -224,17 +262,20 @@ const Dapus = () => {
           />
         </Grid>
         <Grid item xs={12} sx={{ marginTop: 2 }}>
-          {!data.status && (
-            <Button variant="contained" color="primary" onClick={() => {}} sx={{ marginY: 2 }}>
-              Tambah Daftar Pustaka
-            </Button>
-          )}
-          {data.status && (
-            <Button variant="contained" color="info" onClick={() => {}} sx={{ marginY: 2 }}>
-              Update Daftar Pustaka
-            </Button>
-          )}
-          <TableGrid key="grid-2" columns={columns.dapus} rows={data.dapus} expand={false} action onEdit={() => {}} />
+          <Button variant="contained" color="primary" onClick={handleDapus.tambah} sx={{ marginY: 2 }}>
+            Tambah Daftar Pustaka
+          </Button>
+          <TableGrid
+            key="grid-2"
+            columns={columns.dapus}
+            rows={data.dapus}
+            expand
+            action
+            onEdit={() => {}}
+            onDelete={() => {}}
+            onUpdate={() => {}}
+            actionEdit={data.status}
+          />
         </Grid>
       </Grid>
       <Stack

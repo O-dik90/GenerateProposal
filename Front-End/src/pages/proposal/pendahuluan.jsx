@@ -80,6 +80,12 @@ const Pendahuluan = () => {
         })
       });
       setRumusan({ ...rumusan, no: 1, data: '', status: false });
+    },
+    delete: (params) => {
+      setData({
+        ...data,
+        rumusan_masalah: data.rumusan_masalah.filter((item) => item.no !== params.no)
+      });
     }
   };
 
@@ -109,6 +115,12 @@ const Pendahuluan = () => {
         })
       });
       setTujuan({ ...tujuan, no: tujuan.no + 1, data: '', status: false });
+    },
+    delete: (params) => {
+      setData({
+        ...data,
+        tujuan: data.tujuan.filter((item) => item.no !== params.no)
+      });
     }
   };
 
@@ -138,6 +150,12 @@ const Pendahuluan = () => {
         })
       });
       setLuaran({ ...luaran, no: luaran.no + 1, data: '', status: false });
+    },
+    delete: (params) => {
+      setData({
+        ...data,
+        luaran: data.luaran.filter((item) => item.no !== params.no)
+      });
     }
   };
 
@@ -167,6 +185,12 @@ const Pendahuluan = () => {
         })
       });
       setManfaat({ ...manfaat, no: manfaat.no + 1, data: '', status: false });
+    },
+    delete: (params) => {
+      setData({
+        ...data,
+        manfaat: data.manfaat.filter((item) => item.no !== params.no)
+      });
     }
   };
 
@@ -210,17 +234,20 @@ const Pendahuluan = () => {
             // helperText={errors[field.name]}
             // InputProps={field.inputProps}
           />
-          {!rumusan.status && (
-            <Button variant="contained" color="primary" onClick={handleRumusan.tambah} sx={{ marginY: 2 }}>
-              Tambah Rumusan Masalah
-            </Button>
-          )}
-          {rumusan.status && (
-            <Button variant="contained" color="info" onClick={handleRumusan.update} sx={{ marginY: 2 }}>
-              Update Rumusan Masalah
-            </Button>
-          )}
-          <TableGrid key="grid-1" columns={columns.rumusan} rows={data.rumusan_masalah} expand={false} action onEdit={handleRumusan.edit} />
+          <Button variant="contained" color="primary" onClick={handleRumusan.tambah} sx={{ marginY: 2 }}>
+            Tambah Rumusan Masalah
+          </Button>
+          <TableGrid
+            key="grid-1"
+            columns={columns.rumusan}
+            rows={data.rumusan_masalah}
+            expand={false}
+            action
+            onEdit={handleRumusan.edit}
+            onDelete={handleRumusan.delete}
+            onUpdate={handleRumusan.update}
+            actionEdit={rumusan.status}
+          />
         </Grid>
         <Grid item xs={12} sx={{ marginTop: 2 }}>
           <Typography variant="h5" gutterBottom>
@@ -241,17 +268,20 @@ const Pendahuluan = () => {
             // helperText={errors[field.name]}
             // InputProps={field.inputProps}
           />
-          {!tujuan.status && (
-            <Button variant="contained" color="primary" onClick={handleTujuan.tambah} sx={{ marginY: 2 }}>
-              Tambah Tujuan
-            </Button>
-          )}
-          {tujuan.status && (
-            <Button variant="contained" color="info" onClick={handleTujuan.update} sx={{ marginY: 2 }}>
-              Update Tujuan
-            </Button>
-          )}
-          <TableGrid key="grid-2" columns={columns.tujuan} rows={data.tujuan} expand={false} action onEdit={handleTujuan.edit} />
+          <Button variant="contained" color="primary" onClick={handleTujuan.tambah} sx={{ marginY: 2 }}>
+            Tambah Tujuan
+          </Button>
+          <TableGrid
+            key="grid-2"
+            columns={columns.tujuan}
+            rows={data.tujuan}
+            expand={false}
+            action
+            onEdit={handleTujuan.edit}
+            onDelete={handleTujuan.delete}
+            onUpdate={handleTujuan.update}
+            actionEdit={tujuan.status}
+          />
         </Grid>
         <Grid item xs={12} sx={{ marginTop: 2 }}>
           <Typography variant="h5" gutterBottom>
@@ -272,17 +302,20 @@ const Pendahuluan = () => {
             // helperText={errors[field.name]}
             // InputProps={field.inputProps}
           />
-          {!luaran.status && (
-            <Button variant="contained" color="primary" onClick={handleLuaran.tambah} sx={{ marginY: 2 }}>
-              Tambah Luaran
-            </Button>
-          )}
-          {luaran.status && (
-            <Button variant="contained" color="info" onClick={handleLuaran.update} sx={{ marginY: 2 }}>
-              Update Luaran
-            </Button>
-          )}
-          <TableGrid key="grid-3" columns={columns.luaran} rows={data.luaran} expand={false} action onEdit={handleLuaran.edit} />
+          <Button variant="contained" color="primary" onClick={handleLuaran.tambah} sx={{ marginY: 2 }}>
+            Tambah Luaran
+          </Button>
+          <TableGrid
+            key="grid-3"
+            columns={columns.luaran}
+            rows={data.luaran}
+            expand={false}
+            action
+            onEdit={handleLuaran.edit}
+            onUpdate={handleLuaran.update}
+            onDelete={handleLuaran.delete}
+            actionEdit={luaran.status}
+          />
         </Grid>
         <Grid item xs={12} sx={{ marginTop: 2 }}>
           <Typography variant="h5" gutterBottom>
@@ -303,17 +336,20 @@ const Pendahuluan = () => {
             // helperText={errors[field.name]}
             // InputProps={field.inputProps}
           />
-          {!manfaat.status && (
-            <Button variant="contained" color="primary" onClick={handleManfaat.tambah} sx={{ marginY: 2 }}>
-              Tambah Manfaat
-            </Button>
-          )}
-          {manfaat.status && (
-            <Button variant="contained" color="info" onClick={handleManfaat.update} sx={{ marginY: 2 }}>
-              Update Manfaat
-            </Button>
-          )}
-          <TableGrid key="grid-4" columns={columns.manfaat} rows={data.manfaat} expand={false} action onEdit={handleManfaat.edit} />
+          <Button variant="contained" color="primary" onClick={handleManfaat.tambah} sx={{ marginY: 2 }}>
+            Tambah Manfaat
+          </Button>
+          <TableGrid
+            key="grid-4"
+            columns={columns.manfaat}
+            rows={data.manfaat}
+            expand={false}
+            action
+            onEdit={handleManfaat.edit}
+            onDelete={handleManfaat.delete}
+            onUpdate={handleManfaat.update}
+            actionEdit={manfaat.status}
+          />
         </Grid>
       </Grid>
       <Stack

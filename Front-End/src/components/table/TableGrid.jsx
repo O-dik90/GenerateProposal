@@ -1,17 +1,17 @@
-import { ArrowDownOutlined, ArrowRightOutlined, DeleteFilled, EditFilled } from '@ant-design/icons';
+import { ArrowDownOutlined, ArrowRightOutlined, CheckOutlined, DeleteFilled, EditFilled } from '@ant-design/icons';
 import { Box, Collapse, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import React, { useState } from 'react';
 
 import PropTypes from 'prop-types';
 import Typography from '@mui/material/Typography';
 
-const TableGrid = ({ columns, rows, expand, action, onEdit }) => {
+const TableGrid = ({ columns, rows, expand, action, onEdit, onDelete, actionEdit, onUpdate }) => {
   return (
     <TableContainer component={Paper} sx={{ width: '100%', overflowX: 'auto' }}>
       <Table aria-label="collapsible table" sx={{ minWidth: 650 }}>
         <TableHead>
           <TableRow>
-            {expand && <TableCell align="center" sx={{ width: 48, minWidth: 48 }} />}
+            {expand && <TableCell align="center" width={48} />}
             {columns.map((item, index) => (
               <TableCell
                 align="center"
@@ -28,7 +28,7 @@ const TableGrid = ({ columns, rows, expand, action, onEdit }) => {
               </TableCell>
             ))}
             {action && (
-              <TableCell align="center" sx={{ width: 100, minWidth: 100 }}>
+              <TableCell align="center" sx={{ width: 100 }}>
                 Action
               </TableCell>
             )}
@@ -42,8 +42,10 @@ const TableGrid = ({ columns, rows, expand, action, onEdit }) => {
               columns={columns}
               expand={expand}
               onEdit={() => onEdit(row)}
-              onDelete={() => console.log('Delete clicked', row.name)}
+              onDelete={() => onDelete(row)}
+              onUpdate={() => onUpdate(row)}
               action={action}
+              actionEdit={actionEdit}
             />
           ))}
         </TableBody>
@@ -52,14 +54,14 @@ const TableGrid = ({ columns, rows, expand, action, onEdit }) => {
   );
 };
 
-const CollapsibleRow = ({ row, columns, expand, onEdit, onDelete, action }) => {
+const CollapsibleRow = ({ row, columns, expand, onEdit, onDelete, onUpdate, actionEdit, action }) => {
   const [open, setOpen] = useState(false);
 
   return (
     <>
       <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
         {expand && (
-          <TableCell sx={{ width: 48, minWidth: 48 }}>
+          <TableCell>
             <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
               {open ? <ArrowDownOutlined /> : <ArrowRightOutlined />}
             </IconButton>
@@ -81,10 +83,17 @@ const CollapsibleRow = ({ row, columns, expand, onEdit, onDelete, action }) => {
           </TableCell>
         ))}
         {action && (
-          <TableCell align="center" sx={{ width: 100, minWidth: 100 }}>
-            <IconButton aria-label="edit" size="small" color="primary" onClick={onEdit}>
-              <EditFilled />
-            </IconButton>
+          <TableCell align="center" sx={{ width: 100 }}>
+            {!actionEdit && (
+              <IconButton aria-label="edit" size="small" color="primary" onClick={onEdit}>
+                <EditFilled />
+              </IconButton>
+            )}
+            {actionEdit && (
+              <IconButton aria-label="update" size="small" color="info" onClick={onUpdate}>
+                <CheckOutlined />
+              </IconButton>
+            )}
             <IconButton aria-label="delete" size="small" color="error" onClick={onDelete}>
               <DeleteFilled />
             </IconButton>
@@ -94,7 +103,7 @@ const CollapsibleRow = ({ row, columns, expand, onEdit, onDelete, action }) => {
       <TableRow>
         <TableCell sx={{ py: 0 }} colSpan={columns.length + (expand ? 2 : 1)}>
           <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 2, width: '100%' }}>
+            <Box sx={{ padding: 2, width: '100%' }}>
               <Typography variant="h6" gutterBottom component="div">
                 History
               </Typography>
@@ -119,7 +128,10 @@ TableGrid.propTypes = {
   rows: PropTypes.arrayOf(PropTypes.object).isRequired,
   expand: PropTypes.bool,
   action: PropTypes.bool,
-  onEdit: PropTypes.func
+  actionEdit: PropTypes.bool,
+  onEdit: PropTypes.func,
+  onUpdate: PropTypes.func,
+  onDelete: PropTypes.func
 };
 
 CollapsibleRow.propTypes = {
@@ -134,7 +146,9 @@ CollapsibleRow.propTypes = {
   ).isRequired,
   expand: PropTypes.bool.isRequired,
   action: PropTypes.bool,
+  actionEdit: PropTypes.bool,
   onEdit: PropTypes.func,
+  onUpdate: PropTypes.func,
   onDelete: PropTypes.func
 };
 

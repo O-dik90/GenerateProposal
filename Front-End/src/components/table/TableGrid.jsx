@@ -5,9 +5,18 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import Typography from '@mui/material/Typography';
 
-const TableGrid = ({ columns, rows, expand, action, onEdit, onDelete, actionEdit, onUpdate }) => {
+const TableGrid = ({ columns, rows, expand, action, onEdit, onDelete, actionEdit, onUpdate, detail }) => {
   return (
-    <TableContainer component={Paper} sx={{ width: '100%', overflowX: 'auto' }}>
+    <TableContainer
+      component={Paper}
+      sx={{
+        width: '100%',
+        overflowX: 'auto',
+        '& .MuiTableCell-root': {
+          whiteSpace: 'nowrap'
+        }
+      }}
+    >
       <Table aria-label="collapsible table" sx={{ minWidth: 650 }}>
         <TableHead>
           <TableRow>
@@ -28,7 +37,7 @@ const TableGrid = ({ columns, rows, expand, action, onEdit, onDelete, actionEdit
               </TableCell>
             ))}
             {action && (
-              <TableCell align="center" sx={{ width: 100 }}>
+              <TableCell align="center" sx={{ width: 150 }}>
                 Action
               </TableCell>
             )}
@@ -46,6 +55,7 @@ const TableGrid = ({ columns, rows, expand, action, onEdit, onDelete, actionEdit
               onUpdate={() => onUpdate(row)}
               action={action}
               actionEdit={actionEdit}
+              detail={detail}
             />
           ))}
         </TableBody>
@@ -54,7 +64,7 @@ const TableGrid = ({ columns, rows, expand, action, onEdit, onDelete, actionEdit
   );
 };
 
-const CollapsibleRow = ({ row, columns, expand, onEdit, onDelete, onUpdate, actionEdit, action }) => {
+const CollapsibleRow = ({ row, columns, expand, onEdit, onDelete, onUpdate, actionEdit, action, detail }) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -74,16 +84,17 @@ const CollapsibleRow = ({ row, columns, expand, onEdit, onDelete, onUpdate, acti
             sx={{
               width: column.width || 'auto',
               minWidth: column.minWidth || 100,
-              whiteSpace: 'nowrap',
+              maxWidth: column.maxWidth || 'none',
               overflow: 'hidden',
-              textOverflow: 'ellipsis'
+              textOverflow: 'ellipsis',
+              padding: '8px 16px'
             }}
           >
-            {row[column.field]}
+            <Box sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{row[column.field]}</Box>
           </TableCell>
         ))}
         {action && (
-          <TableCell align="center" sx={{ width: 100 }}>
+          <TableCell align="center" sx={{ width: 150 }}>
             {!actionEdit && (
               <IconButton aria-label="edit" size="small" color="primary" onClick={onEdit}>
                 <EditFilled />
@@ -103,9 +114,9 @@ const CollapsibleRow = ({ row, columns, expand, onEdit, onDelete, onUpdate, acti
       <TableRow>
         <TableCell sx={{ py: 0 }} colSpan={columns.length + (expand ? 2 : 1)}>
           <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ padding: 2, width: '100%' }}>
+            <Box sx={{ margin: 1 }}>
               <Typography variant="h6" gutterBottom component="div">
-                History
+                {typeof detail === 'function' ? detail(row) : detail}
               </Typography>
             </Box>
           </Collapse>
@@ -114,7 +125,6 @@ const CollapsibleRow = ({ row, columns, expand, onEdit, onDelete, onUpdate, acti
     </>
   );
 };
-
 // Update PropTypes to include new width properties
 TableGrid.propTypes = {
   columns: PropTypes.arrayOf(
@@ -131,7 +141,8 @@ TableGrid.propTypes = {
   actionEdit: PropTypes.bool,
   onEdit: PropTypes.func,
   onUpdate: PropTypes.func,
-  onDelete: PropTypes.func
+  onDelete: PropTypes.func,
+  detail: PropTypes.oneOfType([PropTypes.func, PropTypes.node])
 };
 
 CollapsibleRow.propTypes = {
@@ -149,7 +160,8 @@ CollapsibleRow.propTypes = {
   actionEdit: PropTypes.bool,
   onEdit: PropTypes.func,
   onUpdate: PropTypes.func,
-  onDelete: PropTypes.func
+  onDelete: PropTypes.func,
+  detail: PropTypes.oneOfType([PropTypes.func, PropTypes.node])
 };
 
 export default TableGrid;

@@ -43,11 +43,11 @@ const Dapus = () => {
     ],
     dapus: [
       { name: 'No', field: 'no', width: '4rem' },
-      { name: 'Nama Pengarang', field: 'nama_pengarang' },
-      { name: 'Judul', field: 'judul' },
-      { name: 'Penerbit', field: 'penerbit' },
-      { name: 'Tahun Terbit', field: 'tahun_terbit' },
-      { name: 'Volume', field: 'volume' }
+      { name: 'Nama Pengarang', field: 'nama_pengarang', width: '25rem' },
+      { name: 'Judul', field: 'judul', width: '12rem' },
+      { name: 'Penerbit', field: 'penerbit', width: '12rem' },
+      { name: 'Tahun Terbit', field: 'tahun_terbit', width: '5rem' },
+      { name: 'Volume', field: 'volume', width: '5rem' }
     ]
   };
   const handlePengarang = {
@@ -92,7 +92,7 @@ const Dapus = () => {
           ...data.dapus,
           {
             no: data.dapus.length + 1,
-            nama_pengarang: object.nama_pengarang,
+            nama_pengarang: data.pengarang.map((item) => item.nama_pengarang).join(','),
             judul: object.judul,
             penerbit: object.penerbit,
             tahun_terbit: object.tahun_terbit,
@@ -101,6 +101,56 @@ const Dapus = () => {
         ]
       });
       setObject({ ...object, nama_pengarang: '', judul: '', penerbit: 0, tahun_terbit: '', volume: '' });
+    },
+    delete: (param) => {
+      setData({
+        ...data,
+        dapus: data.dapus.filter((item) => item.no !== param.no)
+      });
+    },
+    edit: (param) => {
+      setObject({
+        ...object,
+        no: param.no,
+        nama_pengarang: param.nama_pengarang,
+        judul: param.judul,
+        penerbit: param.penerbit,
+        tahun_terbit: param.tahun_terbit,
+        volume: param.volume,
+        status: !object.status
+      });
+    },
+    update: () => {
+      setData({
+        ...data,
+        dapus: data.dapus.map((item) => {
+          if (item.no === object.no) {
+            return {
+              ...item,
+              nama_pengarang: object.nama_pengarang,
+              judul: object.judul,
+              penerbit: object.penerbit,
+              tahun_terbit: object.tahun_terbit,
+              volume: object.volume
+            };
+          }
+          return item;
+        })
+      });
+      setObject({ ...object, no: 1, nama_pengarang: '', judul: '', penerbit: 0, tahun_terbit: '', volume: '', status: false });
+    },
+    detail: (row) => {
+      const res = `${row.nama_pengarang} (${row.tahun_terbit}) ${row.judul}. ${row.penerbit}.`;
+      return (
+        <>
+          <Typography variant="h5" gutterBottom component="div">
+            Detail
+          </Typography>
+          <Typography variant="body1" gutterBottom component="div">
+            {res}
+          </Typography>
+        </>
+      );
     }
   };
 
@@ -202,7 +252,7 @@ const Dapus = () => {
             type="text"
             variant="outlined"
             value={object.judul}
-            onChange={(e) => setObject(e.target.value)}
+            onChange={handleDapus.onchange}
             fullWidth
             // error={!!errors[field.name]}
             // helperText={errors[field.name]}
@@ -249,19 +299,32 @@ const Dapus = () => {
         </Grid>
         <Grid item xs={3} sx={{ marginTop: 2 }}>
           <TextField
-            label="Tempat Publikasi"
-            name="tempat_publikasi"
+            label="Penerbit"
+            name="penerbit"
             type="text"
             variant="outlined"
-            value={object.tempat_publikasi}
-            onChange={(e) => setObject(e.target.value)}
+            value={object.penerbit}
+            onChange={handleDapus.onchange}
             fullWidth
             // error={!!errors[field.name]}
             // helperText={errors[field.name]}
             // InputProps={field.inputProps}
           />
         </Grid>
-        <Grid item xs={12} sx={{ marginTop: 2 }}>
+        <Grid
+          item
+          xs={12}
+          sx={{
+            marginTop: 2,
+            '& .MuiTableContainer-root': {
+              overflowX: 'auto',
+              width: '100%'
+            },
+            '& .MuiTable-root': {
+              minWidth: 1200 // Adjust based on total column widths
+            }
+          }}
+        >
           <Button variant="contained" color="primary" onClick={handleDapus.tambah} sx={{ marginY: 2 }}>
             Tambah Daftar Pustaka
           </Button>
@@ -271,10 +334,11 @@ const Dapus = () => {
             rows={data.dapus}
             expand
             action
-            onEdit={() => {}}
-            onDelete={() => {}}
-            onUpdate={() => {}}
+            onEdit={handleDapus.edit}
+            onDelete={handleDapus.delete}
+            onUpdate={handleDapus.update}
             actionEdit={data.status}
+            detail={handleDapus.detail}
           />
         </Grid>
       </Grid>

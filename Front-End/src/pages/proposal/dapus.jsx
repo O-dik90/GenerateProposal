@@ -25,7 +25,7 @@ const Dapus = () => {
       no: 1,
       nama_pengarang: '',
       judul: '',
-      penerbit: 0,
+      penerbit: '',
       tahun_terbit: '',
       volume: '',
       status: false
@@ -62,9 +62,15 @@ const Dapus = () => {
       setObject({ ...object, no: param.no, nama_pengarang: param.nama_pengarang, status: !object.status });
     },
     delete: (param) => {
+      const filteredData = data.pengarang
+        .filter((item) => item.no !== param.no)
+        .map((item, index) => ({
+          ...item,
+          no: index + 1
+        }));
       setData({
         ...data,
-        pengarang: data.pengarang.filter((item) => item.no !== param.no)
+        pengarang: filteredData
       });
     },
     update: () => {
@@ -103,9 +109,15 @@ const Dapus = () => {
       setObject({ ...object, nama_pengarang: '', judul: '', penerbit: 0, tahun_terbit: '', volume: '' });
     },
     delete: (param) => {
+      const filteredDapus = data.dapus
+        .filter((item) => item.no !== param.no)
+        .map((item, index) => ({
+          ...item,
+          no: index + 1
+        }));
       setData({
         ...data,
-        dapus: data.dapus.filter((item) => item.no !== param.no)
+        dapus: filteredDapus
       });
     },
     edit: (param) => {

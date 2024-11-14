@@ -2,22 +2,23 @@ import 'App.css';
 
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers';
+import { Provider } from 'react-redux';
 import { RouterProvider } from 'react-router-dom';
 import ScrollTop from 'components/ScrollTop';
 import ThemeCustomization from 'themes';
-// project import
 import router from 'routes';
-
-// ==============================|| APP - THEME, ROUTER, LOCAL ||============================== //
+import store from 'store';
 
 export default function App() {
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <ThemeCustomization>
-        <ScrollTop>
-          <RouterProvider router={router} />
-        </ScrollTop>
-      </ThemeCustomization>
-    </LocalizationProvider>
+    <Provider store={store}>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <ThemeCustomization>
+          <ScrollTop>
+            <RouterProvider router={router} />
+          </ScrollTop>
+        </ThemeCustomization>
+      </LocalizationProvider>
+    </Provider>
   );
 }

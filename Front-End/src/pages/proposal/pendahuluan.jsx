@@ -82,9 +82,16 @@ const Pendahuluan = () => {
       setRumusan({ ...rumusan, no: 1, data: '', status: false });
     },
     delete: (params) => {
+      const filteredData = data.rumusan_masalah.filter((item) => item.no !== params.no);
+      // Reindex the remaining items
+      const reindexedData = filteredData.map((item, index) => ({
+        ...item,
+        no: index + 1
+      }));
       setData({
         ...data,
-        rumusan_masalah: data.rumusan_masalah.filter((item) => item.no !== params.no)
+
+        rumusan_masalah: reindexedData
       });
     }
   };
@@ -117,9 +124,15 @@ const Pendahuluan = () => {
       setTujuan({ ...tujuan, no: tujuan.no + 1, data: '', status: false });
     },
     delete: (params) => {
+      const filteredData = data.tujuan.filter((item) => item.no !== params.no);
+      const reindexedData = filteredData.map((item, index) => ({
+        ...item,
+        no: index + 1
+      }));
       setData({
         ...data,
-        tujuan: data.tujuan.filter((item) => item.no !== params.no)
+
+        tujuan: reindexedData
       });
     }
   };
@@ -152,9 +165,15 @@ const Pendahuluan = () => {
       setLuaran({ ...luaran, no: luaran.no + 1, data: '', status: false });
     },
     delete: (params) => {
+      const filteredData = data.luaran.filter((item) => item.no !== params.no);
+      const reindexedData = filteredData.map((item, index) => ({
+        ...item,
+        no: index + 1
+      }));
       setData({
         ...data,
-        luaran: data.luaran.filter((item) => item.no !== params.no)
+
+        luaran: reindexedData
       });
     }
   };
@@ -187,9 +206,15 @@ const Pendahuluan = () => {
       setManfaat({ ...manfaat, no: manfaat.no + 1, data: '', status: false });
     },
     delete: (params) => {
+      const filteredData = data.manfaat.filter((item) => item.no !== params.no);
+      const reindexedData = filteredData.map((item, index) => ({
+        ...item,
+        no: index + 1
+      }));
       setData({
         ...data,
-        manfaat: data.manfaat.filter((item) => item.no !== params.no)
+
+        manfaat: reindexedData
       });
     }
   };

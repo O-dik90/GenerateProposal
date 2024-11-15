@@ -1,117 +1,109 @@
 import { Link, useLocation } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
+import { Box } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import MainCard from 'components/MainCard';
 import MuiBreadcrumbs from '@mui/material/Breadcrumbs';
 import PropTypes from 'prop-types';
 import Typography from '@mui/material/Typography';
 
-export default function Breadcrumbs({ navigation, ...others }) {
+export default function Breadcrumbs({ navigation, title, maxItems = 8, separator = '/', ...others }) {
   const location = useLocation();
   const [main, setMain] = useState();
   const [item, setItem] = useState();
 
-  // set active item state
-  const getCollapse = (menu) => {
-    if (menu.children) {
-      menu.children.filter((collapse) => {
-        if (collapse.type && collapse.type === 'collapse') {
+  // Memoize the collapse function to prevent unnecessary recalculations
+  const getCollapse = useMemo(
+    () => (menu) => {
+      if (!menu.children) return;
+
+      menu.children.forEach((collapse) => {
+        if (collapse.type === 'collapse') {
           getCollapse(collapse);
-        } else if (collapse.type && collapse.type === 'item') {
-          if (location.pathname === collapse.url) {
-            setMain(menu);
-            setItem(collapse);
-          }
+        } else if (collapse.type === 'item' && location.pathname === collapse.url) {
+          setMain(menu);
+          setItem(collapse);
         }
-        return false;
       });
-    }
-  };
+    },
+    [location.pathname]
+  );
 
   useEffect(() => {
-    navigation?.items?.map((menu) => {
-      if (menu.type && menu.type === 'group') {
+    navigation?.items?.forEach((menu) => {
+      if (menu.type === 'group') {
         getCollapse(menu);
       }
-      return false;
     });
-  });
+  }, [navigation, getCollapse]);
 
-  // only used for component demo breadcrumbs
-  if (location.pathname === '/breadcrumbs') {
-    location.pathname = '/dashboard/analytics';
-  }
+  const renderBreadcrumbLink = (to, text, isLast = false) => (
+    <Typography
+      component={isLast ? 'span' : Link}
+      to={to}
+      variant="h6"
+      sx={{
+        textDecoration: 'none',
+        color: isLast ? 'black' : 'text.secondary',
+        fontWeight: isLast ? 'bold' : 'normal',
+        '&:hover': {
+          color: 'black'
+        }
+      }}
+    >
+      {text}
+    </Typography>
+  );
 
-  let mainContent;
-  let itemContent;
-  let breadcrumbContent = <Typography />;
-  let itemTitle = '';
+  const breadcrumbContent = useMemo(() => {
+    if (!item || item.type !== 'item' || item.breadcrumbs === false) {
+      return <Typography />;
+    }
 
-  // collapse item
-  if (main && main.type === 'collapse') {
-    mainContent = (
-      <Typography component={Link} to={document.location.pathname} variant="h6" sx={{ textDecoration: 'none' }} color="textSecondary">
-        {main.title}
-      </Typography>
-    );
-  }
-
-  // items
-  if (item && item.type === 'item') {
-    itemTitle = item.title;
-    itemContent = (
-      <Typography variant="subtitle1" color="textPrimary">
-        {itemTitle}
-      </Typography>
-    );
-
-    // main
-    if (item.breadcrumbs !== false) {
-      breadcrumbContent = (
-        <MainCard border={false} sx={{ mb: 3, bgcolor: 'transparent' }} {...others} content={false}>
-          <Grid container direction="column" justifyContent="flex-start" alignItems="flex-start" spacing={1}>
+    return (
+      <MainCard border={false} sx={{ mb: 3, bgcolor: 'transparent' }} {...others} content={false}>
+        <Box sx={{ p: 2, bgcolor: 'background.paper', borderRadius: 1 }}>
+          <Grid container direction="column" spacing={1}>
             <Grid item>
-              <MuiBreadcrumbs aria-label="breadcrumb">
-                <Typography component={Link} to="/" color="textSecondary" variant="h6" sx={{ textDecoration: 'none' }}>
-                  Home
-                </Typography>
-                {mainContent}
-                {itemContent}
+              <MuiBreadcrumbs
+                separator={separator}
+                maxItems={maxItems}
+                aria-label="breadcrumb"
+                sx={{
+                  '& .MuiBreadcrumbs-separator': {
+                    mx: 1.5,
+                    color: 'text.secondary'
+                  }
+                }}
+              >
+                {renderBreadcrumbLink('/dashboard', 'Home')}
+                {renderBreadcrumbLink(location.pathname, item.title, true)}
               </MuiBreadcrumbs>
             </Grid>
-            {/* {title && (
-              <Grid item sx={{ mt: 2 }}>
-                <Typography variant="h5">{item.title}</Typography>
+            {title && (
+              <Grid item sx={{ mt: 1 }}>
+                <Typography variant="h5" color="black">
+                  {item.title}
+                </Typography>
               </Grid>
-            )} */}
+            )}
           </Grid>
-        </MainCard>
-      );
-    }
-  }
+        </Box>
+      </MainCard>
+    );
+  }, [item, main, title, maxItems, separator, others, location.pathname]);
 
   return breadcrumbContent;
 }
 
 Breadcrumbs.propTypes = {
-  navigation: PropTypes.object,
-  title: PropTypes.bool
-};
-
-Breadcrumbs.propTypes = {
-  card: PropTypes.bool,
-  custom: PropTypes.bool,
-  divider: PropTypes.bool,
-  heading: PropTypes.string,
-  icon: PropTypes.bool,
-  icons: PropTypes.bool,
-  links: PropTypes.array,
-  maxItems: PropTypes.number,
-  rightAlign: PropTypes.bool,
-  separator: PropTypes.any,
+  navigation: PropTypes.shape({
+    items: PropTypes.array
+  }).isRequired,
   title: PropTypes.bool,
-  titleBottom: PropTypes.bool,
-  sx: PropTypes.any,
-  others: PropTypes.any
+  maxItems: PropTypes.number,
+  separator: PropTypes.node,
+  sx: PropTypes.object,
+  others: PropTypes.object
 };

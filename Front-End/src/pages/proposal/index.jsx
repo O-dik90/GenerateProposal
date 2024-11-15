@@ -6,7 +6,7 @@ import MainCard from 'components/MainCard';
 import { useNavigate } from 'react-router-dom';
 
 const ProposalTable = () => {
-  const title = 'Proposal Table';
+  const title = 'Daftar Proposal';
   const navigate = useNavigate();
   const columns = [
     {

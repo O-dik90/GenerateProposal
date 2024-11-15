@@ -4,7 +4,6 @@ import AppBar from '@mui/material/AppBar';
 import AppBarStyled from './AppBarStyled';
 import HeaderContent from './HeaderContent';
 import IconButton from '@mui/material/IconButton';
-
 import MenuFoldOutlined from '@ant-design/icons/MenuFoldOutlined';
 import MenuUnfoldOutlined from '@ant-design/icons/MenuUnfoldOutlined';
 import Toolbar from '@mui/material/Toolbar';
@@ -51,6 +50,8 @@ export default function Header() {
     color: 'inherit',
     elevation: 0,
     sx: {
+      width: !drawerOpen ? '100%' : 'calc(100% - 260px)',
+      right: 0,
       borderBottom: `1px solid ${theme.palette.divider}`
       // boxShadow: theme.customShadows.z1
     }

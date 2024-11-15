@@ -1,11 +1,10 @@
-import PropTypes from 'prop-types';
-import { forwardRef } from 'react';
-
-import { useTheme } from '@mui/material/styles';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
+import PropTypes from 'prop-types';
 import Typography from '@mui/material/Typography';
+import { forwardRef } from 'react';
+import { useTheme } from '@mui/material/styles';
 
 const headerSX = {
   p: 2.5,
@@ -55,7 +54,7 @@ function MainCard(
       }}
     >
       {/* card header and action */}
-      {!darkTitle && title && <CardHeader sx={headerSX} titleTypographyProps={{ variant: 'subtitle1' }} title={title} action={secondary} />}
+      {!darkTitle && title && <CardHeader sx={headerSX} titleTypographyProps={{ variant: 'h4' }} title={title} action={secondary} />}
       {darkTitle && title && <CardHeader sx={headerSX} title={<Typography variant="h3">{title}</Typography>} action={secondary} />}
 
       {/* card content */}

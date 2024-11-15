@@ -14,7 +14,7 @@ const proposal = {
   children: [
     {
       id: 'proposal-table',
-      title: 'Proposal Table',
+      title: 'Proposal Tabel',
       type: 'item',
       url: '/proposal-table',
       icon: icons.BookOutlined

@@ -23,20 +23,17 @@ const MainRoutes = {
   children: [
     {
       path: '/',
-      element: <DashboardDefault />
+      element: <DashboardDefault />,
+      children: [
+        {
+          path: 'dashboard',
+          element: <DashboardDefault />
+        }
+      ]
     },
     {
       path: 'color',
       element: <Color />
-    },
-    {
-      path: 'dashboard',
-      children: [
-        {
-          path: 'default',
-          element: <DashboardDefault />
-        }
-      ]
     },
     {
       path: 'sample-page',

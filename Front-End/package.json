@@ -37,6 +37,7 @@
     "@tanstack/react-table": "^8.20.5",
     "@vitejs/plugin-react": "^4.2.1",
     "apexcharts": "^3.49.0",
+    "axios": "^1.7.7",
     "dayjs": "^1.11.13",
     "docx": "^8.5.0",
     "file-saver": "^2.0.5",

@@ -8,7 +8,7 @@ import MoreOutlined from '@ant-design/icons/MoreOutlined';
 import Paper from '@mui/material/Paper';
 import Popper from '@mui/material/Popper';
 import Profile from './Profile';
-import Search from './Search';
+// import Search from './Search';
 import Toolbar from '@mui/material/Toolbar';
 import Transitions from 'components/@extended/Transitions';
 import { useTheme } from '@mui/material/styles';
@@ -86,7 +86,8 @@ export default function MobileSection() {
               <ClickAwayListener onClickAway={handleClose}>
                 <AppBar color="inherit">
                   <Toolbar>
-                    <Search />
+                    {/* <Search /> */}
+                    <Box sx={{ flexGrow: 1 }} />
                     <Profile />
                   </Toolbar>
                 </AppBar>

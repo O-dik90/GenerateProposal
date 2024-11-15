@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { DataGrid } from '@mui/x-data-grid';
+import GenerateDocx from 'utils/generate';
 import MainCard from 'components/MainCard';
 import { useNavigate } from 'react-router-dom';
 
@@ -22,7 +23,8 @@ const ProposalTable = () => {
       headerName: 'Name',
       headerAlign: 'center',
       minWidth: 150,
-      flex: 1
+      flex: 1,
+      filterable: true
     },
     {
       field: 'age',
@@ -30,28 +32,34 @@ const ProposalTable = () => {
       type: 'number',
       headerAlign: 'center',
       align: 'center',
-      width: 100
+      width: 100,
+      filterable: false
     },
     {
       field: 'city',
       headerName: 'City',
       width: 200,
       align: 'center',
-      headerAlign: 'center'
+      headerAlign: 'center',
+      filterable: false
     },
     {
       field: 'actions',
       headerName: 'Actions',
-      width: 160,
+      width: 260,
       headerAlign: 'center',
       sortable: false,
+      filterable: false,
       renderCell: (params) => (
         <Box>
-          <Button variant="contained" color="primary" size="small" sx={{ mr: 1 }} onClick={() => handleEdit(params.row.name)}>
+          <Button disableRipple variant="contained" color="primary" size="small" onClick={() => handleEdit(params.row.name)}>
             Edit
           </Button>
-          <Button variant="contained" color="error" size="small" onClick={() => handleDelete(params.row.id)}>
+          <Button disableRipple variant="contained" color="error" size="small" sx={{ mx: 1 }} onClick={() => handleDelete(params.row.id)}>
             Delete
+          </Button>
+          <Button disableRipple variant="outlined" color="primary" size="small" onClick={() => handleGenerate(params.row)}>
+            Generate
           </Button>
         </Box>
       )
@@ -77,23 +85,42 @@ const ProposalTable = () => {
     alert(`Delete row with ID: ${id}`);
   };
 
+  const handleGenerate = (param) => {
+    GenerateDocx({
+      data: {
+        latarBelakang: 'Your background text here',
+        rumusanMasalah: 'Your problem statement here',
+        tujuan: 'Your objectives here',
+        luaran: 'Your outputs here',
+        manfaat: 'Your benefits here',
+        fileName: `${param.name}-document.docx`
+      }
+    });
+  };
+
   return (
     <MainCard title={title}>
-      <Button variant="contained" color="success" type="button" sx={{ marginY: 2 }} onClick={() => alert('proposal baru')}>
+      <Button variant="contained" color="success" type="button" sx={{ marginBottom: 2 }} onClick={() => alert('proposal baru')}>
         Proposal Baru
       </Button>
       <Box sx={{ width: '100%' }}>
         <DataGrid
           rows={rows}
           columns={columns}
+          pageSizeOptions={[5, 10, 25]}
           initialState={{
             pagination: {
-              paginationModel: {
-                pageSize: 5
+              paginationModel: { pageSize: 5 }
+            },
+            filter: {
+              filterModel: {
+                items: []
               }
             }
           }}
-          pageSizeOptions={[5]}
+          disableColumnFilter={false}
+          disableColumnSelector={true}
+          disableDensitySelector={true}
           disableRowSelectionOnClick
         />
       </Box>

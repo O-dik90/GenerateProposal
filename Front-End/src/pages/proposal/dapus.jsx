@@ -257,7 +257,7 @@ const Dapus = () => {
             actionEdit={object.status}
           />
         </Grid>
-        <Grid item xs={5} sx={{ marginTop: 2 }}>
+        <Grid item xs={12} sm={5} sx={{ marginTop: 2 }}>
           <TextField
             label="Judul"
             name="judul"
@@ -271,7 +271,7 @@ const Dapus = () => {
             // InputProps={field.inputProps}
           />
         </Grid>
-        <Grid item xs={2} sx={{ marginTop: 2 }}>
+        <Grid item xs={6} sm={2} sx={{ marginTop: 2 }}>
           <TextField
             label="Tahun Terbit"
             name="tahun_terbit"
@@ -290,7 +290,7 @@ const Dapus = () => {
             }}
           />
         </Grid>
-        <Grid item xs={2} sx={{ marginTop: 2 }}>
+        <Grid item xs={6} sm={2} sx={{ marginTop: 2 }}>
           <TextField
             label="Volume"
             name="volume"
@@ -309,7 +309,7 @@ const Dapus = () => {
             }}
           />
         </Grid>
-        <Grid item xs={3} sx={{ marginTop: 2 }}>
+        <Grid item xs={12} sm={3} sx={{ marginTop: 2 }}>
           <TextField
             label="Penerbit"
             name="penerbit"

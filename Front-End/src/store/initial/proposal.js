@@ -132,8 +132,8 @@ const proposalInitial = [
   },
   {
     id: 2,
-    name: 'odik yudi nugroho',
-    deskripsi: 'sample proposal',
+    name: 'odik nugroho',
+    deskripsi: 'sample proposal 2',
     tanggal: '2023-08-10',
     updated: '2023-08-11',
     status: 'pending',

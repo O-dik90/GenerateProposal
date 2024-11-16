@@ -37,18 +37,18 @@ const ProposalTable = () => {
       filterable: true
     },
     {
-      field: 'age',
-      headerName: 'Age',
-      type: 'number',
+      field: 'deskripsi',
+      headerName: 'Deskripsi',
+      type: 'text',
       headerAlign: 'center',
       align: 'center',
-      width: 100,
+      width: 250,
       filterable: false
     },
     {
-      field: 'city',
-      headerName: 'City',
-      width: 200,
+      field: 'tanggal',
+      headerName: 'Tanggal',
+      width: 175,
       align: 'center',
       headerAlign: 'center',
       filterable: false
@@ -62,7 +62,7 @@ const ProposalTable = () => {
       filterable: false,
       renderCell: (params) => (
         <Box>
-          <Button disableRipple variant="contained" color="primary" size="small" onClick={() => handleEdit(params.row.name)}>
+          <Button disableRipple variant="contained" color="primary" size="small" onClick={() => handleEdit(params.row.id)}>
             Edit
           </Button>
           <Button disableRipple variant="contained" color="error" size="small" sx={{ mx: 1 }} onClick={() => handleDelete(params.row.id)}>
@@ -75,17 +75,6 @@ const ProposalTable = () => {
       )
     }
   ];
-
-  // Define some sample rows
-  // const rows = [
-  //   { id: 1, name: 'Alice', age: 25, city: 'New York' },
-  //   { id: 2, name: 'Bob', age: 30, city: 'Chicago' },
-  //   { id: 3, name: 'Carol', age: 28, city: 'Los Angeles' },
-  //   { id: 4, name: 'David', age: 35, city: 'San Francisco' },
-  //   { id: 5, name: 'Eve', age: 22, city: 'Seattle' },
-
-  //   { id: 6, name: 'Frank', age: 27, city: 'Boston' }
-  // ];
 
   const handleEdit = (id) => {
     navigate(`/proposal-table/${id}`);

@@ -1,11 +1,12 @@
 import { Grid, TextField, Typography } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import Button from '@mui/material/Button';
+import PropTypes from 'prop-types';
 import Stack from '@mui/material/Stack';
 import TableGrid from 'components/table/TableGrid';
 
-const Pendahuluan = () => {
+const Pendahuluan = ({ paramsData }) => {
   const [rumusan, setRumusan] = useState({
       no: 1,
       data: '',
@@ -219,6 +220,10 @@ const Pendahuluan = () => {
     }
   };
 
+  useEffect(() => {
+    console.log(paramsData);
+  }, [paramsData]);
+
   return (
     <>
       <Typography variant="h4" gutterBottom>
@@ -394,3 +399,7 @@ const Pendahuluan = () => {
   );
 };
 export default Pendahuluan;
+
+Pendahuluan.propTypes = {
+  paramsData: PropTypes.object.isRequired
+};

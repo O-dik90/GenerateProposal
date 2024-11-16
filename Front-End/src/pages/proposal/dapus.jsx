@@ -1,7 +1,8 @@
 import { Grid, MenuItem, Select, TextField, Typography } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import Button from '@mui/material/Button';
+import PropTypes from 'prop-types';
 import Stack from '@mui/material/Stack';
 import TableGrid from 'components/table/TableGrid';
 
@@ -15,7 +16,7 @@ export const ref_penulis = {
   url: []
 };
 
-const Dapus = () => {
+const Dapus = ({ paramsData }) => {
   const [data, setData] = useState({
       pengarang: [{ no: 1, nama_pengarang: 'pengarang' }],
       dapus: [{ no: 1, nama_pengarang: 'Pengarang 1', judul: 'Judul 1', penerbit: 'Penerbit 1', tahun_terbit: '2022', volume: '1' }],
@@ -50,6 +51,7 @@ const Dapus = () => {
       { name: 'Volume', field: 'volume', width: '5rem' }
     ]
   };
+
   const handlePengarang = {
     onchange: (param) => {
       setObject({ ...object, nama_pengarang: param.target.value });
@@ -165,6 +167,10 @@ const Dapus = () => {
       );
     }
   };
+
+  useEffect(() => {
+    console.log('dapus', paramsData);
+  }, [paramsData]);
 
   return (
     <>
@@ -372,3 +378,7 @@ const Dapus = () => {
 };
 
 export default Dapus;
+
+Dapus.propTypes = {
+  paramsData: PropTypes.object.isRequired
+};

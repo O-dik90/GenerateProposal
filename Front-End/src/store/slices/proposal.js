@@ -14,6 +14,12 @@ export const fetchProposal = createAsyncThunk('proposal/fetch', async () => {
   return Promise.resolve(proposalInitial);
 });
 
+export const detailProposal = createAsyncThunk('proposal/fetch-detail', async (id) => {
+  // const response = await axios.get(`/api/proposals/${id}`);
+  const res = await proposalInitial[id - 1];
+  return Promise.resolve(res);
+});
+
 export const updateProposal = createAsyncThunk('proposal/update', async ({ id, data }) => {
   const response = await axios.put(`/api/proposals/${id}`, data);
   return response.data;
@@ -25,7 +31,7 @@ export const deleteProposal = createAsyncThunk('proposal/delete', async (id) => 
 });
 
 const initialState = {
-  proposal: proposalInitial,
+  data: proposalInitial,
   loading: false,
   error: null
 };
@@ -35,7 +41,7 @@ const proposalSlice = createSlice({
   initialState,
   reducers: {
     clearProposal: (state) => {
-      state.proposal = initialState.proposal;
+      state.proposal = initialState.data;
     }
   },
   extraReducers: (builder) => {
@@ -47,7 +53,7 @@ const proposalSlice = createSlice({
       })
       .addCase(createProposal.fulfilled, (state, action) => {
         state.loading = false;
-        state.proposal = action.payload;
+        state.data = action.payload;
         state.error = null;
       })
       .addCase(createProposal.rejected, (state, action) => {
@@ -60,10 +66,23 @@ const proposalSlice = createSlice({
       })
       .addCase(fetchProposal.fulfilled, (state, action) => {
         state.loading = false;
-        state.proposal = action.payload;
+        state.data = action.payload;
         state.error = null;
       })
       .addCase(fetchProposal.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      // Detail proposal
+      .addCase(detailProposal.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(detailProposal.fulfilled, (state, action) => {
+        state.loading = false;
+        state.data = action.payload;
+        state.error = null;
+      })
+      .addCase(detailProposal.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       })
@@ -73,7 +92,7 @@ const proposalSlice = createSlice({
       })
       .addCase(updateProposal.fulfilled, (state, action) => {
         state.loading = false;
-        state.proposal = action.payload;
+        state.data = action.payload;
         state.error = null;
       })
       .addCase(updateProposal.rejected, (state, action) => {
@@ -86,7 +105,7 @@ const proposalSlice = createSlice({
       })
       .addCase(deleteProposal.fulfilled, (state) => {
         state.loading = false;
-        state.proposal = initialState.proposal;
+        state.data = initialState.proposal;
         state.error = null;
       })
       .addCase(deleteProposal.rejected, (state, action) => {

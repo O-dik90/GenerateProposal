@@ -1,13 +1,23 @@
+import { useDispatch, useSelector } from 'react-redux';
+
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { DataGrid } from '@mui/x-data-grid';
 import GenerateDocx from 'utils/generate';
 import MainCard from 'components/MainCard';
+import { fetchProposal } from 'store/slices/proposal';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const ProposalTable = () => {
   const title = 'Daftar Proposal';
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { proposal, loading } = useSelector((state) => state.app.proposal);
+  useEffect(() => {
+    dispatch(fetchProposal());
+  }, [dispatch]);
   const columns = [
     {
       field: 'id',
@@ -67,15 +77,15 @@ const ProposalTable = () => {
   ];
 
   // Define some sample rows
-  const rows = [
-    { id: 1, name: 'Alice', age: 25, city: 'New York' },
-    { id: 2, name: 'Bob', age: 30, city: 'Chicago' },
-    { id: 3, name: 'Carol', age: 28, city: 'Los Angeles' },
-    { id: 4, name: 'David', age: 35, city: 'San Francisco' },
-    { id: 5, name: 'Eve', age: 22, city: 'Seattle' },
+  // const rows = [
+  //   { id: 1, name: 'Alice', age: 25, city: 'New York' },
+  //   { id: 2, name: 'Bob', age: 30, city: 'Chicago' },
+  //   { id: 3, name: 'Carol', age: 28, city: 'Los Angeles' },
+  //   { id: 4, name: 'David', age: 35, city: 'San Francisco' },
+  //   { id: 5, name: 'Eve', age: 22, city: 'Seattle' },
 
-    { id: 6, name: 'Frank', age: 27, city: 'Boston' }
-  ];
+  //   { id: 6, name: 'Frank', age: 27, city: 'Boston' }
+  // ];
 
   const handleEdit = (id) => {
     navigate(`/proposal-table/${id}`);
@@ -105,8 +115,9 @@ const ProposalTable = () => {
       </Button>
       <Box sx={{ width: '100%' }}>
         <DataGrid
-          rows={rows}
+          rows={proposal}
           columns={columns}
+          loading={loading}
           pageSizeOptions={[5, 10, 25]}
           initialState={{
             pagination: {

@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import axios from 'axios';
+import { proposalInitial } from 'store/initial/proposal';
 
 // Create async thunks for API calls
 export const createProposal = createAsyncThunk('proposal/create', async (proposalData) => {
@@ -8,9 +9,9 @@ export const createProposal = createAsyncThunk('proposal/create', async (proposa
   return response.data;
 });
 
-export const fetchProposal = createAsyncThunk('proposal/fetch', async (id) => {
-  const response = await axios.get(`/api/proposals/${id}`);
-  return response.data;
+export const fetchProposal = createAsyncThunk('proposal/fetch', async () => {
+  // const response = await axios.get(`/api/proposals/${id}`);
+  return Promise.resolve(proposalInitial);
 });
 
 export const updateProposal = createAsyncThunk('proposal/update', async ({ id, data }) => {
@@ -24,15 +25,7 @@ export const deleteProposal = createAsyncThunk('proposal/delete', async (id) => 
 });
 
 const initialState = {
-  proposal: {
-    id: 0,
-    name: '',
-    description: '',
-    price: 0,
-    currency: '',
-    createdAt: '',
-    updatedAt: ''
-  },
+  proposal: proposalInitial,
   loading: false,
   error: null
 };
@@ -50,6 +43,7 @@ const proposalSlice = createSlice({
       // Create proposal
       .addCase(createProposal.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(createProposal.fulfilled, (state, action) => {
         state.loading = false;

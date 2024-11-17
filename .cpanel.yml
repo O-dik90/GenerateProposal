@@ -1,0 +1,16 @@
+deployment:
+  tasks:
+    # Frontend: Install dependencies, build, and deploy
+    - name: Install Front-End Dependencies
+      command: |
+        cd Front-End
+        npm install
+
+    - name: Build Front-End
+      command: |
+        cd Front-End
+        npm run build
+
+    - name: Deploy Front-End
+      command: |
+        cp -R Front-End/build/* ../public_html/

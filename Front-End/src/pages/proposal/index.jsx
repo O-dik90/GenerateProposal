@@ -14,7 +14,7 @@ const ProposalTable = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { proposal, loading } = useSelector((state) => state.app.proposal);
+  const { data, loading } = useSelector((state) => state.app.proposal);
   useEffect(() => {
     dispatch(fetchProposal());
   }, [dispatch]);
@@ -97,6 +97,10 @@ const ProposalTable = () => {
     });
   };
 
+  useEffect(() => {
+    console.log(data);
+  }, [data]);
+
   return (
     <MainCard title={title}>
       <Button variant="contained" color="success" type="button" sx={{ marginBottom: 2 }} onClick={() => alert('proposal baru')}>
@@ -104,7 +108,7 @@ const ProposalTable = () => {
       </Button>
       <Box sx={{ width: '100%' }}>
         <DataGrid
-          rows={proposal}
+          rows={data}
           columns={columns}
           loading={loading}
           pageSizeOptions={[5, 10, 25]}

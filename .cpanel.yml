@@ -1,15 +1,4 @@
 deployment:
   tasks:
-    - name: Install Front-End Dependencies
-      command: |
-        cd Front-End
-        npm install
-
-    - name: Build Front-End
-      command: |
-        cd Front-End
-        npm run build
-
-    - name: Deploy Front-End
-      command: |
-        cp -R Front-End/build/* ../public_html/genpro/
+    - export DEPLOYPATH=/home/pusatpr1/public_html/genpro/
+    - /bin/cp -r * $DEPLOYPATH

@@ -1,6 +1,5 @@
 deployment:
   tasks:
-    # Frontend: Install dependencies, build, and deploy
     - name: Install Front-End Dependencies
       command: |
         cd Front-End
@@ -13,4 +12,4 @@ deployment:
 
     - name: Deploy Front-End
       command: |
-        cp -R Front-End/build/* ../public_html/
+        cp -R Front-End/build/* ../public_html/genpro/

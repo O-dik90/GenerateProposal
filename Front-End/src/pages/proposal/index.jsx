@@ -97,9 +97,9 @@ const ProposalTable = () => {
     });
   };
 
-  useEffect(() => {
-    console.log(data);
-  }, [data]);
+  // useEffect(() => {
+  //   console.log(data);
+  // }, [data]);
 
   return (
     <MainCard title={title}>

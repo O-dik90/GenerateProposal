@@ -2,7 +2,8 @@ require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
-const proposalRoutes = require('./routes/proposal-route')
+const proposalRoutes = require('./routes/proposal-route');
+const errorHandler = require('./utils/errorHandler');
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.get("/", (req, res) => {
 
 app.use('/api/v1', proposalRoutes);
 
+app.use(errorHandler);
 app.listen(process.env.PORT, () => {
   console.log(`Server is running on port ${process.env.PORT}`);
 });

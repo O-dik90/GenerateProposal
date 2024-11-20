@@ -1,9 +1,12 @@
 const express = require('express');
-const { getMasterData } = require('../controller/proposal');
+const { getListProposals, addProposal, deleteProposal,getProposal, updateProposal } = require('../controller/proposal');
 
 const router = express.Router();
 
-router.get('/hello', (req, res) => { res.status(200).json({ message: 'Hello from proposal' }); });
-router.get('/master-data', getMasterData);
+router.get('/get-proposals/:id', getListProposals);
+router.post('/add-proposal', addProposal);
+router.delete('/delete-proposal/:proposal_id', deleteProposal);
+router.get('/get-proposal/:proposal_id', getProposal);
+router.put('/update-proposal/:proposal_id', updateProposal);
 
 module.exports = router;

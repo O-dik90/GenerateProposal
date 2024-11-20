@@ -1,110 +1,134 @@
-const dbConnection = require('../config/db');
-const { sendResponse } = require('../utils/resHandler');
+const { th } = require('date-fns/locale');
+const Proposals = require('../models/proposals');
 
-
-const getListProposals = async (req, res, next) => {
+const getListProposals = async (req, res) => {
   try {
-    const db = await dbConnection();
-    const { id } = req.params;
+    const id = req.params.user_id;
 
-    if (!id) {
-      return sendResponse(res, 400, "User ID is required");
+    const [data] = await Proposals.getAllProposals(id);
+
+    if (data.length === 0) {
+      return res.json({
+        message: 'data not found',
+        data: []
+      })
     }
 
-    const [rows] = await db.query('SELECT * FROM proposals WHERE user_id = ?', [id]);
-    if (rows.length === 0) {
-      return sendResponse(res, 404, "No data found");
-    }
-
-    sendResponse(res, 200, "Proposals fetched successfully", rows);
+    res.json({
+      message: 'success',
+      data: data
+    })
   } catch (error) {
-    next(error);
+    res.status(500).json({
+      message: 'Server Error',
+      serverMessage: error,
+    })
+  }
+};
+
+const getProposal = async (req, res) => {
+  try {
+    const { proposal_id } = req.params;
+
+    if (!proposal_id) {
+      return sendResponse(res, 400, "Proposal ID is required");
+    }
+
+    const [result] = await Proposals.getProposalId(proposal_id);
+    res.json({
+      message: 'success',
+      data: result
+    })
+  } catch (error) {
+    res.status(500).json({
+      message: 'Server Error',
+      serverMessage: error,
+    })
   }
 };
 
 const addProposal = async (req, res, next) => {
   try {
-    const db = await dbConnection();
     const { user_id, title, description, year, type, category } = req.body;
 
     if (!title || !description) {
-      return sendResponse(res, 400, "Title and description are required fields.");
+      throw new Error('Title and description are required');
     }
-
-    const data = { user_id, title, description, year, type, category, creation_date: new Date() };
-    const [result] = await db.query('INSERT INTO proposals SET ?', data);
-
+    const data = {
+      user_id,
+      title,
+      description,
+      year,
+      type,
+      category
+    };
+    const [result] = await Proposals.addProposal(data);
+    
     if (result.affectedRows === 1) {
-      return sendResponse(res, 201, "Proposal successfully inserted", { proposal_id: result.insertId });
+      return res.json({
+        message: 'success',
+        data: data
+      })
     }
-
-    sendResponse(res, 500, "Failed to insert proposal");
   } catch (error) {
-    next(error);
+    res.status(500).json({
+      message: 'Server Error',
+      serverMessage: error,
+    })
   }
 };
 
-const deleteProposal = async (req, res, next) => {
+const deleteProposal = async (req, res) => {
   try {
-    const db = await dbConnection();
     const { proposal_id } = req.params;
 
     if (!proposal_id) {
-      return sendResponse(res, 400, "Proposal ID is required");
+      throw new Error('Proposal ID is required');
     }
-
-    const [result] = await db.query('DELETE FROM proposals WHERE id = ?', [proposal_id]);
-
+    
+    const [result] = await Proposals.deleteProposal(proposal_id);
+    
     if (result.affectedRows === 1) {
-      return sendResponse(res, 200, "Proposal deleted successfully");
+      return res.json({
+        message: 'Proposal deleted successfully',
+      });
     }
-
-    sendResponse(res, 400, "Failed to delete proposal");
+    
+    throw new Error('Proposal not found');
   } catch (error) {
-    next(error);
+    res.status(500).json({
+      message: 'Server Error',
+      serverMessage: error,
+    })
   }
 };
 
-const getProposal = async (req, res, next) => {
+const updateProposal = async (req, res) => {
   try {
-    const db = await dbConnection();
-    const { proposal_id } = req.params;
-
-    if (!proposal_id) {
-      return sendResponse(res, 400, "Proposal ID is required");
-    }
-
-    const [result] = await db.query('SELECT * FROM proposals WHERE id = ?', [proposal_id]);
-
-    if (result.length === 0) {
-      return sendResponse(res, 404, "Proposal not found");
-    }
-
-    sendResponse(res, 200, "Proposal fetched successfully", result[0]);
-  } catch (error) {
-    next(error);
-  }
-};
-
-const updateProposal = async (req, res, next) => {
-  try {
-    const db = await dbConnection();
     const { proposal_id } = req.params;
     const { title, description, year, type, category } = req.body;
 
     if (!proposal_id) {
-      return sendResponse(res, 400, "Proposal ID is required");
+      throw new Error('Proposal ID is required');
     }
 
-    const [result] = await db.query('UPDATE proposals SET title = ?, description = ?, year = ?, type = ?, category = ?, last_update = ? WHERE id = ?', [title, description, year, type, category, new Date(), proposal_id]);
+    const [result] = await Proposals.updateProposal(proposal_id, { title, description, year, type, category });
 
     if (result.affectedRows === 1) {
-      return sendResponse(res, 200, "Proposal updated successfully");
+      return res.json({
+        message: 'success',
+        data: result
+      })
     }
+    res.status(404).json({
+      message: 'Proposal not found',
+    });
 
-    sendResponse(res, 400, "Failed to update proposal");
   } catch (error) {
-    next(error);
+    res.status(500).json({
+      message: 'Server Error',
+      serverMessage: error,
+    })
   }
 };
 

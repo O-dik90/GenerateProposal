@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 
-import Box from '@mui/material/Box';
+import { Box, TextField, Dialog, DialogContent, DialogContentText, DialogTitle, DialogActions, Select, MenuItem } from '@mui/material';
 import Button from '@mui/material/Button';
 import { DataGrid } from '@mui/x-data-grid';
 import GenerateDocx from 'utils/generate';
@@ -8,11 +8,20 @@ import MainCard from 'components/MainCard';
 import { fetchProposal } from 'store/slices/proposal';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+
+export const selector = {
+  lomba: [
+    { label: 'PKM 2024', value: 2024 },
+    { label: 'PKM 2025', value: 2025 }
+  ]
+};
 
 const ProposalTable = () => {
   const title = 'Daftar Proposal';
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [open, setOpen] = useState(false);
 
   const { data, loading } = useSelector((state) => state.app.proposal);
   useEffect(() => {
@@ -83,6 +92,9 @@ const ProposalTable = () => {
   const handleDelete = (id) => {
     alert(`Delete row with ID: ${id}`);
   };
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const handleGenerate = (param) => {
     GenerateDocx({
@@ -102,33 +114,98 @@ const ProposalTable = () => {
   // }, [data]);
 
   return (
-    <MainCard title={title}>
-      <Button variant="contained" color="success" type="button" sx={{ marginBottom: 2 }} onClick={() => alert('proposal baru')}>
-        Proposal Baru
-      </Button>
-      <Box sx={{ width: '100%' }}>
-        <DataGrid
-          rows={data}
-          columns={columns}
-          loading={loading}
-          pageSizeOptions={[5, 10, 25]}
-          initialState={{
-            pagination: {
-              paginationModel: { pageSize: 5 }
-            },
-            filter: {
-              filterModel: {
-                items: []
+    <>
+      <MainCard title={title}>
+        <Button variant="contained" color="success" type="button" sx={{ marginBottom: 2 }} onClick={() => setOpen(true)}>
+          Proposal Baru
+        </Button>
+        <Box sx={{ width: '100%' }}>
+          <DataGrid
+            rows={data}
+            columns={columns}
+            loading={loading}
+            pageSizeOptions={[5, 10, 25]}
+            initialState={{
+              pagination: {
+                paginationModel: { pageSize: 5 }
+              },
+              filter: {
+                filterModel: {
+                  items: []
+                }
               }
-            }
-          }}
-          disableColumnFilter={false}
-          disableColumnSelector={true}
-          disableDensitySelector={true}
-          disableRowSelectionOnClick
-        />
-      </Box>
-    </MainCard>
+            }}
+            disableColumnFilter={false}
+            disableColumnSelector={true}
+            disableDensitySelector={true}
+            disableRowSelectionOnClick
+          />
+        </Box>
+      </MainCard>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        PaperProps={{
+          component: 'form',
+          onSubmit: (event) => {
+            event.preventDefault();
+            const formData = new FormData(event.currentTarget);
+            const formJson = Object.fromEntries(formData.entries());
+            const email = formJson.email;
+            console.log(email);
+            handleClose();
+          }
+        }}
+      >
+        <DialogTitle>Proposal Baru</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            To subscribe to this website, please enter your email address here. We will send updates occasionally.
+          </DialogContentText>
+          <Box sx={{ width: '100%' }}>
+            <Select displayEmpty value={''} onChange={() => {}} inputProps={{ 'aria-label': 'Without label' }} sx={{ width: '10rem' }}>
+              <MenuItem disabled value="">
+                <em>Pilih Lomba</em>
+              </MenuItem>
+              {selector.lomba.map((name) => (
+                <MenuItem key={name.value} value={name.value}>
+                  {name.label.toUpperCase()}
+                </MenuItem>
+              ))}
+            </Select>
+            <TextField
+              autoFocus
+              required
+              margin="dense"
+              id="judul_proposal"
+              name="judul_proposal"
+              label="Judul Proposal"
+              type="text"
+              fullWidth
+              variant="outlined"
+            />
+            <TextField
+              autoFocus
+              required
+              margin="dense"
+              id="deskripsi"
+              name="deskripsi"
+              label="Deskripsi Singkat IDE"
+              type="textarea"
+              fullWidth
+              variant="outlined"
+              multiline
+              maxRows={5}
+              minRows={3}
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button type="submit">Buat</Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };
 

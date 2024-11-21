@@ -1,21 +1,25 @@
+import { ArrowRightOutlined, DeleteOutlined, DownloadOutlined, EditFilled } from '@ant-design/icons';
+import { Box, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, MenuItem, Select, Stack, TextField } from '@mui/material';
+import { masterLomba, masterPkm } from 'store/slices/master-data';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Box, TextField, Dialog, DialogContent, Stack, IconButton, DialogTitle, DialogActions, Select, MenuItem } from '@mui/material';
 import Button from '@mui/material/Button';
 import { DataGrid } from '@mui/x-data-grid';
 import GenerateDocx from 'utils/generate';
 import MainCard from 'components/MainCard';
 import { fetchProposal } from 'store/slices/proposal';
+import { format } from 'date-fns';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { EditFilled, DeleteOutlined, DownloadOutlined, ArrowRightOutlined } from '@ant-design/icons';
 
-export const selector = {
-  lomba: [
-    { label: 'PKM 2024', value: 2024 },
-    { label: 'PKM 2025', value: 2025 }
-  ]
+export const INITIAL = {
+  id: '',
+  title: '',
+  deskripsi: '',
+  lomba: '',
+  pkm: '',
+  status: false
 };
 
 const ProposalTable = () => {
@@ -23,18 +27,16 @@ const ProposalTable = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false),
-    [object, setObject] = useState({
-      id: '',
-      title: '',
-      deskripsi: '',
-      lomba: '',
-      status: false
-    });
+    [object, setObject] = useState(INITIAL);
 
-  const { data, loading } = useSelector((state) => state.app.proposal);
+  const { data, loading } = useSelector((state) => state.app.proposal),
+    { masterData } = useSelector((state) => state.app);
+
   useEffect(() => {
-    dispatch(fetchProposal());
+    dispatch(fetchProposal(1));
+    console.log('fetchProposal');
   }, [dispatch]);
+
   const columns = [
     {
       field: 'id',
@@ -46,15 +48,15 @@ const ProposalTable = () => {
       filterable: false
     },
     {
-      field: 'name',
-      headerName: 'Name',
+      field: 'title',
+      headerName: 'Judul',
       headerAlign: 'center',
       minWidth: 150,
       flex: 1,
       filterable: true
     },
     {
-      field: 'deskripsi',
+      field: 'description',
       headerName: 'Deskripsi',
       type: 'text',
       headerAlign: 'center',
@@ -63,12 +65,15 @@ const ProposalTable = () => {
       filterable: false
     },
     {
-      field: 'tanggal',
+      field: 'creation_date',
       headerName: 'Tanggal',
       width: 175,
       align: 'center',
       headerAlign: 'center',
-      filterable: false
+      filterable: false,
+      valueFormatter: (params) => {
+        return format(new Date(params), 'dd-MM-yyyy HH:mm');
+      }
     },
     {
       field: 'actions',
@@ -113,6 +118,7 @@ const ProposalTable = () => {
   };
   const handleClose = () => {
     setOpen(false);
+    setObject(INITIAL);
   };
 
   const handleGenerate = (param) => {
@@ -128,6 +134,12 @@ const ProposalTable = () => {
     });
   };
 
+  const handleDialog = () => {
+    setOpen(true);
+    dispatch(masterPkm({ source_name: 'PKM' }));
+    dispatch(masterLomba({ source_name: 'LOMBA' }));
+  };
+
   // useEffect(() => {
   //   console.log(data);
   // }, [data]);
@@ -135,7 +147,7 @@ const ProposalTable = () => {
   return (
     <>
       <MainCard title={title}>
-        <Button variant="contained" color="success" type="button" sx={{ marginBottom: 2 }} onClick={() => setOpen(true)}>
+        <Button variant="contained" color="success" type="button" sx={{ marginBottom: 2 }} onClick={() => handleDialog()}>
           Proposal Baru
         </Button>
         <Box sx={{ width: '100%' }}>
@@ -180,34 +192,36 @@ const ProposalTable = () => {
           <Box sx={{ width: '100%' }}>
             <Stack direction="row" spacing={2}>
               <Select
+                id="lomba"
                 displayEmpty
                 value={object.lomba}
-                onChange={() => {}}
+                onChange={(e) => setObject({ ...object, lomba: e.target.value })}
                 inputProps={{ 'aria-label': 'Without label' }}
                 sx={{ width: '10rem' }}
               >
                 <MenuItem disabled value="">
                   <em>Pilih Lomba</em>
                 </MenuItem>
-                {selector.lomba.map((name) => (
-                  <MenuItem key={name.value} value={name.value}>
-                    {name.label.toUpperCase()}
+                {masterData.lomba.map((item) => (
+                  <MenuItem key={item.id} value={item.code}>
+                    {item.value}
                   </MenuItem>
                 ))}
               </Select>
               <Select
+                id="pkm"
                 displayEmpty
-                value={object.lomba}
-                onChange={(e) => setObject({ ...object, lomba: e.target.value })}
+                value={object.pkm}
+                onChange={(e) => setObject({ ...object, pkm: e.target.value })}
                 inputProps={{ 'aria-label': 'Without label' }}
                 sx={{ width: '100%' }}
               >
                 <MenuItem disabled value="">
-                  <em>Pilih Lomba</em>
+                  <em>Pilih PKM</em>
                 </MenuItem>
-                {selector.lomba.map((name) => (
-                  <MenuItem key={name.value} value={name.value}>
-                    {name.label.toUpperCase()}
+                {masterData.pkm.map((item) => (
+                  <MenuItem key={item.id} value={item.code}>
+                    {item.value}
                   </MenuItem>
                 ))}
               </Select>

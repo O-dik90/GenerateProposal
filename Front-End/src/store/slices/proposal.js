@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import axios from 'axios';
+import axiosInstance from 'api/base-url';
 import { proposalInitial } from 'store/initial/proposal';
 
 // Create async thunks for API calls
@@ -9,9 +10,9 @@ export const createProposal = createAsyncThunk('proposal/create', async (proposa
   return response.data;
 });
 
-export const fetchProposal = createAsyncThunk('proposal/fetch', async () => {
-  // const response = await axios.get(`/api/proposals/${id}`);
-  return Promise.resolve(proposalInitial);
+export const fetchProposal = createAsyncThunk('proposal/getlist', async (id) => {
+  const response = await axiosInstance.post(`/get-proposals/${id}`);
+  return response.data;
 });
 
 export const detailProposal = createAsyncThunk('proposal/fetch-detail', async (id) => {
@@ -31,7 +32,7 @@ export const deleteProposal = createAsyncThunk('proposal/delete', async (id) => 
 });
 
 const initialState = {
-  data: proposalInitial,
+  data: [],
   loading: false,
   error: null
 };
@@ -66,7 +67,7 @@ const proposalSlice = createSlice({
       })
       .addCase(fetchProposal.fulfilled, (state, action) => {
         state.loading = false;
-        state.data = action.payload;
+        state.data = action.payload.data;
         state.error = null;
       })
       .addCase(fetchProposal.rejected, (state, action) => {

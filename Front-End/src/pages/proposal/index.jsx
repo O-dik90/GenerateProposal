@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Box, TextField, Dialog, DialogContent, DialogContentText, DialogTitle, DialogActions, Select, MenuItem } from '@mui/material';
+import { Box, TextField, Dialog, DialogContent, Stack, IconButton, DialogTitle, DialogActions, Select, MenuItem } from '@mui/material';
 import Button from '@mui/material/Button';
 import { DataGrid } from '@mui/x-data-grid';
 import GenerateDocx from 'utils/generate';
@@ -9,6 +9,7 @@ import { fetchProposal } from 'store/slices/proposal';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { EditFilled, DeleteOutlined, DownloadOutlined, ArrowRightOutlined } from '@ant-design/icons';
 
 export const selector = {
   lomba: [
@@ -21,7 +22,14 @@ const ProposalTable = () => {
   const title = 'Daftar Proposal';
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false),
+    [object, setObject] = useState({
+      id: '',
+      title: '',
+      deskripsi: '',
+      lomba: '',
+      status: false
+    });
 
   const { data, loading } = useSelector((state) => state.app.proposal);
   useEffect(() => {
@@ -65,22 +73,33 @@ const ProposalTable = () => {
     {
       field: 'actions',
       headerName: 'Actions',
-      width: 260,
+      width: 160,
       headerAlign: 'center',
+      align: 'center',
+      flex: 1,
       sortable: false,
       filterable: false,
       renderCell: (params) => (
-        <Box>
-          <Button disableRipple variant="contained" color="primary" size="small" onClick={() => handleEdit(params.row.id)}>
-            Edit
-          </Button>
-          <Button disableRipple variant="contained" color="error" size="small" sx={{ mx: 1 }} onClick={() => handleDelete(params.row.id)}>
-            Delete
-          </Button>
-          <Button disableRipple variant="outlined" color="primary" size="small" onClick={() => handleGenerate(params.row)}>
-            Generate
-          </Button>
-        </Box>
+        <>
+          <IconButton variant="contained" color="primary" onClick={() => handleEdit(params.row.id)}>
+            <EditFilled />
+          </IconButton>
+          <IconButton disableRipple variant="contained" color="error" sx={{ mx: 1 }} onClick={() => handleDelete(params.row.id)}>
+            <DeleteOutlined />
+          </IconButton>
+          <IconButton disableRipple variant="outlined" color="primary" onClick={() => handleGenerate(params.row)}>
+            <DownloadOutlined />
+          </IconButton>
+          <IconButton
+            disableRipple
+            variant="outlined"
+            color="primary"
+            sx={{ marginLeft: 3 }}
+            onClick={() => navigate(`/proposal-table/${params.row.id}`)}
+          >
+            <ArrowRightOutlined />
+          </IconButton>
+        </>
       )
     }
   ];
@@ -145,34 +164,54 @@ const ProposalTable = () => {
       <Dialog
         open={open}
         onClose={handleClose}
+        fullWidth
+        maxWidth="sm"
         PaperProps={{
           component: 'form',
           onSubmit: (event) => {
             event.preventDefault();
-            const formData = new FormData(event.currentTarget);
-            const formJson = Object.fromEntries(formData.entries());
-            const email = formJson.email;
-            console.log(email);
+            console.log(object);
             handleClose();
           }
         }}
       >
         <DialogTitle>Proposal Baru</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            To subscribe to this website, please enter your email address here. We will send updates occasionally.
-          </DialogContentText>
           <Box sx={{ width: '100%' }}>
-            <Select displayEmpty value={''} onChange={() => {}} inputProps={{ 'aria-label': 'Without label' }} sx={{ width: '10rem' }}>
-              <MenuItem disabled value="">
-                <em>Pilih Lomba</em>
-              </MenuItem>
-              {selector.lomba.map((name) => (
-                <MenuItem key={name.value} value={name.value}>
-                  {name.label.toUpperCase()}
+            <Stack direction="row" spacing={2}>
+              <Select
+                displayEmpty
+                value={object.lomba}
+                onChange={() => {}}
+                inputProps={{ 'aria-label': 'Without label' }}
+                sx={{ width: '10rem' }}
+              >
+                <MenuItem disabled value="">
+                  <em>Pilih Lomba</em>
                 </MenuItem>
-              ))}
-            </Select>
+                {selector.lomba.map((name) => (
+                  <MenuItem key={name.value} value={name.value}>
+                    {name.label.toUpperCase()}
+                  </MenuItem>
+                ))}
+              </Select>
+              <Select
+                displayEmpty
+                value={object.lomba}
+                onChange={(e) => setObject({ ...object, lomba: e.target.value })}
+                inputProps={{ 'aria-label': 'Without label' }}
+                sx={{ width: '100%' }}
+              >
+                <MenuItem disabled value="">
+                  <em>Pilih Lomba</em>
+                </MenuItem>
+                {selector.lomba.map((name) => (
+                  <MenuItem key={name.value} value={name.value}>
+                    {name.label.toUpperCase()}
+                  </MenuItem>
+                ))}
+              </Select>
+            </Stack>
             <TextField
               autoFocus
               required
@@ -183,6 +222,8 @@ const ProposalTable = () => {
               type="text"
               fullWidth
               variant="outlined"
+              value={object.title}
+              onChange={(e) => setObject({ ...object, title: e.target.value })}
             />
             <TextField
               autoFocus
@@ -197,6 +238,8 @@ const ProposalTable = () => {
               multiline
               maxRows={5}
               minRows={3}
+              value={object.deskripsi}
+              onChange={(e) => setObject({ ...object, deskripsi: e.target.value })}
             />
           </Box>
         </DialogContent>

@@ -3,6 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const proposalRoutes = require('./routes/proposal-route');
+const masterData = require('./routes/master-data');
 const middlewareLogRequest = require('./middlewares/logs');
 
 const app = express();
@@ -17,6 +18,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/v1', proposalRoutes);
+app.use('/api/v1', masterData);
 
 app.use((err, req, res) => {
   res.json({

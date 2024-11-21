@@ -1,4 +1,3 @@
-const { th } = require('date-fns/locale');
 const Proposals = require('../models/proposals');
 
 const getListProposals = async (req, res) => {
@@ -10,19 +9,19 @@ const getListProposals = async (req, res) => {
     if (data.length === 0) {
       return res.json({
         message: 'data not found',
-        data: []
-      })
+        data: [],
+      });
     }
 
     res.json({
       message: 'success',
-      data: data
-    })
+      data: data,
+    });
   } catch (error) {
     res.status(500).json({
       message: 'Server Error',
       serverMessage: error,
-    })
+    });
   }
 };
 
@@ -31,23 +30,23 @@ const getProposal = async (req, res) => {
     const { proposal_id } = req.params;
 
     if (!proposal_id) {
-      return sendResponse(res, 400, "Proposal ID is required");
+      return sendResponse(res, 400, 'Proposal ID is required');
     }
 
     const [result] = await Proposals.getProposalId(proposal_id);
     res.json({
       message: 'success',
-      data: result
-    })
+      data: result,
+    });
   } catch (error) {
     res.status(500).json({
       message: 'Server Error',
       serverMessage: error,
-    })
+    });
   }
 };
 
-const addProposal = async (req, res, next) => {
+const addProposal = async (req, res) => {
   try {
     const { user_id, title, description, year, type, category } = req.body;
 
@@ -60,21 +59,21 @@ const addProposal = async (req, res, next) => {
       description,
       year,
       type,
-      category
+      category,
     };
     const [result] = await Proposals.addProposal(data);
-    
+
     if (result.affectedRows === 1) {
       return res.json({
         message: 'success',
-        data: data
-      })
+        data: data,
+      });
     }
   } catch (error) {
     res.status(500).json({
       message: 'Server Error',
       serverMessage: error,
-    })
+    });
   }
 };
 
@@ -85,21 +84,20 @@ const deleteProposal = async (req, res) => {
     if (!proposal_id) {
       throw new Error('Proposal ID is required');
     }
-    
+
     const [result] = await Proposals.deleteProposal(proposal_id);
-    
-    if (result.affectedRows === 1) {
-      return res.json({
-        message: 'Proposal deleted successfully',
-      });
+
+    if (result.affectedRows === 0) {
+      throw new Error('Proposal not found');
     }
-    
-    throw new Error('Proposal not found');
+    return res.json({
+      message: 'Proposal deleted successfully',
+    });
   } catch (error) {
     res.status(500).json({
       message: 'Server Error',
       serverMessage: error,
-    })
+    });
   }
 };
 
@@ -112,23 +110,28 @@ const updateProposal = async (req, res) => {
       throw new Error('Proposal ID is required');
     }
 
-    const [result] = await Proposals.updateProposal(proposal_id, { title, description, year, type, category });
+    const [result] = await Proposals.updateProposal(proposal_id, {
+      title,
+      description,
+      year,
+      type,
+      category,
+    });
 
     if (result.affectedRows === 1) {
       return res.json({
         message: 'success',
-        data: result
-      })
+        data: result,
+      });
     }
     res.status(404).json({
       message: 'Proposal not found',
     });
-
   } catch (error) {
     res.status(500).json({
       message: 'Server Error',
       serverMessage: error,
-    })
+    });
   }
 };
 
@@ -137,5 +140,5 @@ module.exports = {
   getProposal,
   addProposal,
   deleteProposal,
-  updateProposal
+  updateProposal,
 };

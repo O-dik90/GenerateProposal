@@ -1,5 +1,11 @@
 const express = require('express');
-const { getListProposals, getProposal, addProposal, deleteProposal, updateProposal } = require('../controller/proposal');
+const {
+  getListProposals,
+  getProposal,
+  addProposal,
+  deleteProposal,
+  updateProposal,
+} = require('../controller/proposal');
 
 const router = express.Router();
 

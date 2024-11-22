@@ -11,10 +11,15 @@ export const masterPkm = createAsyncThunk('master/list-pkm', async (params) => {
   const response = await axiosInstance.post('/master-dropdown', params);
   return response.data;
 });
+export const masterTahunLomba = createAsyncThunk('master/list-tahun', async (params) => {
+  const response = await axiosInstance.post('/master-dropdown', params);
+  return response.data;
+});
 
 const initialState = {
   lomba: [],
   pkm: [],
+  tahun_lomba: [],
   loading: false,
   error: null
 };
@@ -47,6 +52,15 @@ const masterSlice = createSlice({
         state.error = null;
       })
       .addCase(masterPkm.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      .addCase(masterTahunLomba.fulfilled, (state, action) => {
+        state.loading = false;
+        state.tahun_lomba = action.payload.data;
+        state.error = null;
+      })
+      .addCase(masterTahunLomba.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       });

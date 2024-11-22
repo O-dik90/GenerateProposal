@@ -1,13 +1,20 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import axios from 'axios';
 import axiosInstance from 'api/base-url';
-import { proposalInitial } from 'store/initial/proposal';
 
 // Create async thunks for API calls
-export const createProposal = createAsyncThunk('proposal/create', async (proposalData) => {
-  const response = await axios.post('/api/proposals', proposalData);
-  return response.data;
+export const createProposal = createAsyncThunk('proposal/create', async (proposalData, { dispatch, rejectWithValue }) => {
+  try {
+    const response = await axiosInstance.post('/add-proposal', proposalData);
+
+    if (response.data.message === 'success') {
+      dispatch(fetchProposal(proposalData.user_id));
+    }
+
+    return response.data.message;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || 'An error occurred');
+  }
 });
 
 export const fetchProposal = createAsyncThunk('proposal/getlist', async (id) => {
@@ -16,24 +23,41 @@ export const fetchProposal = createAsyncThunk('proposal/getlist', async (id) => 
 });
 
 export const detailProposal = createAsyncThunk('proposal/fetch-detail', async (id) => {
-  // const response = await axios.get(`/api/proposals/${id}`);
-  const res = await proposalInitial[id - 1];
-  return Promise.resolve(res);
-});
-
-export const updateProposal = createAsyncThunk('proposal/update', async ({ id, data }) => {
-  const response = await axios.put(`/api/proposals/${id}`, data);
+  const response = await axiosInstance.post(`/get-proposal/${id}`);
   return response.data;
 });
 
-export const deleteProposal = createAsyncThunk('proposal/delete', async (id) => {
-  await axios.delete(`/api/proposals/${id}`);
-  return id;
+export const updateProposal = createAsyncThunk('proposal/update', async (params, { dispatch, rejectWithValue }) => {
+  try {
+    const { id, user_id, ...updateData } = params;
+    const res = await axiosInstance.put(`/update-proposal/${id}`, updateData);
+
+    if (res.status === 200) {
+      dispatch(fetchProposal(user_id));
+    }
+  } catch (error) {
+    return rejectWithValue(error.response?.data || 'An error occurred');
+  }
+});
+
+export const deleteProposal = createAsyncThunk('proposal/delete', async (params, { dispatch, rejectWithValue }) => {
+  try {
+    const res = await axiosInstance.delete(`/delete-proposal/${params.id}`);
+
+    if (res.status === 200) {
+      dispatch(fetchProposal(params.user_id));
+    }
+    return res.data.message;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || 'An error occurred');
+  }
 });
 
 const initialState = {
   data: [],
+  detail: {},
   loading: false,
+  message: null,
   error: null
 };
 
@@ -54,7 +78,7 @@ const proposalSlice = createSlice({
       })
       .addCase(createProposal.fulfilled, (state, action) => {
         state.loading = false;
-        state.data = action.payload;
+        state.message = action.payload;
         state.error = null;
       })
       .addCase(createProposal.rejected, (state, action) => {
@@ -80,7 +104,7 @@ const proposalSlice = createSlice({
       })
       .addCase(detailProposal.fulfilled, (state, action) => {
         state.loading = false;
-        state.data = action.payload;
+        state.detail = action.payload;
         state.error = null;
       })
       .addCase(detailProposal.rejected, (state, action) => {
@@ -93,7 +117,7 @@ const proposalSlice = createSlice({
       })
       .addCase(updateProposal.fulfilled, (state, action) => {
         state.loading = false;
-        state.data = action.payload;
+        state.message = action.payload;
         state.error = null;
       })
       .addCase(updateProposal.rejected, (state, action) => {
@@ -104,9 +128,9 @@ const proposalSlice = createSlice({
       .addCase(deleteProposal.pending, (state) => {
         state.loading = true;
       })
-      .addCase(deleteProposal.fulfilled, (state) => {
+      .addCase(deleteProposal.fulfilled, (state, action) => {
         state.loading = false;
-        state.data = initialState.proposal;
+        state.message = action.payload;
         state.error = null;
       })
       .addCase(deleteProposal.rejected, (state, action) => {

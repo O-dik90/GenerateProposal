@@ -36,11 +36,11 @@ const ProposalDetail = () => {
         >
           <Tabs value={value} onChange={handleChange} variant="scrollable" scrollButtons="auto" aria-label="scrollable auto tabs example">
             <Tab label="Pendahuluan" value="1" />
-            <Tab label="Bab" value="2" />
+            {/* <Tab label="Bab" value="2" />
             <Tab label="Bab" value="3" />
             <Tab label="Bab" value="4" />
             <Tab label="Bab" value="5" />
-            <Tab label="Bab" value="6" />
+            <Tab label="Bab" value="6" /> */}
             <Tab label="Daftar Pustaka" value="7" />
           </Tabs>
         </Box>

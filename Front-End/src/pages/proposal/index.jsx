@@ -1,25 +1,53 @@
-import { ArrowRightOutlined, DeleteOutlined, DownloadOutlined, EditFilled } from '@ant-design/icons';
-import { Box, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, MenuItem, Select, Stack, TextField } from '@mui/material';
-import { masterLomba, masterPkm } from 'store/slices/master-data';
-import { useDispatch, useSelector } from 'react-redux';
+import * as Yup from 'yup';
 
-import Button from '@mui/material/Button';
+import { ArrowRightOutlined, DeleteOutlined, DownloadOutlined, EditFilled } from '@ant-design/icons';
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  FormHelperText,
+  IconButton,
+  MenuItem,
+  Select,
+  Stack,
+  TextField
+} from '@mui/material';
+import { Form, Formik } from 'formik';
+import { createProposal, deleteProposal, fetchProposal, updateProposal } from 'store/slices/proposal';
+import { masterLomba, masterPkm, masterTahunLomba } from 'store/slices/master-data';
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+
 import { DataGrid } from '@mui/x-data-grid';
 import GenerateDocx from 'utils/generate';
 import MainCard from 'components/MainCard';
-import { fetchProposal } from 'store/slices/proposal';
 import { format } from 'date-fns';
-import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+
+// Validation schema using Yup
+const validationSchema = Yup.object({
+  type: Yup.string().required('Pilih Lomba'),
+  year: Yup.string().required('Pilih Tahun'),
+  category: Yup.string().required('Pilih PKM'),
+  title: Yup.string().required('Judul Proposal diperlukan'),
+  description: Yup.string().required('Deskripsi diperlukan').min(10, 'Deskripsi harus lebih dari 10 karakter')
+});
 
 export const INITIAL = {
-  id: '',
+  id: 0,
+  user_id: 1,
   title: '',
-  deskripsi: '',
-  lomba: '',
-  pkm: '',
-  status: false
+  description: '',
+  category: '',
+  type: '',
+  year: '',
+  creation_date: '',
+  last_update: '',
+  edit_status: false
 };
 
 const ProposalTable = () => {
@@ -27,14 +55,17 @@ const ProposalTable = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false),
-    [object, setObject] = useState(INITIAL);
+    [object, setObject] = useState(INITIAL),
+    [btnAction, setBtnAction] = useState('Buat');
 
   const { data, loading } = useSelector((state) => state.app.proposal),
-    { masterData } = useSelector((state) => state.app);
+    { pkm, lomba, tahun_lomba } = useSelector((state) => state.app.masterData);
 
   useEffect(() => {
     dispatch(fetchProposal(1));
-    console.log('fetchProposal');
+    dispatch(masterPkm({ source_name: 'PKM' }));
+    dispatch(masterLomba({ source_name: 'LOMBA' }));
+    dispatch(masterTahunLomba({ source_name: 'TAHUN_LOMBA' }));
   }, [dispatch]);
 
   const columns = [
@@ -89,7 +120,7 @@ const ProposalTable = () => {
           <IconButton variant="contained" color="primary" onClick={() => handleEdit(params.row.id)}>
             <EditFilled />
           </IconButton>
-          <IconButton disableRipple variant="contained" color="error" sx={{ mx: 1 }} onClick={() => handleDelete(params.row.id)}>
+          <IconButton disableRipple variant="contained" color="error" sx={{ mx: 1 }} onClick={() => handleDelete(params.row)}>
             <DeleteOutlined />
           </IconButton>
           <IconButton disableRipple variant="outlined" color="primary" onClick={() => handleGenerate(params.row)}>
@@ -110,14 +141,23 @@ const ProposalTable = () => {
   ];
 
   const handleEdit = (id) => {
-    navigate(`/proposal-table/${id}`);
+    const editData = data.find((item) => item.id === id);
+    setObject((prevObject) => ({
+      ...prevObject,
+      ...editData,
+      edit_status: true
+    }));
+    setBtnAction('Update');
+    setOpen(true);
   };
 
-  const handleDelete = (id) => {
-    alert(`Delete row with ID: ${id}`);
+  const handleDelete = (param) => {
+    dispatch(deleteProposal(param));
   };
+
   const handleClose = () => {
     setOpen(false);
+    setBtnAction('Buat');
     setObject(INITIAL);
   };
 
@@ -136,13 +176,7 @@ const ProposalTable = () => {
 
   const handleDialog = () => {
     setOpen(true);
-    dispatch(masterPkm({ source_name: 'PKM' }));
-    dispatch(masterLomba({ source_name: 'LOMBA' }));
   };
-
-  // useEffect(() => {
-  //   console.log(data);
-  // }, [data]);
 
   return (
     <>
@@ -179,88 +213,145 @@ const ProposalTable = () => {
         fullWidth
         maxWidth="sm"
         PaperProps={{
-          component: 'form',
-          onSubmit: (event) => {
-            event.preventDefault();
-            console.log(object);
-            handleClose();
-          }
+          component: 'form'
         }}
       >
         <DialogTitle>Proposal Baru</DialogTitle>
         <DialogContent>
-          <Box sx={{ width: '100%' }}>
-            <Stack direction="row" spacing={2}>
-              <Select
-                id="lomba"
-                displayEmpty
-                value={object.lomba}
-                onChange={(e) => setObject({ ...object, lomba: e.target.value })}
-                inputProps={{ 'aria-label': 'Without label' }}
-                sx={{ width: '10rem' }}
-              >
-                <MenuItem disabled value="">
-                  <em>Pilih Lomba</em>
-                </MenuItem>
-                {masterData.lomba.map((item) => (
-                  <MenuItem key={item.id} value={item.code}>
-                    {item.value}
-                  </MenuItem>
-                ))}
-              </Select>
-              <Select
-                id="pkm"
-                displayEmpty
-                value={object.pkm}
-                onChange={(e) => setObject({ ...object, pkm: e.target.value })}
-                inputProps={{ 'aria-label': 'Without label' }}
-                sx={{ width: '100%' }}
-              >
-                <MenuItem disabled value="">
-                  <em>Pilih PKM</em>
-                </MenuItem>
-                {masterData.pkm.map((item) => (
-                  <MenuItem key={item.id} value={item.code}>
-                    {item.value}
-                  </MenuItem>
-                ))}
-              </Select>
-            </Stack>
-            <TextField
-              autoFocus
-              required
-              margin="dense"
-              id="judul_proposal"
-              name="judul_proposal"
-              label="Judul Proposal"
-              type="text"
-              fullWidth
-              variant="outlined"
-              value={object.title}
-              onChange={(e) => setObject({ ...object, title: e.target.value })}
-            />
-            <TextField
-              autoFocus
-              required
-              margin="dense"
-              id="deskripsi"
-              name="deskripsi"
-              label="Deskripsi Singkat IDE"
-              type="textarea"
-              fullWidth
-              variant="outlined"
-              multiline
-              maxRows={5}
-              minRows={3}
-              value={object.deskripsi}
-              onChange={(e) => setObject({ ...object, deskripsi: e.target.value })}
-            />
-          </Box>
+          <Formik
+            initialValues={object}
+            validationSchema={validationSchema}
+            onSubmit={(values) => {
+              values.preventDefault();
+
+              // Perform the create or update action
+              if (btnAction === 'Buat') {
+                dispatch(createProposal(values));
+              } else {
+                dispatch(updateProposal(values));
+              }
+
+              handleClose();
+            }}
+          >
+            {({ values, handleChange, handleBlur, errors, touched }) => (
+              <Form>
+                <Box sx={{ width: '100%' }}>
+                  <Stack
+                    direction="row"
+                    spacing={2}
+                    useFlexGap
+                    sx={{
+                      justifyContent: 'flex-start',
+                      alignItems: 'flex-start',
+                      flexWrap: 'wrap'
+                    }}
+                  >
+                    <FormControl error={touched.type && !!errors.type}>
+                      <Select
+                        id="lomba"
+                        name="type"
+                        displayEmpty
+                        value={values.type}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        sx={{ width: '10rem' }}
+                      >
+                        <MenuItem disabled value="">
+                          <em>Pilih Lomba</em>
+                        </MenuItem>
+                        {lomba.map((item) => (
+                          <MenuItem key={item.id} value={item.code}>
+                            {item.value}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                      <FormHelperText>{touched.type && errors.type}</FormHelperText>
+                    </FormControl>
+                    <FormControl error={!!errors.year && touched.year}>
+                      <Select
+                        id="tahun"
+                        name="year"
+                        displayEmpty
+                        value={values.year}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        sx={{ width: '10rem' }}
+                      >
+                        <MenuItem disabled value="">
+                          <em>Pilih Tahun</em>
+                        </MenuItem>
+                        {tahun_lomba.map((item) => (
+                          <MenuItem key={item.id} value={item.code}>
+                            {item.value}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                      <FormHelperText>{touched.year && errors.year}</FormHelperText>
+                    </FormControl>
+                    <FormControl error={!!errors.category && touched.category} fullWidth>
+                      <Select id="pkm" name="category" displayEmpty value={values.category} onChange={handleChange} onBlur={handleBlur}>
+                        <MenuItem disabled value="">
+                          <em>Pilih PKM</em>
+                        </MenuItem>
+                        {pkm.map((item) => (
+                          <MenuItem key={item.id} value={item.code}>
+                            {item.value}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                      <FormHelperText>{touched.category && errors.category}</FormHelperText>
+                    </FormControl>
+                  </Stack>
+                  <TextField
+                    autoFocus
+                    required
+                    margin="dense"
+                    id="judul_proposal"
+                    name="title"
+                    label="Judul Proposal"
+                    type="text"
+                    fullWidth
+                    variant="outlined"
+                    value={values.title}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched.title && !!errors.title}
+                    helperText={touched.title && errors.title}
+                  />
+                  <TextField
+                    required
+                    margin="dense"
+                    id="deskripsi"
+                    name="description"
+                    label="Deskripsi Singkat IDE"
+                    type="textarea"
+                    fullWidth
+                    variant="outlined"
+                    multiline
+                    maxRows={5}
+                    minRows={3}
+                    value={values.description}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched.description && !!errors.description}
+                    helperText={touched.description && errors.description}
+                  />
+                </Box>
+                <DialogActions>
+                  <Button onClick={handleClose}>Cancel</Button>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    disabled={!values.type || !values.year || !values.category || !values.title || !values.description}
+                  >
+                    {btnAction}
+                  </Button>
+                </DialogActions>
+              </Form>
+            )}
+          </Formik>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button type="submit">Buat</Button>
-        </DialogActions>
       </Dialog>
     </>
   );

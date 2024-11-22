@@ -13,7 +13,7 @@ const getListProposals = async (req, res) => {
       });
     }
 
-    res.json({
+    return res.json({
       message: 'success',
       data: data,
     });
@@ -34,7 +34,7 @@ const getProposal = async (req, res) => {
     }
 
     const [result] = await Proposals.getProposalId(proposal_id);
-    res.json({
+    return res.json({
       message: 'success',
       data: result,
     });
@@ -63,12 +63,14 @@ const addProposal = async (req, res) => {
     };
     const [result] = await Proposals.addProposal(data);
 
-    if (result.affectedRows === 1) {
-      return res.json({
-        message: 'success',
-        data: data,
-      });
+    if (result.affectedRows === 0) {
+      throw new Error('Failed add data');
     }
+
+    return res.json({
+      message: 'success',
+      data: data,
+    });
   } catch (error) {
     res.status(500).json({
       message: 'Server Error',
@@ -124,7 +126,8 @@ const updateProposal = async (req, res) => {
         data: result,
       });
     }
-    res.status(404).json({
+
+    return res.status(404).json({
       message: 'Proposal not found',
     });
   } catch (error) {

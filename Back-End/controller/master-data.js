@@ -2,6 +2,7 @@ const MasterData = require('../models/masters-data');
 
 const masterDropdown = async (req, res) => {
   const { source_name: sourceName } = req.body;
+  console.log(req.body);
   if (!sourceName) {
     return res.status(400).json({
       message: 'Bad Request: source_name is required',

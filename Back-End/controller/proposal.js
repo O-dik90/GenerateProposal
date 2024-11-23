@@ -30,19 +30,23 @@ const getProposal = async (req, res) => {
   try {
     const { proposal_id } = req.params;
 
-    if (!proposal_id) {
-      return sendResponse(res, 400, 'Proposal ID is required');
+    if (proposal_id === undefined || proposal_id === 0) {
+      throw new Error('proposal id not found');
     }
 
     const [result] = await Proposals.getProposalId(proposal_id);
+
+    if (result.length === 0) {
+      throw new Error('data not found');
+    }
     return res.json({
       message: 'success',
       data: result,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       message: 'Server Error',
-      serverMessage: error,
+      serverMessage: error.message,
     });
   }
 };
@@ -137,6 +141,12 @@ const updateProposal = async (req, res) => {
 
     if (!proposal_id) {
       throw new Error('Proposal ID is required');
+    }
+
+    const [data] = await Proposals.getProposalId(proposal_id);
+
+    if (!data) {
+      throw new Error('data not found');
     }
 
     const [result] = await Proposals.updateProposal(proposal_id, {

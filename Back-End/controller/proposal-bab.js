@@ -1,5 +1,6 @@
 require('date-fns/locale');
 const ProposalBab = require('../models/proposal-bab');
+const Proposals = require('../models/proposals');
 
 const getListProposalBab = async (req, res) => {
   try {
@@ -28,7 +29,8 @@ const getListProposalBab = async (req, res) => {
 const updateBabPendahuluan = async (req, res) => {
   let array_bab = [];
   try {
-    const [data] = await ProposalBab.getListProposalBab(25);
+    const { proposal_id } = req.body;
+    const [data] = await ProposalBab.getListProposalBab(proposal_id);
 
     //get data proposal
     data.map((item) => {
@@ -40,6 +42,7 @@ const updateBabPendahuluan = async (req, res) => {
         });
       }
     });
+
     // update new params data and convert to Stringify
     array_bab = array_bab.map((item) => {
       if (req.body.hasOwnProperty(item.key_title)) {
@@ -51,12 +54,14 @@ const updateBabPendahuluan = async (req, res) => {
       return item;
     });
 
+    console.log(array_bab);
     // update to db
     const updateDB = array_bab.map((item) =>
       ProposalBab.updateBabPendahuluan(item.id, item.data)
     );
 
     const result = await Promise.all(updateDB);
+    const [lastUpdate] = await Proposals.updateLatestProposal(proposal_id);
 
     // check result all update
     result.map((item) => {
@@ -67,6 +72,8 @@ const updateBabPendahuluan = async (req, res) => {
 
     return res.status(200).json({
       message: 'success',
+      data: result,
+      update: lastUpdate.affectedRows,
     });
   } catch (error) {
     res.status(500).json({

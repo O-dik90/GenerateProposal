@@ -34,7 +34,16 @@ const deleteProposal = async (id) => {
 };
 
 const updateProposal = (id, data) => {
-  const query = `UPDATE proposals SET title = '${data.title}', description = '${data.description}', year = ${data.year} ,  type = '${data.type}', category = '${data.category}' WHERE id = ${id}`;
+  const query = `
+  UPDATE proposals 
+  SET title = '${data.title}', 
+  description = '${data.description}', 
+  year = ${data.year} ,  
+  type = '${data.type}', 
+  category = '${data.category}',
+  last_update = NOW()
+  WHERE id = ${id}
+  `;
   return dbPool.execute(query);
 };
 
@@ -62,6 +71,13 @@ const initProposal = (id) => {
   return dbPool.execute(query, flattenedData);
 };
 
+const updateLatestProposal = (id) => {
+  const query = `
+  UPDATE proposals SET last_update = NOW() WHERE id = ?
+  `;
+  return dbPool.execute(query, [id]);
+};
+
 module.exports = {
   getAllProposals,
   getProposalId,
@@ -69,4 +85,5 @@ module.exports = {
   deleteProposal,
   updateProposal,
   initProposal,
+  updateLatestProposal,
 };

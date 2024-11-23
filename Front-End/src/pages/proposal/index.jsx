@@ -1,5 +1,3 @@
-import * as Yup from 'yup';
-
 import { ArrowRightOutlined, DeleteOutlined, DownloadOutlined, EditFilled } from '@ant-design/icons';
 import {
   Box,
@@ -8,15 +6,12 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  FormControl,
-  FormHelperText,
   IconButton,
   MenuItem,
   Select,
   Stack,
   TextField
 } from '@mui/material';
-import { Form, Formik } from 'formik';
 import { createProposal, deleteProposal, fetchProposal, updateProposal } from 'store/slices/proposal';
 import { masterLomba, masterPkm, masterTahunLomba } from 'store/slices/master-data';
 import { useDispatch, useSelector } from 'react-redux';
@@ -27,15 +22,6 @@ import GenerateDocx from 'utils/generate';
 import MainCard from 'components/MainCard';
 import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
-
-// Validation schema using Yup
-const validationSchema = Yup.object({
-  type: Yup.string().required('Pilih Lomba'),
-  year: Yup.string().required('Pilih Tahun'),
-  category: Yup.string().required('Pilih PKM'),
-  title: Yup.string().required('Judul Proposal diperlukan'),
-  description: Yup.string().required('Deskripsi diperlukan').min(10, 'Deskripsi harus lebih dari 10 karakter')
-});
 
 export const INITIAL = {
   id: 0,
@@ -69,15 +55,6 @@ const ProposalTable = () => {
   }, [dispatch]);
 
   const columns = [
-    {
-      field: 'id',
-      headerName: 'ID',
-      width: 80,
-      align: 'center',
-      headerAlign: 'center',
-      sortable: false,
-      filterable: false
-    },
     {
       field: 'title',
       headerName: 'Judul',
@@ -140,6 +117,25 @@ const ProposalTable = () => {
     }
   ];
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (btnAction === 'Buat') {
+      dispatch(createProposal(object));
+    } else {
+      dispatch(updateProposal(object));
+    }
+    setOpen(false);
+    setBtnAction('Buat');
+    setObject(INITIAL);
+  };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setObject((prevObject) => ({
+      ...prevObject,
+      [name]: value
+    }));
+  };
+
   const handleEdit = (id) => {
     const editData = data.find((item) => item.id === id);
     setObject((prevObject) => ({
@@ -189,10 +185,10 @@ const ProposalTable = () => {
             rows={data}
             columns={columns}
             loading={loading}
-            pageSizeOptions={[5, 10, 25]}
+            pageSizeOptions={[10, 25, 50]}
             initialState={{
               pagination: {
-                paginationModel: { pageSize: 5 }
+                paginationModel: { pageSize: 10 }
               },
               filter: {
                 filterModel: {
@@ -218,139 +214,94 @@ const ProposalTable = () => {
       >
         <DialogTitle>Proposal Baru</DialogTitle>
         <DialogContent>
-          <Formik
-            initialValues={object}
-            validationSchema={validationSchema}
-            onSubmit={(values) => {
-              values.preventDefault();
+          <Box sx={{ width: '100%' }}>
+            <Stack
+              direction="row"
+              spacing={2}
+              // useFlexGap
+              // sx={{
+              //   justifyContent: 'flex-start',
+              //   alignItems: 'flex-start',
+              //   flexWrap: 'wrap'
+              // }}
+            >
+              <Select id="lomba" name="type" displayEmpty value={object.type} onChange={handleChange} sx={{ width: '10rem' }}>
+                <MenuItem disabled value="">
+                  <em>Pilih Lomba</em>
+                </MenuItem>
+                {lomba.map((item) => (
+                  <MenuItem key={item.id} value={item.code}>
+                    {item.value}
+                  </MenuItem>
+                ))}
+              </Select>
+              <Select id="tahun" name="year" displayEmpty value={object.year} onChange={handleChange} sx={{ width: '10rem' }}>
+                <MenuItem disabled value="">
+                  <em>Pilih Tahun</em>
+                </MenuItem>
+                {tahun_lomba.map((item) => (
+                  <MenuItem key={item.id} value={item.code}>
+                    {item.value}
+                  </MenuItem>
+                ))}
+              </Select>
 
-              // Perform the create or update action
-              if (btnAction === 'Buat') {
-                dispatch(createProposal(values));
-              } else {
-                dispatch(updateProposal(values));
-              }
-
-              handleClose();
-            }}
-          >
-            {({ values, handleChange, handleBlur, errors, touched }) => (
-              <Form>
-                <Box sx={{ width: '100%' }}>
-                  <Stack
-                    direction="row"
-                    spacing={2}
-                    useFlexGap
-                    sx={{
-                      justifyContent: 'flex-start',
-                      alignItems: 'flex-start',
-                      flexWrap: 'wrap'
-                    }}
-                  >
-                    <FormControl error={touched.type && !!errors.type}>
-                      <Select
-                        id="lomba"
-                        name="type"
-                        displayEmpty
-                        value={values.type}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        sx={{ width: '10rem' }}
-                      >
-                        <MenuItem disabled value="">
-                          <em>Pilih Lomba</em>
-                        </MenuItem>
-                        {lomba.map((item) => (
-                          <MenuItem key={item.id} value={item.code}>
-                            {item.value}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                      <FormHelperText>{touched.type && errors.type}</FormHelperText>
-                    </FormControl>
-                    <FormControl error={!!errors.year && touched.year}>
-                      <Select
-                        id="tahun"
-                        name="year"
-                        displayEmpty
-                        value={values.year}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        sx={{ width: '10rem' }}
-                      >
-                        <MenuItem disabled value="">
-                          <em>Pilih Tahun</em>
-                        </MenuItem>
-                        {tahun_lomba.map((item) => (
-                          <MenuItem key={item.id} value={item.code}>
-                            {item.value}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                      <FormHelperText>{touched.year && errors.year}</FormHelperText>
-                    </FormControl>
-                    <FormControl error={!!errors.category && touched.category} fullWidth>
-                      <Select id="pkm" name="category" displayEmpty value={values.category} onChange={handleChange} onBlur={handleBlur}>
-                        <MenuItem disabled value="">
-                          <em>Pilih PKM</em>
-                        </MenuItem>
-                        {pkm.map((item) => (
-                          <MenuItem key={item.id} value={item.code}>
-                            {item.value}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                      <FormHelperText>{touched.category && errors.category}</FormHelperText>
-                    </FormControl>
-                  </Stack>
-                  <TextField
-                    autoFocus
-                    required
-                    margin="dense"
-                    id="judul_proposal"
-                    name="title"
-                    label="Judul Proposal"
-                    type="text"
-                    fullWidth
-                    variant="outlined"
-                    value={values.title}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={touched.title && !!errors.title}
-                    helperText={touched.title && errors.title}
-                  />
-                  <TextField
-                    required
-                    margin="dense"
-                    id="deskripsi"
-                    name="description"
-                    label="Deskripsi Singkat IDE"
-                    type="textarea"
-                    fullWidth
-                    variant="outlined"
-                    multiline
-                    maxRows={5}
-                    minRows={3}
-                    value={values.description}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={touched.description && !!errors.description}
-                    helperText={touched.description && errors.description}
-                  />
-                </Box>
-                <DialogActions>
-                  <Button onClick={handleClose}>Cancel</Button>
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    disabled={!values.type || !values.year || !values.category || !values.title || !values.description}
-                  >
-                    {btnAction}
-                  </Button>
-                </DialogActions>
-              </Form>
-            )}
-          </Formik>
+              <Select id="pkm" name="category" displayEmpty value={object.category} onChange={handleChange} sx={{ width: '100%' }}>
+                <MenuItem disabled value="">
+                  <em>Pilih PKM</em>
+                </MenuItem>
+                {pkm.map((item) => (
+                  <MenuItem key={item.id} value={item.code}>
+                    {item.value}
+                  </MenuItem>
+                ))}
+              </Select>
+            </Stack>
+            <TextField
+              autoFocus
+              required
+              margin="dense"
+              id="judul_proposal"
+              name="title"
+              label="Judul Proposal"
+              type="text"
+              fullWidth
+              variant="outlined"
+              value={object.title}
+              onChange={handleChange}
+              error={object.title === ''}
+              helperText={object.title === '' ? 'Judul Proposal harus diisi, boleh belum fix' : ''}
+            />
+            <TextField
+              required
+              margin="dense"
+              id="deskripsi"
+              name="description"
+              label="Deskripsi Singkat IDE"
+              type="textarea"
+              fullWidth
+              variant="outlined"
+              multiline
+              maxRows={5}
+              minRows={3}
+              value={object.description}
+              onChange={handleChange}
+              error={object.description === ''}
+              helperText={object.description === '' ? 'Deskripsi Singkat IDE harus diisi' : ''}
+            />
+          </Box>
+          <DialogActions>
+            <Button onClick={handleClose}>Cancel</Button>
+            <Button
+              type="button"
+              variant="contained"
+              disabled={!object.type || !object.year || !object.category || !object.title || !object.description}
+              onClick={(e) => handleSubmit(e)}
+              loading={loading}
+            >
+              {btnAction}
+            </Button>
+          </DialogActions>
         </DialogContent>
       </Dialog>
     </>

@@ -1,3 +1,4 @@
+import { Form, Formik } from "formik";
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -56,3 +57,34 @@ const ProposalDetail = () => {
   );
 };
 export default ProposalDetail;
+
+
+
+function DemoComp() {
+  return (
+    <Formik
+      initialValues={{ fieldOneVal: "" }}
+      onSubmit={async (formsData, { setSubmitting, resetForm }) => {
+        setSubmitting(true)
+        // async request
+        // --> if wanted to reset on submit: resetForm();
+        console.log(formsData)
+        setSubmitting(false)
+      }}
+    >
+      {({ values, isSubmitting, handleChange, handleBlur, handleSubmit }) => (
+        <Form>
+          <input
+            type="text"
+            name="fieldOneVal"
+            value={values.fieldOneVal}
+            onChange={handleChange}
+            onBlur={handleBlur}
+          />
+          <button type="submit">Submit</button>
+        </Form>
+      )}
+    </Formik>
+
+  )
+}

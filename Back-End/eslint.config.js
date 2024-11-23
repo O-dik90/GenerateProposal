@@ -20,7 +20,7 @@ module.exports = [
     rules: {
       ...prettierConfig.rules,
       'prettier/prettier': [
-        'error', // Show Prettier issues as ESLint errors
+        'error',
         {
           semi: true,
           singleQuote: true,
@@ -28,8 +28,8 @@ module.exports = [
           printWidth: 80,
           trailingComma: 'es5',
         },
-      ], // Show Prettier issues as ESLint errors
-      'no-unused-vars': 'warn', // Example rule
+      ],
+      'no-unused-vars': 'warn',
     },
   },
 ];

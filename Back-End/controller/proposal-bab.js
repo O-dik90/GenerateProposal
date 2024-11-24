@@ -16,7 +16,16 @@ const getListProposalBab = async (req, res) => {
     return res.json({
       message: 'success',
       proposal_id: proposal_id,
-      data: data,
+      pendahuluan: {
+        latar_belakang: data[0].json_data,
+        rumusan_masalah: data[1].json_data,
+        luaran: data[2].json_data,
+        tujuan: data[3].json_data,
+        manfaat: data[4].json_data,
+      },
+      tinjauan: data.slice(5, 6),
+      pelaksanaan: data.slice(6, 7),
+      biaya: data.slice(-1),
     });
   } catch (error) {
     res.status(500).json({

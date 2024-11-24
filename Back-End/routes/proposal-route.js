@@ -5,7 +5,7 @@ const {
   addProposal,
   deleteProposal,
   updateProposal,
-  initProposal,
+  // initProposal,
 } = require('../controller/proposal');
 const {
   getListProposalBab,
@@ -20,10 +20,10 @@ router.post('/get-proposal/:proposal_id', getProposal);
 router.post('/add-proposal', addProposal);
 router.delete('/delete-proposal/:proposal_id', deleteProposal);
 router.put('/update-proposal/:proposal_id', updateProposal);
-router.post('/init-proposal/:proposal_id', initProposal);
+// router.post('/init-proposal/:proposal_id', initProposal);
 
 // routes/proposal-bab-route.js
 router.post('/get-listProposal-bab/:proposal_id', getListProposalBab);
-router.put('/update-bab-tujuan', updateBabPendahuluan);
+router.put('/update-bab-pendahuluan', updateBabPendahuluan);
 
 module.exports = router;

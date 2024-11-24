@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 
 import Box from '@mui/material/Box';
 import Dapus from './dapus';
@@ -11,21 +10,14 @@ import TabPanel from '@mui/lab/TabPanel';
 import Tabs from '@mui/material/Tabs';
 import { getListBabProposal } from 'store/slices/proposal';
 import { proposalInitial } from 'store/initial/proposal';
+import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
 const ProposalDetail = () => {
   const title = 'Proposal Detail';
   const { id } = useParams(),
     dispatch = useDispatch(),
-    { pendahuluan, tinjauan, biaya, pelaksanaan } = useSelector((state) => state.app.proposal),
-    [data, setData] = React.useState({
-      pendahuluan: {},
-      tinjauan: [],
-      pelaksanaan: [],
-      biaya: [],
-      dapus: []
-    });
-  const [value, setValue] = React.useState('1');
+    [value, setValue] = React.useState('7');
 
   const handleChange = (event, newValue) => {
     event.preventDefault();
@@ -36,22 +28,6 @@ const ProposalDetail = () => {
     dispatch(getListBabProposal(id));
   }, [dispatch, id]);
 
-  useEffect(() => {
-    if (pendahuluan) {
-      setData((prevData) => ({
-        ...prevData,
-        pendahuluan: pendahuluan,
-        tinjauan: tinjauan,
-        pelaksanaan: pelaksanaan,
-        biaya: biaya
-      }));
-    }
-  }, [biaya, pelaksanaan, pendahuluan, tinjauan]);
-
-  useEffect(() => {
-    console.log('detail bab', pendahuluan);
-    // console.log(data);
-  }, [data, pendahuluan]);
   return (
     <TabContext value={value}>
       <MainCard title={title}>
@@ -69,7 +45,7 @@ const ProposalDetail = () => {
           </Tabs>
         </Box>
         <TabPanel value="1" sx={{ marginTop: 5 }}>
-          <Pendahuluan paramsData={pendahuluan} />
+          <Pendahuluan />
         </TabPanel>
         <TabPanel value="2">Item Two</TabPanel>
         <TabPanel value="7">

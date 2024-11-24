@@ -7,9 +7,11 @@ import Stack from '@mui/material/Stack';
 import TableGrid from 'components/table/TableGrid';
 import { updateBabPendahuluan } from 'store/slices/proposal';
 import { useParams } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
 
 const Pendahuluan = () => {
   const { id } = useParams(),
+    { enqueueSnackbar } = useSnackbar(),
     dispatch = useDispatch();
   const { pendahuluan } = useSelector((state) => state.app.proposal);
   const [rumusan, setRumusan] = useState({
@@ -220,7 +222,12 @@ const Pendahuluan = () => {
   };
 
   const handleSimpan = () => {
-    dispatch(updateBabPendahuluan(data));
+    try {
+      dispatch(updateBabPendahuluan(data));
+      enqueueSnackbar('Berhasil Menyimpan!', { variant: 'success' });
+    } catch (error) {
+      enqueueSnackbar('Gagal Menyimpan!', { variant: 'error' });
+    }
   };
 
   return (
@@ -251,7 +258,13 @@ const Pendahuluan = () => {
             1.2 Rumusan Masalah
           </Typography>
           <TextField label="Rumusan Masalah" variant="outlined" value={rumusan.data} onChange={handleRumusan.onchange} fullWidth />
-          <Button variant="contained" color="primary" onClick={handleRumusan.tambah} sx={{ marginY: 2 }} disabled={rumusan.status}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleRumusan.tambah}
+            sx={{ marginY: 2 }}
+            disabled={rumusan.status || !rumusan.data}
+          >
             Tambah Rumusan Masalah
           </Button>
           <TableGrid
@@ -277,7 +290,13 @@ const Pendahuluan = () => {
             Dari rumusan masalah di atas, berikut merupakan beberapa tujuan pada program ini:
           </Typography>
           <TextField label="Tujuan" variant="outlined" value={tujuan.data} onChange={handleTujuan.onchange} fullWidth />
-          <Button variant="contained" color="primary" onClick={handleTujuan.tambah} sx={{ marginY: 2 }} disabled={tujuan.status}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleTujuan.tambah}
+            sx={{ marginY: 2 }}
+            disabled={tujuan.status || !tujuan.data}
+          >
             Tambah Tujuan
           </Button>
           <TableGrid
@@ -303,7 +322,13 @@ const Pendahuluan = () => {
             Luaran-luaran yang diperlukan pada program ini antara lain:
           </Typography>
           <TextField label="Luaran" variant="outlined" value={luaran.data} onChange={handleLuaran.onchange} fullWidth />
-          <Button variant="contained" color="primary" onClick={handleLuaran.tambah} sx={{ marginY: 2 }} disabled={luaran.status}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleLuaran.tambah}
+            sx={{ marginY: 2 }}
+            disabled={luaran.status || !luaran.data}
+          >
             Tambah Luaran
           </Button>
           <TableGrid
@@ -329,7 +354,13 @@ const Pendahuluan = () => {
             Isi Manfaat:
           </Typography>
           <TextField label="Manfaat" variant="outlined" value={manfaat.data} onChange={handleManfaat.onchange} fullWidth />
-          <Button variant="contained" color="primary" onClick={handleManfaat.tambah} sx={{ marginY: 2 }} disabled={manfaat.status}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleManfaat.tambah}
+            sx={{ marginY: 2 }}
+            disabled={manfaat.status || !manfaat.data}
+          >
             Tambah Manfaat
           </Button>
           <TableGrid
@@ -349,8 +380,16 @@ const Pendahuluan = () => {
         </Grid>
       </Grid>
 
-      <Stack direction="row" spacing={2} sx={{ justifyContent: 'center', marginY: 5 }}>
-        <Button variant="contained" color="success" onClick={() => handleSimpan()}>
+      <Stack
+        direction="row"
+        spacing={2}
+        sx={{
+          justifyContent: 'space-evenly',
+          alignItems: 'center',
+          marginY: 5
+        }}
+      >
+        <Button variant="contained" color="success" onClick={() => handleSimpan()} sx={{ width: '25rem' }}>
           Simpan
         </Button>
       </Stack>

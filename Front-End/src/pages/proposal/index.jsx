@@ -22,6 +22,7 @@ import GenerateDocx from 'utils/generate';
 import MainCard from 'components/MainCard';
 import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
 
 export const INITIAL = {
   id: 0,
@@ -38,8 +39,10 @@ export const INITIAL = {
 
 const ProposalTable = () => {
   const title = 'Daftar Proposal';
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const navigate = useNavigate(),
+    dispatch = useDispatch(),
+    { enqueueSnackbar } = useSnackbar();
+
   const [open, setOpen] = useState(false),
     [object, setObject] = useState(INITIAL),
     [btnAction, setBtnAction] = useState('Buat');
@@ -84,6 +87,20 @@ const ProposalTable = () => {
       }
     },
     {
+      field: 'last_update',
+      headerName: 'Tanggal Update',
+      width: 175,
+      align: 'center',
+      headerAlign: 'center',
+      filterable: false,
+      valueFormatter: (params) => {
+        if (params) {
+          return format(new Date(params), 'dd-MM-yyyy HH:mm');
+        }
+        return '-';
+      }
+    },
+    {
       field: 'actions',
       headerName: 'Actions',
       width: 160,
@@ -119,10 +136,16 @@ const ProposalTable = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (btnAction === 'Buat') {
-      dispatch(createProposal(object));
-    } else {
-      dispatch(updateProposal(object));
+    try {
+      if (btnAction === 'Buat') {
+        dispatch(createProposal(object));
+        enqueueSnackbar('Berhasil Menambah!', { variant: 'success' });
+      } else {
+        dispatch(updateProposal(object));
+        enqueueSnackbar('Berhasil Menyimpan!', { variant: 'success' });
+      }
+    } catch (error) {
+      enqueueSnackbar('Gagal!', { variant: 'error' });
     }
     setOpen(false);
     setBtnAction('Buat');
@@ -148,7 +171,12 @@ const ProposalTable = () => {
   };
 
   const handleDelete = (param) => {
-    dispatch(deleteProposal(param));
+    try {
+      dispatch(deleteProposal(param));
+      enqueueSnackbar('Berhasil Menghapus!', { variant: 'info' });
+    } catch (error) {
+      enqueueSnackbar('Gagal!', { variant: 'error' });
+    }
   };
 
   const handleClose = () => {
@@ -170,14 +198,10 @@ const ProposalTable = () => {
     });
   };
 
-  const handleDialog = () => {
-    setOpen(true);
-  };
-
   return (
     <>
       <MainCard title={title}>
-        <Button variant="contained" color="success" type="button" sx={{ marginBottom: 2 }} onClick={() => handleDialog()}>
+        <Button variant="contained" color="success" type="button" sx={{ marginBottom: 2 }} onClick={() => setOpen(true)}>
           Proposal Baru
         </Button>
         <Box sx={{ width: '100%' }}>
@@ -297,7 +321,6 @@ const ProposalTable = () => {
               variant="contained"
               disabled={!object.type || !object.year || !object.category || !object.title || !object.description}
               onClick={(e) => handleSubmit(e)}
-              loading={loading}
             >
               {btnAction}
             </Button>

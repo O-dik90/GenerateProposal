@@ -11,20 +11,21 @@ export const selector = {
   referensi: ['jurnal', 'buku', 'url']
 };
 export const ref_penulis = {
-  buku: ['pengarang', 'editor', 'terjemahan'],
+  buku: ['penulis', 'editor', 'terjemahan'],
   jurnal: [],
   url: []
 };
 
 const Dapus = ({ paramsData }) => {
   const [data, setData] = useState({
-      pengarang: [{ no: 1, nama_pengarang: 'pengarang' }],
-      dapus: [{ no: 1, nama_pengarang: 'Pengarang 1', judul: 'Judul 1', penerbit: 'Penerbit 1', tahun_terbit: '2022', volume: '1' }],
+      pengarang: [],
+      dapus: [],
       status: false
     }),
     [object, setObject] = useState({
       no: 1,
-      nama_pengarang: '',
+      nama_depan: '',
+      nama_belakang: '',
       judul: '',
       penerbit: '',
       tahun_terbit: '',
@@ -34,13 +35,14 @@ const Dapus = ({ paramsData }) => {
   const [inisiasi, setInisiasi] = useState({
     gaya: 'mla',
     referensi: 'buku',
-    pengarang: 'pengarang'
+    pengarang: 'penulis'
   });
 
   const columns = {
     pengarang: [
       { name: 'No', field: 'no', width: '4rem' },
-      { name: 'Nama Pengarang', field: 'nama_pengarang' }
+      { name: 'Nama Depan', field: 'nama_depan' },
+      { name: 'Nama Belakang', field: 'nama_belakang' }
     ],
     dapus: [
       { name: 'No', field: 'no', width: '4rem' },
@@ -54,14 +56,26 @@ const Dapus = ({ paramsData }) => {
 
   const handlePengarang = {
     onchange: (param) => {
-      setObject({ ...object, nama_pengarang: param.target.value });
+      const { name, value } = param.target;
+      setObject({ ...object, [name]: value });
     },
     tambah: () => {
-      setData({ ...data, pengarang: [...data.pengarang, { no: data.pengarang.length + 1, nama_pengarang: object.nama_pengarang }] });
-      setObject({ ...object, nama_pengarang: '' });
+      console.log(object);
+      setData({
+        ...data,
+        pengarang: [
+          ...data.pengarang,
+          {
+            no: data.pengarang.length + 1,
+            nama_depan: object.nama_depan,
+            nama_belakang: object.nama_belakang
+          }
+        ]
+      });
+      setObject((prev) => ({ ...prev, nama_depan: '', nama_belakang: '' }));
     },
     edit: (param) => {
-      setObject({ ...object, no: param.no, nama_pengarang: param.nama_pengarang, status: !object.status });
+      setObject({ ...object, no: param.no, nama_depan: param.nama_depan, nama_belakang: param.nama_belakang, status: !object.status });
     },
     delete: (param) => {
       const filteredData = data.pengarang
@@ -80,12 +94,12 @@ const Dapus = ({ paramsData }) => {
         ...data,
         pengarang: data.pengarang.map((item) => {
           if (item.no === object.no) {
-            return { ...item, nama_pengarang: object.nama_pengarang };
+            return { ...item, nama_depan: object.nama_depan, nama_belakang: object.nama_belakang };
           }
           return item;
         })
       });
-      setObject({ ...object, no: 1, nama_pengarang: '', status: false });
+      setObject({ ...object, no: 1, nama_depan: '', nama_belakang: '', status: false });
     }
   };
 
@@ -100,7 +114,7 @@ const Dapus = ({ paramsData }) => {
           ...data.dapus,
           {
             no: data.dapus.length + 1,
-            nama_pengarang: data.pengarang.map((item) => item.nama_pengarang).join(','),
+            nama_pengarang: data.pengarang.map((item) => `${item.nama_depan} ${item.nama_belakang}`).join(', '),
             judul: object.judul,
             penerbit: object.penerbit,
             tahun_terbit: object.tahun_terbit,
@@ -236,18 +250,26 @@ const Dapus = ({ paramsData }) => {
           </Typography>
         </Grid>
         <Grid item xs={12} sx={{ marginTop: 2 }}>
-          <TextField
-            label="Nama Pengarang"
-            name="nama_pengarang"
-            type="text"
-            variant="outlined"
-            value={object.nama_pengarang}
-            onChange={handlePengarang.onchange}
-            fullWidth
-            // error={!!errors[field.name]}
-            // helperText={errors[field.name]}
-            // InputProps={field.inputProps}
-          />
+          <Stack direction="row" spacing={2}>
+            <TextField
+              placeholder="Nama Depan"
+              name="nama_depan"
+              type="text"
+              variant="outlined"
+              value={object.nama_depan}
+              onChange={handlePengarang.onchange}
+              fullWidth
+            />
+            <TextField
+              placeholder="Nama Belakang"
+              name="nama_belakang"
+              type="text"
+              variant="outlined"
+              value={object.nama_belakang}
+              onChange={handlePengarang.onchange}
+              fullWidth
+            />
+          </Stack>
           <Button variant="contained" color="primary" onClick={handlePengarang.tambah} sx={{ marginY: 2 }}>
             Tambah Pengarang
           </Button>
@@ -265,21 +287,18 @@ const Dapus = ({ paramsData }) => {
         </Grid>
         <Grid item xs={12} sm={5} sx={{ marginTop: 2 }}>
           <TextField
-            label="Judul"
+            placeholder="Judul"
             name="judul"
             type="text"
             variant="outlined"
             value={object.judul}
             onChange={handleDapus.onchange}
             fullWidth
-            // error={!!errors[field.name]}
-            // helperText={errors[field.name]}
-            // InputProps={field.inputProps}
           />
         </Grid>
         <Grid item xs={6} sm={2} sx={{ marginTop: 2 }}>
           <TextField
-            label="Tahun Terbit"
+            placeholder="Tahun Terbit"
             name="tahun_terbit"
             type="text"
             value={object.tahun_terbit}
@@ -298,7 +317,7 @@ const Dapus = ({ paramsData }) => {
         </Grid>
         <Grid item xs={6} sm={2} sx={{ marginTop: 2 }}>
           <TextField
-            label="Volume"
+            placeholder="Volume"
             name="volume"
             type="number"
             variant="outlined"
@@ -317,16 +336,13 @@ const Dapus = ({ paramsData }) => {
         </Grid>
         <Grid item xs={12} sm={3} sx={{ marginTop: 2 }}>
           <TextField
-            label="Penerbit"
+            placeholder="Penerbit"
             name="penerbit"
             type="text"
             variant="outlined"
             value={object.penerbit}
             onChange={handleDapus.onchange}
             fullWidth
-            // error={!!errors[field.name]}
-            // helperText={errors[field.name]}
-            // InputProps={field.inputProps}
           />
         </Grid>
         <Grid
@@ -369,7 +385,7 @@ const Dapus = ({ paramsData }) => {
           marginY: 5
         }}
       >
-        <Button variant="contained" color="success" onClick={() => alert('simpan data')} sx={{ marginTop: 5, width: '25rem' }}>
+        <Button variant="contained" color="success" onClick={() => console.log(data)} sx={{ marginTop: 5, width: '25rem' }}>
           Simpan
         </Button>
       </Stack>

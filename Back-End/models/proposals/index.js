@@ -57,6 +57,7 @@ const initProposal = (id) => {
     [`${id}`, 'BAB 2. TINJAUAN PUSTAKA', '', '', 1, null],
     [`${id}`, 'BAB 3. TAHAP PELAKSANAAN', '', '', 1, null],
     [`${id}`, 'BAB 4. BIAYA DAN JADWAL KEGIATAN', '', '', 1, null],
+    [`${id}`, 'BAB 5. DAFTAR PUSTAKA', '', '', 1, null],
   ];
 
   const placeholders = data.map(() => '(?, ?, ?, ?, ?, ?)').join(', ');

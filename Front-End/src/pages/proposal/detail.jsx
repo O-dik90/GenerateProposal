@@ -1,4 +1,3 @@
-import { Form, Formik } from "formik";
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -10,7 +9,7 @@ import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabPanel from '@mui/lab/TabPanel';
 import Tabs from '@mui/material/Tabs';
-import { detailProposal } from 'store/slices/proposal';
+import { getListBabProposal } from 'store/slices/proposal';
 import { proposalInitial } from 'store/initial/proposal';
 import { useParams } from 'react-router-dom';
 
@@ -18,17 +17,41 @@ const ProposalDetail = () => {
   const title = 'Proposal Detail';
   const { id } = useParams(),
     dispatch = useDispatch(),
-    { proposal } = useSelector((state) => state.app.proposal);
-  const [value, setValue] = React.useState('7');
+    { pendahuluan, tinjauan, biaya, pelaksanaan } = useSelector((state) => state.app.proposal),
+    [data, setData] = React.useState({
+      pendahuluan: {},
+      tinjauan: [],
+      pelaksanaan: [],
+      biaya: [],
+      dapus: []
+    });
+  const [value, setValue] = React.useState('1');
 
   const handleChange = (event, newValue) => {
+    event.preventDefault();
     setValue(newValue);
   };
 
   useEffect(() => {
-    dispatch(detailProposal(id));
-    console.log('detail', proposal);
-  }, [dispatch, id, proposal]);
+    dispatch(getListBabProposal(id));
+  }, [dispatch, id]);
+
+  useEffect(() => {
+    if (pendahuluan) {
+      setData((prevData) => ({
+        ...prevData,
+        pendahuluan: pendahuluan,
+        tinjauan: tinjauan,
+        pelaksanaan: pelaksanaan,
+        biaya: biaya
+      }));
+    }
+  }, [biaya, pelaksanaan, pendahuluan, tinjauan]);
+
+  useEffect(() => {
+    console.log('detail bab', pendahuluan);
+    // console.log(data);
+  }, [data, pendahuluan]);
   return (
     <TabContext value={value}>
       <MainCard title={title}>
@@ -46,7 +69,7 @@ const ProposalDetail = () => {
           </Tabs>
         </Box>
         <TabPanel value="1" sx={{ marginTop: 5 }}>
-          <Pendahuluan paramsData={proposalInitial[0].pendahuluan} />
+          <Pendahuluan paramsData={pendahuluan} />
         </TabPanel>
         <TabPanel value="2">Item Two</TabPanel>
         <TabPanel value="7">
@@ -57,34 +80,3 @@ const ProposalDetail = () => {
   );
 };
 export default ProposalDetail;
-
-
-
-function DemoComp() {
-  return (
-    <Formik
-      initialValues={{ fieldOneVal: "" }}
-      onSubmit={async (formsData, { setSubmitting, resetForm }) => {
-        setSubmitting(true)
-        // async request
-        // --> if wanted to reset on submit: resetForm();
-        console.log(formsData)
-        setSubmitting(false)
-      }}
-    >
-      {({ values, isSubmitting, handleChange, handleBlur, handleSubmit }) => (
-        <Form>
-          <input
-            type="text"
-            name="fieldOneVal"
-            value={values.fieldOneVal}
-            onChange={handleChange}
-            onBlur={handleBlur}
-          />
-          <button type="submit">Submit</button>
-        </Form>
-      )}
-    </Formik>
-
-  )
-}

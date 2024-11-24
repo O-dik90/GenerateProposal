@@ -1,12 +1,17 @@
 import { Grid, TextField, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Button from '@mui/material/Button';
-import PropTypes from 'prop-types';
 import Stack from '@mui/material/Stack';
 import TableGrid from 'components/table/TableGrid';
+import { updateBabPendahuluan } from 'store/slices/proposal';
+import { useParams } from 'react-router-dom';
 
-const Pendahuluan = ({ paramsData }) => {
+const Pendahuluan = () => {
+  const { id } = useParams(),
+    dispatch = useDispatch();
+  const { pendahuluan } = useSelector((state) => state.app.proposal);
   const [rumusan, setRumusan] = useState({
       no: 1,
       data: '',
@@ -27,33 +32,29 @@ const Pendahuluan = ({ paramsData }) => {
       data: '',
       status: false
     }),
-    [data, setData] = React.useState({
+    [data, setData] = useState({
       latar_belakang: '',
-      rumusan_masalah: [{ no: 1, rumusan_masalah: 'Rumusan Masalah 1' }],
-      tujuan: [{ no: 1, tujuan: 'Tujuan 1' }],
-      luaran: [{ no: 1, luaran: 'Luaran 1' }],
-      manfaat: [{ no: 1, manfaat: 'Manfaat 1' }]
+      rumusan_masalah: [],
+      tujuan: [],
+      luaran: [],
+      manfaat: []
     });
 
-  const columns = {
-    rumusan: [
-      { name: 'No', field: 'no', width: '4rem' },
-      { name: 'Rumusan Masalah', field: 'rumusan_masalah' }
-    ],
-    tujuan: [
-      { name: 'No', field: 'no', width: '4rem' },
-      { name: 'Tujuan', field: 'tujuan' }
-    ],
-    luaran: [
-      { name: 'No', field: 'no', width: '4rem' },
-      { name: 'Luaran', field: 'luaran' }
-    ],
-    manfaat: [
-      { name: 'No', field: 'no', width: '4rem' },
-      { name: 'Manfaat', field: 'manfaat' }
-    ]
-  };
+  // Populate data from Redux state
+  useEffect(() => {
+    if (pendahuluan) {
+      setData({
+        proposal_id: Number(id),
+        latar_belakang: pendahuluan.latar_belakang || '',
+        rumusan_masalah: pendahuluan.rumusan_masalah || [],
+        tujuan: pendahuluan.tujuan || [],
+        luaran: pendahuluan.luaran || [],
+        manfaat: pendahuluan.manfaat || []
+      });
+    }
+  }, [id, pendahuluan]);
 
+  // Handler for adding a new item to a specific array
   const handleRumusan = {
     onchange: (e) => {
       setRumusan({ ...rumusan, data: e.target.value });
@@ -62,20 +63,19 @@ const Pendahuluan = ({ paramsData }) => {
       e.preventDefault();
       setData({
         ...data,
-        rumusan_masalah: [...data.rumusan_masalah, { no: data.rumusan_masalah.length + 1, rumusan_masalah: rumusan.data }]
+        rumusan_masalah: [...data.rumusan_masalah, { no: data.rumusan_masalah.length + 1, data: rumusan.data }]
       });
       setRumusan({ ...rumusan, no: rumusan.no + 1, data: '', status: false });
     },
     edit: (params) => {
-      console.log(params);
-      setRumusan({ ...rumusan, no: params.no, data: params.rumusan_masalah, status: true });
+      setRumusan({ ...rumusan, no: params.no, data: params.data, status: true });
     },
     update: () => {
       setData({
         ...data,
         rumusan_masalah: data.rumusan_masalah.map((item) => {
           if (item.no === rumusan.no) {
-            return { ...item, rumusan_masalah: rumusan.data };
+            return { ...item, data: rumusan.data };
           }
           return item;
         })
@@ -91,7 +91,6 @@ const Pendahuluan = ({ paramsData }) => {
       }));
       setData({
         ...data,
-
         rumusan_masalah: reindexedData
       });
     }
@@ -105,19 +104,19 @@ const Pendahuluan = ({ paramsData }) => {
       e.preventDefault();
       setData({
         ...data,
-        tujuan: [...data.tujuan, { no: data.tujuan.length + 1, tujuan: tujuan.data }]
+        tujuan: [...data.tujuan, { no: data.tujuan.length + 1, data: tujuan.data }]
       });
       setTujuan({ ...tujuan, no: tujuan.no + 1, data: '', status: false });
     },
     edit: (params) => {
-      setTujuan({ ...tujuan, no: params.no, data: params.tujuan, status: true });
+      setTujuan({ ...tujuan, no: params.no, data: params.data, status: true });
     },
     update: () => {
       setData({
         ...data,
         tujuan: data.tujuan.map((item) => {
           if (item.no === tujuan.no) {
-            return { ...item, tujuan: tujuan.data };
+            return { ...item, data: tujuan.data };
           }
           return item;
         })
@@ -146,19 +145,19 @@ const Pendahuluan = ({ paramsData }) => {
       e.preventDefault();
       setData({
         ...data,
-        luaran: [...data.luaran, { no: data.luaran.length + 1, luaran: luaran.data }]
+        luaran: [...data.luaran, { no: data.luaran.length + 1, data: luaran.data }]
       });
       setLuaran({ ...luaran, no: luaran.no + 1, data: '', status: false });
     },
     edit: (params) => {
-      setLuaran({ ...luaran, no: params.no, data: params.luaran, status: true });
+      setLuaran({ ...luaran, no: params.no, data: params.data, status: true });
     },
     update: () => {
       setData({
         ...data,
         luaran: data.luaran.map((item) => {
           if (item.no === luaran.no) {
-            return { ...item, luaran: luaran.data };
+            return { ...item, data: luaran.data };
           }
           return item;
         })
@@ -187,19 +186,19 @@ const Pendahuluan = ({ paramsData }) => {
       e.preventDefault();
       setData({
         ...data,
-        manfaat: [...data.manfaat, { no: data.manfaat.length + 1, manfaat: manfaat.data }]
+        manfaat: [...data.manfaat, { no: data.manfaat.length + 1, data: manfaat.data }]
       });
       setManfaat({ ...manfaat, no: manfaat.no + 1, data: '', status: false });
     },
     edit: (params) => {
-      setManfaat({ ...manfaat, no: params.no, data: params.manfaat, status: true });
+      setManfaat({ ...manfaat, no: params.no, data: params.data, status: true });
     },
     update: () => {
       setData({
         ...data,
         manfaat: data.manfaat.map((item) => {
           if (item.no === manfaat.no) {
-            return { ...item, manfaat: manfaat.data };
+            return { ...item, data: manfaat.data };
           }
           return item;
         })
@@ -220,15 +219,16 @@ const Pendahuluan = ({ paramsData }) => {
     }
   };
 
-  useEffect(() => {
-    console.log(paramsData);
-  }, [paramsData]);
+  const handleSimpan = () => {
+    dispatch(updateBabPendahuluan(data));
+  };
 
   return (
     <>
       <Typography variant="h4" gutterBottom>
         BAB 1. PENDAHULUAN
       </Typography>
+
       <Typography variant="h5" gutterBottom>
         1.1 Latar Belakang
       </Typography>
@@ -239,44 +239,34 @@ const Pendahuluan = ({ paramsData }) => {
             name="latar_belakang"
             variant="outlined"
             value={data.latar_belakang}
-            onChange={(e) => setData({ ...data, [e.target.name]: e.target.value })}
+            onChange={(e) => setData({ ...data, latar_belakang: e.target.value })}
             fullWidth
             multiline
             rows={8}
           />
         </Grid>
+
         <Grid item xs={12} sx={{ marginTop: 2 }}>
           <Typography variant="h5" gutterBottom>
             1.2 Rumusan Masalah
           </Typography>
-          <Typography variant="body1" gutterBottom>
-            Berdasarkan latar belakang tersebut, dapat dibuat beberapa rumusan masalah sebagai berikut:
-          </Typography>
-          <TextField
-            label="Rumusan Masalah"
-            name="rumusan_masalah"
-            type="text"
-            variant="outlined"
-            value={rumusan.data}
-            onChange={handleRumusan.onchange}
-            fullWidth
-            // error={!!errors[field.name]}
-            // helperText={errors[field.name]}
-            // InputProps={field.inputProps}
-          />
-          <Button variant="contained" color="primary" onClick={handleRumusan.tambah} sx={{ marginY: 2 }}>
+          <TextField label="Rumusan Masalah" variant="outlined" value={rumusan.data} onChange={handleRumusan.onchange} fullWidth />
+          <Button variant="contained" color="primary" onClick={handleRumusan.tambah} sx={{ marginY: 2 }} disabled={rumusan.status}>
             Tambah Rumusan Masalah
           </Button>
           <TableGrid
-            key="grid-1"
-            columns={columns.rumusan}
+            key="grid-rumusan"
+            columns={[
+              { name: 'No', field: 'no', width: '4rem' },
+              { name: 'Rumusan Masalah', field: 'data' }
+            ]}
             rows={data.rumusan_masalah}
             expand={false}
             action
             onEdit={handleRumusan.edit}
             onDelete={handleRumusan.delete}
             onUpdate={handleRumusan.update}
-            actionEdit={rumusan.status}
+            actionedit={rumusan.status}
           />
         </Grid>
         <Grid item xs={12} sx={{ marginTop: 2 }}>
@@ -286,31 +276,23 @@ const Pendahuluan = ({ paramsData }) => {
           <Typography variant="body1" gutterBottom>
             Dari rumusan masalah di atas, berikut merupakan beberapa tujuan pada program ini:
           </Typography>
-          <TextField
-            label="Tujuan"
-            name="tujuan"
-            type="text"
-            variant="outlined"
-            value={tujuan.data}
-            onChange={handleTujuan.onchange}
-            fullWidth
-            // error={!!errors[field.name]}
-            // helperText={errors[field.name]}
-            // InputProps={field.inputProps}
-          />
-          <Button variant="contained" color="primary" onClick={handleTujuan.tambah} sx={{ marginY: 2 }}>
+          <TextField label="Tujuan" variant="outlined" value={tujuan.data} onChange={handleTujuan.onchange} fullWidth />
+          <Button variant="contained" color="primary" onClick={handleTujuan.tambah} sx={{ marginY: 2 }} disabled={tujuan.status}>
             Tambah Tujuan
           </Button>
           <TableGrid
-            key="grid-2"
-            columns={columns.tujuan}
+            key="grid-tujuan"
+            columns={[
+              { name: 'No', field: 'no', width: '4rem' },
+              { name: 'Tujuan', field: 'data' }
+            ]}
             rows={data.tujuan}
             expand={false}
             action
             onEdit={handleTujuan.edit}
             onDelete={handleTujuan.delete}
             onUpdate={handleTujuan.update}
-            actionEdit={tujuan.status}
+            actionedit={tujuan.status}
           />
         </Grid>
         <Grid item xs={12} sx={{ marginTop: 2 }}>
@@ -320,31 +302,23 @@ const Pendahuluan = ({ paramsData }) => {
           <Typography variant="body1" gutterBottom>
             Luaran-luaran yang diperlukan pada program ini antara lain:
           </Typography>
-          <TextField
-            label="Luaran"
-            name="luaran"
-            type="text"
-            variant="outlined"
-            value={luaran.data}
-            onChange={handleLuaran.onchange}
-            fullWidth
-            // error={!!errors[field.name]}
-            // helperText={errors[field.name]}
-            // InputProps={field.inputProps}
-          />
-          <Button variant="contained" color="primary" onClick={handleLuaran.tambah} sx={{ marginY: 2 }}>
+          <TextField label="Luaran" variant="outlined" value={luaran.data} onChange={handleLuaran.onchange} fullWidth />
+          <Button variant="contained" color="primary" onClick={handleLuaran.tambah} sx={{ marginY: 2 }} disabled={luaran.status}>
             Tambah Luaran
           </Button>
           <TableGrid
-            key="grid-3"
-            columns={columns.luaran}
+            key="grid-luaran"
+            columns={[
+              { name: 'No', field: 'no', width: '4rem' },
+              { name: 'Rumusan Masalah', field: 'data' }
+            ]}
             rows={data.luaran}
             expand={false}
             action
             onEdit={handleLuaran.edit}
-            onUpdate={handleLuaran.update}
             onDelete={handleLuaran.delete}
-            actionEdit={luaran.status}
+            onUpdate={handleLuaran.update}
+            actionedit={luaran.status}
           />
         </Grid>
         <Grid item xs={12} sx={{ marginTop: 2 }}>
@@ -354,52 +328,34 @@ const Pendahuluan = ({ paramsData }) => {
           <Typography variant="body1" gutterBottom>
             Isi Manfaat:
           </Typography>
-          <TextField
-            label="Manfaat"
-            name="manfaat"
-            type="text"
-            variant="outlined"
-            value={manfaat.data}
-            onChange={handleManfaat.onchange}
-            fullWidth
-            // error={!!errors[field.name]}
-            // helperText={errors[field.name]}
-            // InputProps={field.inputProps}
-          />
-          <Button variant="contained" color="primary" onClick={handleManfaat.tambah} sx={{ marginY: 2 }}>
+          <TextField label="Manfaat" variant="outlined" value={manfaat.data} onChange={handleManfaat.onchange} fullWidth />
+          <Button variant="contained" color="primary" onClick={handleManfaat.tambah} sx={{ marginY: 2 }} disabled={manfaat.status}>
             Tambah Manfaat
           </Button>
           <TableGrid
-            key="grid-4"
-            columns={columns.manfaat}
+            key="grid-manfaat"
+            columns={[
+              { name: 'No', field: 'no', width: '4rem' },
+              { name: 'Manfaat', field: 'data' }
+            ]}
             rows={data.manfaat}
             expand={false}
             action
             onEdit={handleManfaat.edit}
             onDelete={handleManfaat.delete}
             onUpdate={handleManfaat.update}
-            actionEdit={manfaat.status}
+            actionedit={manfaat.status}
           />
         </Grid>
       </Grid>
-      <Stack
-        direction="row"
-        spacing={2}
-        sx={{
-          justifyContent: 'space-evenly',
-          alignItems: 'center',
-          marginY: 5
-        }}
-      >
-        <Button variant="contained" color="success" onClick={() => alert('simpan data')} sx={{ marginTop: 5, width: '25rem' }}>
+
+      <Stack direction="row" spacing={2} sx={{ justifyContent: 'center', marginY: 5 }}>
+        <Button variant="contained" color="success" onClick={() => handleSimpan()}>
           Simpan
         </Button>
       </Stack>
     </>
   );
 };
-export default Pendahuluan;
 
-Pendahuluan.propTypes = {
-  paramsData: PropTypes.object.isRequired
-};
+export default Pendahuluan;

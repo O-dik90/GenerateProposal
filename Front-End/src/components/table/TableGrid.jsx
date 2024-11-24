@@ -5,7 +5,9 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import Typography from '@mui/material/Typography';
 
-const TableGrid = ({ columns, rows, expand, action, onEdit, onDelete, actionEdit, onUpdate, detail }) => {
+const TableGrid = ({ columns, rows, expand, action, onEdit, onDelete, onUpdate, detail }) => {
+  const [editingRow, setEditingRow] = useState(null);
+
   return (
     <TableContainer
       component={Paper}
@@ -21,7 +23,7 @@ const TableGrid = ({ columns, rows, expand, action, onEdit, onDelete, actionEdit
         <TableHead>
           <TableRow>
             {expand && <TableCell align="center" width={48} />}
-            {columns.map((item, index) => (
+            {columns?.map((item, index) => (
               <TableCell
                 align="center"
                 key={index}
@@ -44,17 +46,23 @@ const TableGrid = ({ columns, rows, expand, action, onEdit, onDelete, actionEdit
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row, index) => (
+          {rows?.map((row, index) => (
             <CollapsibleRow
               key={index}
               row={row}
               columns={columns}
               expand={expand}
-              onEdit={() => onEdit(row)}
+              onEdit={() => {
+                setEditingRow(row.no);
+                onEdit(row);
+              }}
               onDelete={() => onDelete(row)}
-              onUpdate={() => onUpdate(row)}
+              onUpdate={() => {
+                setEditingRow(null);
+                onUpdate(row);
+              }}
               action={action}
-              actionEdit={actionEdit}
+              actionedit={editingRow === row.no}
               detail={detail}
             />
           ))}
@@ -64,7 +72,7 @@ const TableGrid = ({ columns, rows, expand, action, onEdit, onDelete, actionEdit
   );
 };
 
-const CollapsibleRow = ({ row, columns, expand, onEdit, onDelete, onUpdate, actionEdit, action, detail }) => {
+const CollapsibleRow = ({ row, columns, expand, onEdit, onDelete, onUpdate, actionedit, action, detail }) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -95,14 +103,13 @@ const CollapsibleRow = ({ row, columns, expand, onEdit, onDelete, onUpdate, acti
         ))}
         {action && (
           <TableCell align="center" sx={{ width: 150 }}>
-            {!actionEdit && (
-              <IconButton aria-label="edit" size="small" color="primary" onClick={onEdit}>
-                <EditFilled />
-              </IconButton>
-            )}
-            {actionEdit && (
+            {actionedit ? (
               <IconButton aria-label="update" size="small" color="info" onClick={onUpdate}>
                 <CheckOutlined />
+              </IconButton>
+            ) : (
+              <IconButton aria-label="edit" size="small" color="primary" onClick={onEdit}>
+                <EditFilled />
               </IconButton>
             )}
             <IconButton aria-label="delete" size="small" color="error" onClick={onDelete}>
@@ -138,7 +145,6 @@ TableGrid.propTypes = {
   rows: PropTypes.arrayOf(PropTypes.object).isRequired,
   expand: PropTypes.bool,
   action: PropTypes.bool,
-  actionEdit: PropTypes.bool,
   onEdit: PropTypes.func,
   onUpdate: PropTypes.func,
   onDelete: PropTypes.func,
@@ -157,7 +163,7 @@ CollapsibleRow.propTypes = {
   ).isRequired,
   expand: PropTypes.bool.isRequired,
   action: PropTypes.bool,
-  actionEdit: PropTypes.bool,
+  actionedit: PropTypes.bool,
   onEdit: PropTypes.func,
   onUpdate: PropTypes.func,
   onDelete: PropTypes.func,

@@ -260,7 +260,7 @@ const Dapus = ({ paramsData }) => {
             onEdit={handlePengarang.edit}
             onDelete={handlePengarang.delete}
             onUpdate={handlePengarang.update}
-            actionEdit={object.status}
+            actionedit={object.status}
           />
         </Grid>
         <Grid item xs={12} sm={5} sx={{ marginTop: 2 }}>
@@ -355,7 +355,7 @@ const Dapus = ({ paramsData }) => {
             onEdit={handleDapus.edit}
             onDelete={handleDapus.delete}
             onUpdate={handleDapus.update}
-            actionEdit={data.status}
+            actionedit={data.status}
             detail={handleDapus.detail}
           />
         </Grid>

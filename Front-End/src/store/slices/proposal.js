@@ -53,9 +53,30 @@ export const deleteProposal = createAsyncThunk('proposal/delete', async (params,
   }
 });
 
+export const getListBabProposal = createAsyncThunk('proposal/get-detail', async (id) => {
+  const response = await axiosInstance.post(`/get-listProposal-bab/${id}`);
+  return response.data;
+});
+
+export const updateBabPendahuluan = createAsyncThunk('proposal/update-pendahuluan', async (params, { dispatch, rejectWithValue }) => {
+  try {
+    const res = await axiosInstance.put(`/update-bab-pendahuluan`, params);
+    if (res.status === 200) {
+      await dispatch(getListBabProposal(params?.proposal_id));
+    }
+    return res.data.message;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || 'An error occurred');
+  }
+});
+
 const initialState = {
   data: [],
-  detail: {},
+  detail_id: {},
+  pendahuluan: {},
+  pelaksanaan: [],
+  biaya: [],
+  tinjuan: [],
   loading: false,
   message: null,
   error: null
@@ -134,6 +155,35 @@ const proposalSlice = createSlice({
         state.error = null;
       })
       .addCase(deleteProposal.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      // Get detail proposal
+      .addCase(getListBabProposal.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getListBabProposal.fulfilled, (state, action) => {
+        state.loading = false;
+        state.detail = action.payload.proposal_id;
+        state.pendahuluan = action.payload.pendahuluan;
+        state.pelaksanaan = action.payload.pelaksanaan;
+        state.biaya = action.payload.biaya;
+        state.tinjuan = action.payload.tinjauan;
+        state.error = null;
+      })
+      .addCase(getListBabProposal.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      .addCase(updateBabPendahuluan.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(updateBabPendahuluan.fulfilled, (state, action) => {
+        state.loading = false;
+        state.message = action.payload;
+        state.error = null;
+      })
+      .addCase(updateBabPendahuluan.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       });

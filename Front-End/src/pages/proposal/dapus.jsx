@@ -2,21 +2,20 @@ import { Grid, MenuItem, Select, TextField, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 
 import Button from '@mui/material/Button';
-import PropTypes from 'prop-types';
 import Stack from '@mui/material/Stack';
 import TableGrid from 'components/table/TableGrid';
 
 export const selector = {
   gaya: ['mla'], // mla, apa, chicago
-  referensi: ['jurnal', 'buku', 'url']
+  referensi: ['buku'] // jurnal, buku, url
 };
 export const ref_penulis = {
-  buku: ['penulis', 'editor', 'terjemahan'],
+  buku: ['penulis'], //, 'editor', 'terjemahan'
   jurnal: [],
   url: []
 };
 
-const Dapus = ({ paramsData }) => {
+const Dapus = () => {
   const [data, setData] = useState({
       pengarang: [],
       dapus: [],
@@ -24,12 +23,13 @@ const Dapus = ({ paramsData }) => {
     }),
     [object, setObject] = useState({
       no: 1,
-      nama_depan: '',
-      nama_belakang: '',
+      nama_depan: [''],
+      nama_belakang: [''],
+      nama_pengarang: [''],
       judul: '',
       penerbit: '',
       tahun_terbit: '',
-      volume: '',
+      edisi: '',
       status: false
     });
   const [inisiasi, setInisiasi] = useState({
@@ -50,7 +50,7 @@ const Dapus = ({ paramsData }) => {
       { name: 'Judul', field: 'judul', width: '12rem' },
       { name: 'Penerbit', field: 'penerbit', width: '12rem' },
       { name: 'Tahun Terbit', field: 'tahun_terbit', width: '5rem' },
-      { name: 'Volume', field: 'volume', width: '5rem' }
+      { name: 'edisi', field: 'edisi', width: '5rem' }
     ]
   };
 
@@ -59,8 +59,7 @@ const Dapus = ({ paramsData }) => {
       const { name, value } = param.target;
       setObject({ ...object, [name]: value });
     },
-    tambah: () => {
-      console.log(object);
+    new: () => {
       setData({
         ...data,
         pengarang: [
@@ -107,7 +106,7 @@ const Dapus = ({ paramsData }) => {
     onchange: (param) => {
       setObject({ ...object, [param.target.name]: param.target.value });
     },
-    tambah: () => {
+    new: () => {
       setData({
         ...data,
         dapus: [
@@ -118,11 +117,14 @@ const Dapus = ({ paramsData }) => {
             judul: object.judul,
             penerbit: object.penerbit,
             tahun_terbit: object.tahun_terbit,
-            volume: object.volume
+            edisi: object.edisi,
+            data_pengarang: data.pengarang
           }
-        ]
+        ],
+        pengarang: []
       });
-      setObject({ ...object, nama_pengarang: '', judul: '', penerbit: 0, tahun_terbit: '', volume: '' });
+      setObject({ ...object, nama_pengarang: '', judul: '', penerbit: 0, tahun_terbit: '', edisi: '' });
+      // setData({ ...data, pengarang: [] });
     },
     delete: (param) => {
       const filteredDapus = data.dapus
@@ -144,28 +146,29 @@ const Dapus = ({ paramsData }) => {
         judul: param.judul,
         penerbit: param.penerbit,
         tahun_terbit: param.tahun_terbit,
-        volume: param.volume,
+        edisi: param.edisi,
         status: !object.status
       });
+      setData({ ...data, pengarang: param.data_pengarang });
     },
     update: () => {
       setData({
         ...data,
-        dapus: data.dapus.map((item) => {
-          if (item.no === object.no) {
-            return {
-              ...item,
-              nama_pengarang: object.nama_pengarang,
-              judul: object.judul,
-              penerbit: object.penerbit,
-              tahun_terbit: object.tahun_terbit,
-              volume: object.volume
-            };
-          }
-          return item;
-        })
+        dapus: prev.dapus.map((item) =>
+          item.no === object.no
+            ? {
+                ...item,
+                nama_pengarang: data.pengarang.map((p) => `${p.nama_depan} ${p.nama_belakang}`).join(', '),
+                judul: object.judul,
+                penerbit: object.penerbit,
+                tahun_terbit: object.tahun_terbit,
+                edisi: object.edisi,
+                data_pengarang: data.pengarang
+              }
+            : item
+        )
       });
-      setObject({ ...object, no: 1, nama_pengarang: '', judul: '', penerbit: 0, tahun_terbit: '', volume: '', status: false });
+      setObject({ ...object, no: 1, nama_pengarang: '', judul: '', penerbit: 0, tahun_terbit: '', edisi: '', status: false });
     },
     detail: (row) => {
       const res = `${row.nama_pengarang} (${row.tahun_terbit}) ${row.judul}. ${row.penerbit}.`;
@@ -183,8 +186,8 @@ const Dapus = ({ paramsData }) => {
   };
 
   useEffect(() => {
-    console.log('dapus', paramsData);
-  }, [paramsData]);
+    console.log('dapus', data.dapus);
+  }, [data.dapus]);
 
   return (
     <>
@@ -270,7 +273,7 @@ const Dapus = ({ paramsData }) => {
               fullWidth
             />
           </Stack>
-          <Button variant="contained" color="primary" onClick={handlePengarang.tambah} sx={{ marginY: 2 }}>
+          <Button variant="contained" color="primary" onClick={handlePengarang.new} sx={{ marginY: 2 }}>
             Tambah Pengarang
           </Button>
           <TableGrid
@@ -317,15 +320,15 @@ const Dapus = ({ paramsData }) => {
         </Grid>
         <Grid item xs={6} sm={2} sx={{ marginTop: 2 }}>
           <TextField
-            placeholder="Volume"
-            name="volume"
+            placeholder="Edisi"
+            name="edisi"
             type="number"
             variant="outlined"
-            value={object.volume}
+            value={object.edisi}
             onChange={(e) => {
               const value = e.target.value;
               if (value >= 0) {
-                setObject({ ...object, volume: value });
+                setObject({ ...object, edisi: value });
               }
             }}
             fullWidth
@@ -359,7 +362,7 @@ const Dapus = ({ paramsData }) => {
             }
           }}
         >
-          <Button variant="contained" color="primary" onClick={handleDapus.tambah} sx={{ marginY: 2 }}>
+          <Button variant="contained" color="primary" onClick={handleDapus.new} sx={{ marginY: 2 }}>
             Tambah Daftar Pustaka
           </Button>
           <TableGrid
@@ -394,7 +397,3 @@ const Dapus = ({ paramsData }) => {
 };
 
 export default Dapus;
-
-Dapus.propTypes = {
-  paramsData: PropTypes.object.isRequired
-};

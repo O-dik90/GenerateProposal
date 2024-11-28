@@ -12,6 +12,8 @@ const {
   updateBabPendahuluan,
 } = require('../controller/proposal-bab');
 
+const { addDapus } = require('../controller/dapus');
+
 const router = express.Router();
 
 // routes/proposals-route.js
@@ -25,5 +27,8 @@ router.put('/update-proposal/:proposal_id', updateProposal);
 // routes/proposal-bab-route.js
 router.post('/get-listProposal-bab/:proposal_id', getListProposalBab);
 router.put('/update-bab-pendahuluan', updateBabPendahuluan);
+
+//routes/dapus
+router.post('/gen-dapus', addDapus);
 
 module.exports = router;

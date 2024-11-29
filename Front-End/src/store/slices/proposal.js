@@ -70,6 +70,16 @@ export const updateBabPendahuluan = createAsyncThunk('proposal/update-pendahulua
   }
 });
 
+export const updateDapus = createAsyncThunk('proposal/update-dapus', async (params, { rejectWithValue }) => {
+  try {
+    const res = await axiosInstance.put(`/update-dapus`, params);
+
+    return res.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || 'An error occurred');
+  }
+});
+
 const initialState = {
   data: [],
   detail_id: {},
@@ -77,6 +87,7 @@ const initialState = {
   pelaksanaan: [],
   biaya: [],
   tinjuan: [],
+  dapus: [],
   loading: false,
   message: null,
   error: null
@@ -175,6 +186,7 @@ const proposalSlice = createSlice({
         state.loading = false;
         state.error = action.error.message;
       })
+      // Update Pendahuluan
       .addCase(updateBabPendahuluan.pending, (state) => {
         state.loading = true;
       })
@@ -184,6 +196,16 @@ const proposalSlice = createSlice({
         state.error = null;
       })
       .addCase(updateBabPendahuluan.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      // Update Dapus
+      .addCase(updateDapus.fulfilled, (state, action) => {
+        state.loading = false;
+        state.dapus = action.payload;
+        state.error = null;
+      })
+      .addCase(updateDapus.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       });

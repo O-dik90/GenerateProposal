@@ -12,7 +12,7 @@ const {
   updateBabPendahuluan,
 } = require('../controller/proposal-bab');
 
-const { addDapus } = require('../controller/dapus');
+const { addDapus, updateDapus } = require('../controller/dapus');
 
 const router = express.Router();
 
@@ -30,5 +30,6 @@ router.put('/update-bab-pendahuluan', updateBabPendahuluan);
 
 //routes/dapus
 router.post('/gen-dapus', addDapus);
+router.put('/update-dapus', updateDapus);
 
 module.exports = router;

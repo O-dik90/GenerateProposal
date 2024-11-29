@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import TableGrid from 'components/table/TableGrid';
+import { updateDapus } from 'store/slices/proposal';
+import { useDispatch } from 'react-redux';
 
 export const selector = {
   gaya: ['mla'], // mla, apa, chicago
@@ -35,6 +37,7 @@ export const PENGARANG_INIT = {
 
 const Dapus = () => {
   const [data, setData] = useState([]),
+    dispatch = useDispatch(),
     [object, setObject] = useState({
       pengarang: PENGARANG_INIT,
       dapus: DAPUS_INIT,
@@ -119,10 +122,10 @@ const Dapus = () => {
           data_pengarang: prev.dapus.data_pengarang.map((item) =>
             item.no === object.pengarang.no
               ? {
-                  ...item,
-                  nama_depan: object.pengarang.nama_depan,
-                  nama_belakang: object.pengarang.nama_belakang
-                }
+                ...item,
+                nama_depan: object.pengarang.nama_depan,
+                nama_belakang: object.pengarang.nama_belakang
+              }
               : item
           )
         },
@@ -216,16 +219,15 @@ const Dapus = () => {
           </Typography>
         </>
       );
+    },
+    save: () => {
+      dispatch(updateDapus(data));
     }
   };
 
   useEffect(() => {
     console.log('object', data);
   }, [data]);
-
-  // useEffect(() => {
-  //   console.log('dapus', da);
-  // }, []);
 
   return (
     <>
@@ -417,7 +419,7 @@ const Dapus = () => {
           marginY: 5
         }}
       >
-        <Button variant="contained" color="success" onClick={() => console.log(data)} sx={{ marginTop: 5, width: '25rem' }}>
+        <Button variant="contained" color="success" onClick={handleDapus.save} sx={{ marginTop: 5, width: '25rem' }}>
           Simpan
         </Button>
       </Stack>

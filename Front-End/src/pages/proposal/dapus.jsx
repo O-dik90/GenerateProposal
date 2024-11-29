@@ -15,21 +15,29 @@ export const ref_penulis = {
   url: []
 };
 
+export const DAPUS_INIT = {
+  no: 0,
+  nama_pengarang: '',
+  judul: '',
+  penerbit: '',
+  tahun_terbit: '',
+  edisi: '',
+  data_pengarang: [],
+  status: false
+};
+
+export const PENGARANG_INIT = {
+  no: 0,
+  nama_depan: '',
+  nama_belakang: '',
+  status: false
+};
+
 const Dapus = () => {
-  const [data, setData] = useState({
-      pengarang: [],
-      dapus: [],
-      status: false
-    }),
+  const [data, setData] = useState([]),
     [object, setObject] = useState({
-      no: 1,
-      nama_depan: [''],
-      nama_belakang: [''],
-      nama_pengarang: [''],
-      judul: '',
-      penerbit: '',
-      tahun_terbit: '',
-      edisi: '',
+      pengarang: PENGARANG_INIT,
+      dapus: DAPUS_INIT,
       status: false
     });
   const [inisiasi, setInisiasi] = useState({
@@ -57,118 +65,144 @@ const Dapus = () => {
   const handlePengarang = {
     onchange: (param) => {
       const { name, value } = param.target;
-      setObject({ ...object, [name]: value });
+
+      setObject((prev) => ({
+        ...prev,
+        pengarang: {
+          ...prev.pengarang,
+          [name]: value
+        }
+      }));
     },
     new: () => {
-      setData({
-        ...data,
-        pengarang: [
-          ...data.pengarang,
-          {
-            no: data.pengarang.length + 1,
-            nama_depan: object.nama_depan,
-            nama_belakang: object.nama_belakang
-          }
-        ]
-      });
-      setObject((prev) => ({ ...prev, nama_depan: '', nama_belakang: '' }));
+      setObject((prev) => ({
+        ...prev,
+        dapus: {
+          ...prev.dapus,
+          data_pengarang: [
+            ...prev.dapus.data_pengarang,
+            {
+              ...prev.pengarang,
+              no: prev.dapus.data_pengarang.length + 1
+            }
+          ]
+        },
+        pengarang: PENGARANG_INIT
+      }));
     },
     edit: (param) => {
-      setObject({ ...object, no: param.no, nama_depan: param.nama_depan, nama_belakang: param.nama_belakang, status: !object.status });
+      setObject((prev) => ({
+        ...prev,
+        pengarang: param
+      }));
     },
     delete: (param) => {
-      const filteredData = data.pengarang
+      const filteredData = object.dapus.data_pengarang
         .filter((item) => item.no !== param.no)
         .map((item, index) => ({
           ...item,
           no: index + 1
         }));
-      setData({
-        ...data,
-        pengarang: filteredData
-      });
+      setObject((prev) => ({
+        ...prev,
+        dapus: {
+          ...prev.dapus,
+          data_pengarang: filteredData
+        }
+      }));
     },
     update: () => {
-      setData({
-        ...data,
-        pengarang: data.pengarang.map((item) => {
-          if (item.no === object.no) {
-            return { ...item, nama_depan: object.nama_depan, nama_belakang: object.nama_belakang };
-          }
-          return item;
-        })
-      });
-      setObject({ ...object, no: 1, nama_depan: '', nama_belakang: '', status: false });
+      setObject((prev) => ({
+        ...prev,
+        dapus: {
+          ...prev.dapus,
+          data_pengarang: prev.dapus.data_pengarang.map((item) =>
+            item.no === object.pengarang.no
+              ? {
+                  ...item,
+                  nama_depan: object.pengarang.nama_depan,
+                  nama_belakang: object.pengarang.nama_belakang
+                }
+              : item
+          )
+        },
+        pengarang: PENGARANG_INIT
+      }));
     }
   };
 
   const handleDapus = {
     onchange: (param) => {
-      setObject({ ...object, [param.target.name]: param.target.value });
+      const { name, value } = param.target;
+
+      setObject((prev) => ({
+        ...prev,
+        dapus: {
+          ...prev.dapus,
+          [name]: value
+        }
+      }));
     },
     new: () => {
-      setData({
-        ...data,
-        dapus: [
-          ...data.dapus,
-          {
-            no: data.dapus.length + 1,
-            nama_pengarang: data.pengarang.map((item) => `${item.nama_depan} ${item.nama_belakang}`).join(', '),
-            judul: object.judul,
-            penerbit: object.penerbit,
-            tahun_terbit: object.tahun_terbit,
-            edisi: object.edisi,
-            data_pengarang: data.pengarang
-          }
-        ],
-        pengarang: []
+      const newData = [...data];
+      newData.push({
+        ...object.dapus,
+        no: data.length + 1,
+        nama_pengarang: object.dapus.data_pengarang.map((item) => `${item.nama_depan} ${item.nama_belakang}`).join(',')
       });
-      setObject({ ...object, nama_pengarang: '', judul: '', penerbit: 0, tahun_terbit: '', edisi: '' });
-      // setData({ ...data, pengarang: [] });
+      setData(newData);
+      setObject({
+        pengarang: PENGARANG_INIT,
+        dapus: DAPUS_INIT
+      });
     },
     delete: (param) => {
-      const filteredDapus = data.dapus
+      const filteredDapus = data
         .filter((item) => item.no !== param.no)
         .map((item, index) => ({
           ...item,
           no: index + 1
         }));
-      setData({
-        ...data,
-        dapus: filteredDapus
-      });
+      setData(filteredDapus);
     },
     edit: (param) => {
-      setObject({
-        ...object,
-        no: param.no,
-        nama_pengarang: param.nama_pengarang,
-        judul: param.judul,
-        penerbit: param.penerbit,
-        tahun_terbit: param.tahun_terbit,
-        edisi: param.edisi,
-        status: !object.status
-      });
-      setData({ ...data, pengarang: param.data_pengarang });
+      console.log(param);
+      setObject((prev) => ({
+        ...prev,
+        dapus: {
+          no: param.no,
+          judul: param.judul,
+          nama_pengarang: param.nama_pengarang,
+          penerbit: param.penerbit,
+          tahun_terbit: param.tahun_terbit,
+          edisi: param.edisi,
+          data_pengarang: param.data_pengarang,
+          status: !object.status
+        }
+      }));
     },
     update: () => {
-      setData({
-        ...data,
-        dapus: prev.dapus.map((item) =>
-          item.no === object.no
-            ? {
-                ...item,
-                nama_pengarang: data.pengarang.map((p) => `${p.nama_depan} ${p.nama_belakang}`).join(', '),
-                judul: object.judul,
-                penerbit: object.penerbit,
-                tahun_terbit: object.tahun_terbit,
-                edisi: object.edisi,
-                data_pengarang: data.pengarang
-              }
-            : item
-        )
+      const indexToUpdate = data.findIndex((item) => item.no === object.dapus.no);
+
+      if (indexToUpdate !== -1) {
+        data.splice(indexToUpdate, 1, {
+          ...data[indexToUpdate],
+
+          data_pengarang: object.dapus.data_pengarang,
+          nama_pengarang: Array.isArray(object.dapus.data_pengarang)
+            ? object.dapus.data_pengarang.map((pengarang) => `${pengarang.nama_depan} ${pengarang.nama_belakang}`).join(', ') // Join names
+            : data[indexToUpdate].nama_pengarang,
+          judul: object.dapus.judul,
+          penerbit: object.dapus.penerbit,
+          tahun_terbit: object.dapus.tahun_terbit,
+          edisi: object.dapus.edisi
+        });
+      }
+      setData([...data]);
+      setObject({
+        pengarang: PENGARANG_INIT,
+        dapus: DAPUS_INIT
       });
-      setObject({ ...object, no: 1, nama_pengarang: '', judul: '', penerbit: 0, tahun_terbit: '', edisi: '', status: false });
     },
     detail: (row) => {
       const res = `${row.nama_pengarang} (${row.tahun_terbit}) ${row.judul}. ${row.penerbit}.`;
@@ -186,8 +220,12 @@ const Dapus = () => {
   };
 
   useEffect(() => {
-    console.log('dapus', data.dapus);
-  }, [data.dapus]);
+    console.log('object', data);
+  }, [data]);
+
+  // useEffect(() => {
+  //   console.log('dapus', da);
+  // }, []);
 
   return (
     <>
@@ -259,7 +297,7 @@ const Dapus = () => {
               name="nama_depan"
               type="text"
               variant="outlined"
-              value={object.nama_depan}
+              value={object.pengarang.nama_depan}
               onChange={handlePengarang.onchange}
               fullWidth
             />
@@ -268,7 +306,7 @@ const Dapus = () => {
               name="nama_belakang"
               type="text"
               variant="outlined"
-              value={object.nama_belakang}
+              value={object.pengarang.nama_belakang}
               onChange={handlePengarang.onchange}
               fullWidth
             />
@@ -279,7 +317,7 @@ const Dapus = () => {
           <TableGrid
             key="grid-1"
             columns={columns.pengarang}
-            rows={data.pengarang}
+            rows={object.dapus.data_pengarang}
             expand={false}
             action
             onEdit={handlePengarang.edit}
@@ -294,7 +332,7 @@ const Dapus = () => {
             name="judul"
             type="text"
             variant="outlined"
-            value={object.judul}
+            value={object.dapus.judul}
             onChange={handleDapus.onchange}
             fullWidth
           />
@@ -304,13 +342,8 @@ const Dapus = () => {
             placeholder="Tahun Terbit"
             name="tahun_terbit"
             type="text"
-            value={object.tahun_terbit}
-            onChange={(e) => {
-              const value = e.target.value.replace(/[^0-9]/g, '');
-              if (value.length <= 4) {
-                setObject({ ...object, tahun_terbit: value });
-              }
-            }}
+            value={object.dapus.tahun_terbit}
+            onChange={handleDapus.onchange}
             fullWidth
             inputProps={{
               maxLength: 4,
@@ -322,18 +355,14 @@ const Dapus = () => {
           <TextField
             placeholder="Edisi"
             name="edisi"
-            type="number"
+            type="text"
             variant="outlined"
-            value={object.edisi}
-            onChange={(e) => {
-              const value = e.target.value;
-              if (value >= 0) {
-                setObject({ ...object, edisi: value });
-              }
-            }}
+            value={object.dapus.edisi}
+            onChange={handleDapus.onchange}
             fullWidth
             inputProps={{
-              min: '0'
+              min: '0',
+              maxLength: 3
             }}
           />
         </Grid>
@@ -343,7 +372,7 @@ const Dapus = () => {
             name="penerbit"
             type="text"
             variant="outlined"
-            value={object.penerbit}
+            value={object.dapus.penerbit}
             onChange={handleDapus.onchange}
             fullWidth
           />
@@ -368,7 +397,7 @@ const Dapus = () => {
           <TableGrid
             key="grid-2"
             columns={columns.dapus}
-            rows={data.dapus}
+            rows={data}
             expand
             action
             onEdit={handleDapus.edit}

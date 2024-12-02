@@ -86,7 +86,7 @@ const initialState = {
   pendahuluan: {},
   pelaksanaan: [],
   biaya: [],
-  tinjuan: [],
+  tinjauan: [],
   dapus: [],
   loading: false,
   message: null,
@@ -179,7 +179,8 @@ const proposalSlice = createSlice({
         state.pendahuluan = action.payload.pendahuluan;
         state.pelaksanaan = action.payload.pelaksanaan;
         state.biaya = action.payload.biaya;
-        state.tinjuan = action.payload.tinjauan;
+        state.tinjauan = action.payload.tinjauan;
+        state.dapus = action.payload.dapus;
         state.error = null;
       })
       .addCase(getListBabProposal.rejected, (state, action) => {
@@ -202,7 +203,8 @@ const proposalSlice = createSlice({
       // Update Dapus
       .addCase(updateDapus.fulfilled, (state, action) => {
         state.loading = false;
-        state.dapus = action.payload;
+        state.dapus = action.payload.data;
+        state.message = action.payload.message;
         state.error = null;
       })
       .addCase(updateDapus.rejected, (state, action) => {

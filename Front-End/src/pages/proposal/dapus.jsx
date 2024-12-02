@@ -1,67 +1,93 @@
 import { Grid, MenuItem, Select, TextField, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import TableGrid from 'components/table/TableGrid';
 import { updateDapus } from 'store/slices/proposal';
-import { useDispatch } from 'react-redux';
 
 export const selector = {
-  gaya: ['mla'], // mla, apa, chicago
-  referensi: ['buku'] // jurnal, buku, url
+  // gaya: ['mla'], // mla, apa, chicago
+  // referensi: ['buku'] // jurnal, buku, url
+  style: ['mla'],
+  reference: [
+    {
+      key: 'book',
+      value: 'BUKU'
+    }
+  ]
 };
 export const ref_penulis = {
-  buku: ['penulis'], //, 'editor', 'terjemahan'
+  buku: [
+    {
+      key: 'authors',
+      value: 'PENULIS'
+    }
+  ], //, 'editor', 'terjemahan'
   jurnal: [],
   url: []
 };
 
 export const DAPUS_INIT = {
+  // no: 0,
+  // nama_pengarang: '',
+  // judul: '',
+  // penerbit: '',
+  // tahun_terbit: '',
+  // edisi: '',
+  // data_pengarang: [],
+  // status: false
   no: 0,
-  nama_pengarang: '',
-  judul: '',
-  penerbit: '',
-  tahun_terbit: '',
-  edisi: '',
-  data_pengarang: [],
-  status: false
+  category: 'book',
+  style: 'mla',
+  author_title: 'authors',
+  authors_name: [''],
+  title: '',
+  publisher: '',
+  year: '',
+  edition: '',
+  authors_data: []
 };
 
 export const PENGARANG_INIT = {
+  // no: 0,
+  // nama_depan: '',
+  // nama_belakang: '',
+  // status: false,
   no: 0,
-  nama_depan: '',
-  nama_belakang: '',
-  status: false
+  first_name: '',
+  last_name: ''
 };
 
 const Dapus = () => {
+  const { dapus } = useSelector((state) => state.app.proposal);
   const [data, setData] = useState([]),
     dispatch = useDispatch(),
     [object, setObject] = useState({
-      pengarang: PENGARANG_INIT,
+      author: PENGARANG_INIT,
       dapus: DAPUS_INIT,
       status: false
     });
   const [inisiasi, setInisiasi] = useState({
-    gaya: 'mla',
-    referensi: 'buku',
-    pengarang: 'penulis'
+    style: 'mla',
+    reference: 'book',
+    author_title: 'authors'
   });
 
   const columns = {
     pengarang: [
       { name: 'No', field: 'no', width: '4rem' },
-      { name: 'Nama Depan', field: 'nama_depan' },
-      { name: 'Nama Belakang', field: 'nama_belakang' }
+      { name: 'Nama Depan', field: 'first_name' },
+      { name: 'Nama Belakang', field: 'last_name' }
     ],
     dapus: [
       { name: 'No', field: 'no', width: '4rem' },
-      { name: 'Nama Pengarang', field: 'nama_pengarang', width: '25rem' },
-      { name: 'Judul', field: 'judul', width: '12rem' },
-      { name: 'Penerbit', field: 'penerbit', width: '12rem' },
-      { name: 'Tahun Terbit', field: 'tahun_terbit', width: '5rem' },
-      { name: 'edisi', field: 'edisi', width: '5rem' }
+      { name: 'Nama Pengarang', field: 'authors_name', width: '25rem' },
+      { name: 'Judul', field: 'title', width: '12rem' },
+      { name: 'Penerbit', field: 'publisher', width: '12rem' },
+      { name: 'Tahun Terbit', field: 'year', width: '5rem' },
+      { name: 'edisi', field: 'edition', width: '5rem' }
     ]
   };
 
@@ -71,8 +97,8 @@ const Dapus = () => {
 
       setObject((prev) => ({
         ...prev,
-        pengarang: {
-          ...prev.pengarang,
+        author: {
+          ...prev.author,
           [name]: value
         }
       }));
@@ -82,25 +108,25 @@ const Dapus = () => {
         ...prev,
         dapus: {
           ...prev.dapus,
-          data_pengarang: [
-            ...prev.dapus.data_pengarang,
+          authors_data: [
+            ...prev.dapus.authors_data,
             {
-              ...prev.pengarang,
-              no: prev.dapus.data_pengarang.length + 1
+              ...prev.author,
+              no: prev.dapus.authors_data.length + 1
             }
           ]
         },
-        pengarang: PENGARANG_INIT
+        author: PENGARANG_INIT
       }));
     },
     edit: (param) => {
       setObject((prev) => ({
         ...prev,
-        pengarang: param
+        author: param
       }));
     },
     delete: (param) => {
-      const filteredData = object.dapus.data_pengarang
+      const filteredData = object.dapus.authors_data
         .filter((item) => item.no !== param.no)
         .map((item, index) => ({
           ...item,
@@ -110,7 +136,7 @@ const Dapus = () => {
         ...prev,
         dapus: {
           ...prev.dapus,
-          data_pengarang: filteredData
+          authors_data: filteredData
         }
       }));
     },
@@ -119,17 +145,17 @@ const Dapus = () => {
         ...prev,
         dapus: {
           ...prev.dapus,
-          data_pengarang: prev.dapus.data_pengarang.map((item) =>
-            item.no === object.pengarang.no
+          authors_data: prev.dapus.authors_data.map((item) =>
+            item.no === object.author.no
               ? {
-                ...item,
-                nama_depan: object.pengarang.nama_depan,
-                nama_belakang: object.pengarang.nama_belakang
-              }
+                  ...item,
+                  first_name: object.author.first_name,
+                  last_name: object.author.last_name
+                }
               : item
           )
         },
-        pengarang: PENGARANG_INIT
+        author: PENGARANG_INIT
       }));
     }
   };
@@ -147,15 +173,21 @@ const Dapus = () => {
       }));
     },
     new: () => {
-      const newData = [...data];
-      newData.push({
+      console.log(data);
+      const no = data !== null ? data.length + 1 : 1;
+
+      const newEntry = {
         ...object.dapus,
-        no: data.length + 1,
-        nama_pengarang: object.dapus.data_pengarang.map((item) => `${item.nama_depan} ${item.nama_belakang}`).join(',')
-      });
-      setData(newData);
+        no,
+        authors_name: Array.isArray(object.dapus.authors_data)
+          ? object.dapus.authors_data.map((item) => `${item.first_name} ${item.last_name}`).join(',')
+          : ''
+      };
+
+      setData(data !== null ? [...data, newEntry] : [newEntry]);
+
       setObject({
-        pengarang: PENGARANG_INIT,
+        author: PENGARANG_INIT,
         dapus: DAPUS_INIT
       });
     },
@@ -174,13 +206,13 @@ const Dapus = () => {
         ...prev,
         dapus: {
           no: param.no,
-          judul: param.judul,
-          nama_pengarang: param.nama_pengarang,
-          penerbit: param.penerbit,
-          tahun_terbit: param.tahun_terbit,
-          edisi: param.edisi,
-          data_pengarang: param.data_pengarang,
-          status: !object.status
+          title: param.title,
+          authors_name: param.authors_name,
+          publisher: param.publisher,
+          year: param.year,
+          edition: param.edition,
+          authors_data: param.authors_data,
+          status: true
         }
       }));
     },
@@ -191,24 +223,24 @@ const Dapus = () => {
         data.splice(indexToUpdate, 1, {
           ...data[indexToUpdate],
 
-          data_pengarang: object.dapus.data_pengarang,
-          nama_pengarang: Array.isArray(object.dapus.data_pengarang)
-            ? object.dapus.data_pengarang.map((pengarang) => `${pengarang.nama_depan} ${pengarang.nama_belakang}`).join(', ') // Join names
-            : data[indexToUpdate].nama_pengarang,
-          judul: object.dapus.judul,
-          penerbit: object.dapus.penerbit,
-          tahun_terbit: object.dapus.tahun_terbit,
-          edisi: object.dapus.edisi
+          authors_data: object.dapus.authors_data,
+          authors_name: Array.isArray(object.dapus.authors_data)
+            ? object.dapus.authors_data.map((o) => `${o.first_name} ${o.last_name}`).join(', ') // Join names
+            : data[indexToUpdate].authors_data,
+          title: object.dapus.title,
+          publisher: object.dapus.publisher,
+          year: object.dapus.year,
+          edition: object.dapus.edition
         });
       }
       setData([...data]);
       setObject({
-        pengarang: PENGARANG_INIT,
+        author: PENGARANG_INIT,
         dapus: DAPUS_INIT
       });
     },
     detail: (row) => {
-      const res = `${row.nama_pengarang} (${row.tahun_terbit}) ${row.judul}. ${row.penerbit}.`;
+      const res = `${row.authors_name} (${row.year}) ${row.title}. ${row.publisher}.`;
       return (
         <>
           <Typography variant="h5" gutterBottom component="div">
@@ -221,13 +253,18 @@ const Dapus = () => {
       );
     },
     save: () => {
-      dispatch(updateDapus(data));
+      console.log('data', data);
+      dispatch(updateDapus({ id: dapus[0]?.id, data: data }));
     }
   };
 
   useEffect(() => {
-    console.log('object', data);
-  }, [data]);
+    console.log('redux-data', dapus);
+
+    if (dapus !== null) {
+      setData(dapus[0]?.json_data);
+    }
+  }, [dapus]);
 
   return (
     <>
@@ -239,15 +276,15 @@ const Dapus = () => {
           <Stack direction="row" spacing={2}>
             <Select
               displayEmpty
-              value={inisiasi.gaya}
-              onChange={(e) => setInisiasi({ ...inisiasi, gaya: e.target.value })}
+              value={inisiasi.style}
+              onChange={(e) => setInisiasi({ ...inisiasi, style: e.target.value })}
               inputProps={{ 'aria-label': 'Without label' }}
               sx={{ width: '10rem' }}
             >
               <MenuItem disabled value="">
                 <em>Gaya Penulisan</em>
               </MenuItem>
-              {selector.gaya.map((name) => (
+              {selector.style.map((name) => (
                 <MenuItem key={name} value={name}>
                   {name.toUpperCase()}
                 </MenuItem>
@@ -255,34 +292,34 @@ const Dapus = () => {
             </Select>
             <Select
               displayEmpty
-              value={inisiasi.referensi}
-              onChange={(e) => setInisiasi({ ...inisiasi, referensi: e.target.value })}
+              value={inisiasi.reference}
+              onChange={(e) => setInisiasi({ ...inisiasi, reference: e.target.value })}
               inputProps={{ 'aria-label': 'Without label' }}
               sx={{ width: '10rem' }}
             >
               <MenuItem disabled value="">
                 <em>Referensi</em>
               </MenuItem>
-              {selector.referensi.map((name) => (
-                <MenuItem key={name} value={name}>
-                  {name.toUpperCase()}
+              {selector.reference.map((o) => (
+                <MenuItem key={o.key} value={o.key}>
+                  {o.value.toUpperCase()}
                 </MenuItem>
               ))}
             </Select>
-            {inisiasi.referensi === 'buku' && (
+            {DAPUS_INIT.category === 'book' && (
               <Select
                 displayEmpty
-                value={inisiasi.pengarang}
-                onChange={(e) => setInisiasi({ ...inisiasi, pengarang: e.target.value })}
+                value={inisiasi.author_title}
+                onChange={(e) => setInisiasi({ ...inisiasi, author_title: e.target.value })}
                 inputProps={{ 'aria-label': 'Without label' }}
                 sx={{ width: '10rem' }}
               >
                 <MenuItem disabled value="">
                   <em>Oleh</em>
                 </MenuItem>
-                {ref_penulis.buku.map((name) => (
-                  <MenuItem key={name} value={name}>
-                    {name.toUpperCase()}
+                {ref_penulis.buku.map((o) => (
+                  <MenuItem key={o.key} value={o.key}>
+                    {o.value.toUpperCase()}
                   </MenuItem>
                 ))}
               </Select>
@@ -296,19 +333,19 @@ const Dapus = () => {
           <Stack direction="row" spacing={2}>
             <TextField
               placeholder="Nama Depan"
-              name="nama_depan"
+              name="first_name"
               type="text"
               variant="outlined"
-              value={object.pengarang.nama_depan}
+              value={object.author.first_name}
               onChange={handlePengarang.onchange}
               fullWidth
             />
             <TextField
               placeholder="Nama Belakang"
-              name="nama_belakang"
+              name="last_name"
               type="text"
               variant="outlined"
-              value={object.pengarang.nama_belakang}
+              value={object.author.last_name}
               onChange={handlePengarang.onchange}
               fullWidth
             />
@@ -319,22 +356,22 @@ const Dapus = () => {
           <TableGrid
             key="grid-1"
             columns={columns.pengarang}
-            rows={object.dapus.data_pengarang}
+            rows={object.dapus.authors_data}
             expand={false}
             action
             onEdit={handlePengarang.edit}
             onDelete={handlePengarang.delete}
             onUpdate={handlePengarang.update}
-            actionedit={object.status}
+            actionedit={object.author.status}
           />
         </Grid>
         <Grid item xs={12} sm={5} sx={{ marginTop: 2 }}>
           <TextField
             placeholder="Judul"
-            name="judul"
+            name="title"
             type="text"
             variant="outlined"
-            value={object.dapus.judul}
+            value={object.dapus.title}
             onChange={handleDapus.onchange}
             fullWidth
           />
@@ -342,24 +379,23 @@ const Dapus = () => {
         <Grid item xs={6} sm={2} sx={{ marginTop: 2 }}>
           <TextField
             placeholder="Tahun Terbit"
-            name="tahun_terbit"
+            name="year"
             type="text"
-            value={object.dapus.tahun_terbit}
+            value={object.dapus.year}
             onChange={handleDapus.onchange}
             fullWidth
             inputProps={{
-              maxLength: 4,
-              placeholder: `years`
+              maxLength: 4
             }}
           />
         </Grid>
         <Grid item xs={6} sm={2} sx={{ marginTop: 2 }}>
           <TextField
             placeholder="Edisi"
-            name="edisi"
+            name="edition"
             type="text"
             variant="outlined"
-            value={object.dapus.edisi}
+            value={object.dapus.edition}
             onChange={handleDapus.onchange}
             fullWidth
             inputProps={{
@@ -371,10 +407,10 @@ const Dapus = () => {
         <Grid item xs={12} sm={3} sx={{ marginTop: 2 }}>
           <TextField
             placeholder="Penerbit"
-            name="penerbit"
+            name="publisher"
             type="text"
             variant="outlined"
-            value={object.dapus.penerbit}
+            value={object.dapus.publisher}
             onChange={handleDapus.onchange}
             fullWidth
           />
@@ -405,7 +441,7 @@ const Dapus = () => {
             onEdit={handleDapus.edit}
             onDelete={handleDapus.delete}
             onUpdate={handleDapus.update}
-            actionedit={data.status}
+            actionedit={object.dapus.status}
             detail={handleDapus.detail}
           />
         </Grid>

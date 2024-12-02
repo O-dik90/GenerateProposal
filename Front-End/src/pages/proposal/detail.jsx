@@ -2,12 +2,15 @@ import React, { useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Dapus from './dapus';
+import Kegiatan from './kegiatan';
 import MainCard from 'components/MainCard';
+import Pelaksanaan from './pelaksanaan';
 import Pendahuluan from './pendahuluan';
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabPanel from '@mui/lab/TabPanel';
 import Tabs from '@mui/material/Tabs';
+import Tinjauan from './tinjauan';
 import { getListBabProposal } from 'store/slices/proposal';
 import { proposalInitial } from 'store/initial/proposal';
 import { useDispatch } from 'react-redux';
@@ -17,7 +20,7 @@ const ProposalDetail = () => {
   const title = 'Proposal Detail';
   const { id } = useParams(),
     dispatch = useDispatch(),
-    [value, setValue] = React.useState('7');
+    [value, setValue] = React.useState('4');
 
   const handleChange = (event, newValue) => {
     event.preventDefault();
@@ -36,19 +39,25 @@ const ProposalDetail = () => {
         >
           <Tabs value={value} onChange={handleChange} variant="scrollable" scrollButtons="auto" aria-label="scrollable auto tabs example">
             <Tab label="Pendahuluan" value="1" />
-            {/* <Tab label="Bab" value="2" />
-            <Tab label="Bab" value="3" />
-            <Tab label="Bab" value="4" />
-            <Tab label="Bab" value="5" />
-            <Tab label="Bab" value="6" /> */}
-            <Tab label="Daftar Pustaka" value="7" />
+            <Tab label="Tinjauan Pustaka" value="2" />
+            <Tab label="Pelaksanaan" value="3" />
+            <Tab label="Kegiatan" value="4" />
+            <Tab label="Daftar Pustaka" value="5" />
           </Tabs>
         </Box>
         <TabPanel value="1" sx={{ marginTop: 5 }}>
           <Pendahuluan />
         </TabPanel>
-        <TabPanel value="2">Item Two</TabPanel>
-        <TabPanel value="7">
+        <TabPanel value="2">
+          <Tinjauan />
+        </TabPanel>
+        <TabPanel value="3">
+          <Pelaksanaan />
+        </TabPanel>
+        <TabPanel value="4">
+          <Kegiatan />
+        </TabPanel>
+        <TabPanel value="5">
           <Dapus paramsData={proposalInitial[0]} />
         </TabPanel>
       </MainCard>

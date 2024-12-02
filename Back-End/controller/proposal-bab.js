@@ -1,4 +1,5 @@
 require('date-fns/locale');
+require('date-fns/locale');
 const ProposalBab = require('../models/proposal-bab');
 const Proposals = require('../models/proposals');
 
@@ -25,8 +26,8 @@ const getListProposalBab = async (req, res) => {
       },
       tinjauan: data.slice(5, 6),
       pelaksanaan: data.slice(6, 7),
-      biaya: data.slice(-1),
-      dapus: [],
+      biaya: data.slice(7, 8),
+      dapus: data.slice(-1),
     });
   } catch (error) {
     res.status(500).json({
@@ -93,7 +94,49 @@ const updateBabPendahuluan = async (req, res) => {
   }
 };
 
+const updateBab = async (req, res) => {
+  try {
+    const params = req.body;
+
+    if (params === undefined) {
+      throw new Error('proposal id not found or data undefined');
+    }
+    const [updateData] = await ProposalBab.updateBab(
+      params?.id,
+      JSON.stringify(params?.json_data)
+    );
+
+    if (updateData.length === 0) {
+      return res.json({
+        message: 'fail update data',
+      });
+    }
+    const [detail] = await ProposalBab.getDetailProposalBab(params?.id);
+    if (updateData.affectedRows > 0) {
+      await Proposals.updateLatestProposal(params?.proposals_id);
+
+      if (detail.length === 0) {
+        return res.json({
+          message: 'data not found',
+          data: [],
+        });
+      }
+    }
+
+    return res.status(200).json({
+      message: 'success',
+      data: detail,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Server Error',
+      serverMessage: error.message,
+    });
+  }
+};
+
 module.exports = {
   getListProposalBab,
   updateBabPendahuluan,
+  updateBab,
 };

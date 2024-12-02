@@ -30,9 +30,20 @@ const updateDapus = (id, json_data) => {
   return dbPool.execute(query, [json_data, id]);
 };
 
+const updateBab = (id, json_data) => {
+  const query = `
+    UPDATE proposal_bab
+    set json_data = ?
+    where id = ? 
+  `;
+
+  return dbPool.execute(query, [json_data, id]);
+};
+
 module.exports = {
   getListProposalBab,
   getDetailProposalBab,
   updateBabPendahuluan,
   updateDapus,
+  updateBab,
 };

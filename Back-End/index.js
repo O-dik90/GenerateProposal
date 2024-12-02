@@ -22,11 +22,11 @@ app.get('/', (req, res) => {
 app.use('/api/v1', proposalRoutes);
 app.use('/api/v1', masterData);
 
-app.use((err, req, res) => {
-  res.json({
-    message: err.message,
-  });
-});
+// app.use((err, req, res) => {
+//   res.json({
+//     message: err.message,
+//   });
+// });
 
 app.listen(process.env.PORT, () => {
   console.log(`Server is running on port ${process.env.PORT}`);

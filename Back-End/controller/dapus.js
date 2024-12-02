@@ -1,37 +1,38 @@
 const ProposalBab = require('../models/proposal-bab');
 
 const genMLA = (data) => {
-  let { category, author, title, publisher, year, url, volume, issue } = data;
+  let { category, authors_name, title, publisher, year, url, volume, issue } =
+    data;
 
-  if (author) {
-    switch (author.length) {
-      case 1:
-        author = `${author[0]}`;
-        break;
-      case 2:
-        author = `${author[0]} and ${author[1]}`;
-        break;
-      default:
-        author = `${author[0]}, et al.`;
-        break;
-    }
-  }
+  // if (author) {
+  //   switch (author.length) {
+  //     case 1:
+  //       author = `${authors_name[0]}`;
+  //       break;
+  //     case 2:
+  //       author = `${authors_name[0]} and ${author[1]}`;
+  //       break;
+  //     default:
+  //       author = `${authors_name[0]}, et al.`;
+  //       break;
+  //   }
+  // }
 
   switch (category) {
     case 'journal':
       return {
         ...data,
-        res: `${author}. "${title}." *${publisher}*, ${year}, ${volume}, ${issue}.`,
+        res: `${authors_name}. "${title}." *${publisher}*, ${year}, ${volume}, ${issue}.`,
       };
     case 'book':
       return {
         ...data,
-        res: `${author}. *${title}*. ${publisher}, ${year}.`,
+        res: `${authors_name}. *${title}*. ${publisher}, ${year}.`,
       };
     case 'url':
       return {
         ...data,
-        res: `${author}. "${title}." *${publisher}*, ${year}, ${url}.`,
+        res: `${authors_name}. "${title}." *${publisher}*, ${year}, ${url}.`,
       };
     default:
       return 'Invalid category';
@@ -61,10 +62,10 @@ const updateDapus = async (req, res) => {
     if (!params) {
       return res.status(404).json({ message: 'invalid params' });
     }
-    const citations = params.map((item) => genMLA(item));
+    const citations = params?.data?.map((item) => genMLA(item));
 
     const [updateData] = await ProposalBab.updateDapus(
-      96,
+      params?.id,
       JSON.stringify(citations)
     );
 
@@ -74,7 +75,7 @@ const updateDapus = async (req, res) => {
       });
     }
 
-    const [detailDapus] = await ProposalBab.getDetailProposalBab(96);
+    const [detailDapus] = await ProposalBab.getDetailProposalBab(params?.id);
 
     if (detailDapus.length === 0) {
       return res.json({

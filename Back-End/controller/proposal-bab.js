@@ -97,6 +97,7 @@ const updateBabPendahuluan = async (req, res) => {
 const updateBab = async (req, res) => {
   try {
     const params = req.body;
+    console.log(params);
 
     if (params === undefined) {
       throw new Error('proposal id not found or data undefined');
@@ -108,7 +109,7 @@ const updateBab = async (req, res) => {
 
     if (updateData.length === 0) {
       return res.json({
-        message: 'fail update data',
+        message: 'error update data',
       });
     }
     const [detail] = await ProposalBab.getDetailProposalBab(params?.id);

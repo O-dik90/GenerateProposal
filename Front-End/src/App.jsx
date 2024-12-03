@@ -14,7 +14,7 @@ export default function App() {
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <ThemeCustomization>
           <ScrollTop>
-            <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
+            <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: 'top', horizontal: 'right', autoHideDuration: 3000 }}>
               <RouterProvider router={router} />
             </SnackbarProvider>
           </ScrollTop>

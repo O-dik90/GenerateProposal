@@ -1,13 +1,12 @@
 import { Grid, TextField, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import TableGrid from 'components/table/TableGrid';
-import { useSelector } from 'react-redux';
-
-// import { updateBabPendahuluan } from 'store/slices/proposal';
-// import { useSnackbar } from 'notistack';
+import { updateBab } from 'store/slices/proposal';
+import { useSnackbar } from 'notistack';
 
 export const TINJAUAN_INIT = {
   no: 1,
@@ -17,14 +16,15 @@ export const TINJAUAN_INIT = {
 };
 
 const Tinjauan = () => {
-  const { tinjauan } = useSelector((state) => state.app.proposal);
+  const { tinjauan } = useSelector((state) => state.app.proposal),
+    dispatch = useDispatch(),
+    { enqueueSnackbar } = useSnackbar();
   const [data, setData] = useState([]),
     [object, setObject] = useState(TINJAUAN_INIT);
 
   const handlePustaka = {
     onchange: (e) => setObject({ ...object, [e.target.name]: e.target.value }),
     add: () => {
-      console.log(object);
       if (data === null) {
         setData(object);
       } else {
@@ -33,10 +33,10 @@ const Tinjauan = () => {
       setObject(TINJAUAN_INIT);
     },
     edit: (param) => {
-      setObject({ ...param });
+      setObject({ ...param, status: true });
     },
     update: () => {
-      setData(data.map((item) => (item.no === object.no ? { ...object } : item)));
+      setData(data.map((item) => (item.no === object.no ? { ...item, ...object } : item)));
       setObject(TINJAUAN_INIT);
     },
     delete: (param) => {
@@ -58,18 +58,31 @@ const Tinjauan = () => {
     }
   };
 
-  const handleSimpan = () => {
+  const handleSimpan = async () => {
     const newData = {
       id: tinjauan[0]?.id,
-      proposal_id: tinjauan[0]?.proposals_id,
+      proposals_id: tinjauan[0]?.proposals_id,
       bab_title: tinjauan[0]?.bab_title,
       json_data: data
     };
-    console.log(newData);
+
+    try {
+      const res = await dispatch(updateBab(newData));
+      if (updateBab.fulfilled.match(res)) {
+        enqueueSnackbar('Berhasil menyimpan', { variant: 'success' });
+      } else if (updateBab.rejected.match(res)) {
+        enqueueSnackbar('Gagal menyimpan', { variant: 'error' });
+      }
+    } catch (error) {
+      enqueueSnackbar('Terjadi error', { variant: 'error' });
+    }
   };
 
   useEffect(() => {
-    console.log(tinjauan[0]);
+    console.log(tinjauan[0]?.json_data);
+    if (tinjauan && tinjauan[0]?.json_data) {
+      setData(tinjauan[0]?.json_data);
+    }
   }, [tinjauan]);
   return (
     <>

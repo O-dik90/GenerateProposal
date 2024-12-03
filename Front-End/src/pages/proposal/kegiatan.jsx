@@ -1,31 +1,26 @@
 import { Grid, TextField, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import TableGrid from 'components/table/TableGrid';
-import { useSelector } from 'react-redux';
+import { updateBab } from 'store/slices/proposal';
+import { useSnackbar } from 'notistack';
 
-// import { updateBabPendahuluan } from 'store/slices/proposal';
-
-// import { useSnackbar } from 'notistack';
-
-export const BIAYA_INIT = {
+const INIT = {
   no: 1,
   title: '',
   description: '',
   status: false
 };
-
-export const KEGIATAN_INIT = {
-  no: 1,
-  title: '',
-  description: '',
-  status: false
-};
+export const BIAYA_INIT = INIT;
+export const KEGIATAN_INIT = INIT;
 
 const Kegiatan = () => {
-  const { biaya } = useSelector((state) => state.app.proposal);
+  const { biaya } = useSelector((state) => state.app.proposal),
+    dispatch = useDispatch(),
+    { enqueueSnackbar } = useSnackbar();
   const [data, setData] = useState({
     biaya: [],
     kegiatan: []
@@ -48,15 +43,23 @@ const Kegiatan = () => {
       }));
     },
     add: () => {
-      const newBiaya = [...data.biaya, { ...object.biaya, no: data.biaya.length + 1 }];
-      setData((prev) => ({ ...prev, biaya: newBiaya }));
+      if (data.biaya === null) {
+        setData((prev) => ({
+          ...prev,
+          biaya: [{ ...object.biaya, no: 1 }]
+        }));
+      } else {
+        const newBiaya = [...data.biaya, { ...object.biaya, no: data.biaya.length + 1 }];
+        setData((prev) => ({ ...prev, biaya: newBiaya }));
+      }
+
       setObject((prev) => ({ ...prev, biaya: BIAYA_INIT }));
     },
     edit: (param) => {
-      setObject((prev) => ({ ...prev, biaya: param }));
+      setObject((prev) => ({ ...prev, biaya: { ...param, status: true } }));
     },
     update: () => {
-      const updatedBiaya = data.biaya.map((item) => (item.no === object.biaya.no ? { ...object.biaya } : item));
+      const updatedBiaya = data.biaya.map((item) => (item.no === object.biaya.no ? { ...item, ...object.biaya } : item));
       setData((prev) => ({ ...prev, biaya: updatedBiaya }));
       setObject((prev) => ({ ...prev, biaya: BIAYA_INIT }));
     },
@@ -93,18 +96,27 @@ const Kegiatan = () => {
       }));
     },
     add: () => {
-      const newKegiatan = [...data.kegiatan, { ...object.kegiatan, no: data.kegiatan.length + 1 }];
-      setData((prev) => ({ ...prev, kegiatan: newKegiatan }));
+      if (data.kegiatan === null) {
+        setData((prev) => ({
+          ...prev,
+          kegiatan: [{ ...object.kegiatan, no: 1 }]
+        }));
+      } else {
+        const newKegiatan = [...data.kegiatan, { ...object.kegiatan, no: data.kegiatan.length + 1 }];
+        setData((prev) => ({ ...prev, kegiatan: newKegiatan }));
+      }
+
       setObject((prev) => ({ ...prev, kegiatan: KEGIATAN_INIT }));
     },
     edit: (param) => {
-      setObject((prev) => ({ ...prev, kegiatan: param }));
+      setObject((prev) => ({ ...prev, kegiatan: { ...param, status: true } }));
     },
     update: () => {
-      const updatedKegiatan = data.kegiatan.map((item) => (item.no === object.kegiatan.no ? { ...object.kegiatan } : item));
+      const updatedKegiatan = data.kegiatan.map((item) => (item.no === object.kegiatan.no ? { ...item, ...object.kegiatan } : item));
       setData((prev) => ({ ...prev, kegiatan: updatedKegiatan }));
       setObject((prev) => ({ ...prev, kegiatan: KEGIATAN_INIT }));
     },
+
     delete: (param) => {
       const filteredKegiatan = data.kegiatan.filter((item) => item.no !== param?.no).map((item, index) => ({ ...item, no: index + 1 }));
       setData((prev) => ({ ...prev, kegiatan: filteredKegiatan }));
@@ -125,18 +137,26 @@ const Kegiatan = () => {
     }
   };
 
-  const handleSimpan = () => {
+  const handleSimpan = async () => {
     const newData = {
       id: biaya[0]?.id,
-      proposal_id: biaya[0]?.proposals_id,
+      proposals_id: biaya[0]?.proposals_id,
       bab_title: biaya[0]?.bab_title,
       json_data: data
     };
-    console.log(newData);
+    try {
+      const res = await dispatch(updateBab(newData));
+      if (updateBab.fulfilled.match(res)) {
+        enqueueSnackbar('Berhasil menyimpan', { variant: 'success' });
+      } else if (updateBab.rejected.match(res)) {
+        enqueueSnackbar('Gagal menyimpan', { variant: 'error' });
+      }
+    } catch (error) {
+      enqueueSnackbar('Terjadi error', { variant: 'error' });
+    }
   };
 
   useEffect(() => {
-    console.log(biaya[0]);
     if (biaya !== null) {
       setData((prev) => ({
         ...prev,
@@ -186,7 +206,7 @@ const Kegiatan = () => {
             variant="contained"
             color="primary"
             onClick={handleBiaya.add}
-            disabled={!object.biaya.title || !object.biaya.description}
+            disabled={object.biaya.status || !object.biaya.title || !object.biaya.description}
             sx={{ marginY: 2 }}
           >
             Tambah Pustaka
@@ -197,7 +217,7 @@ const Kegiatan = () => {
               { name: 'No', field: 'no', width: '4rem' },
               { name: 'Judul', field: 'title' }
             ]}
-            rows={data?.biaya || []}
+            rows={data.biaya || []}
             expand={true}
             action
             onEdit={handleBiaya.edit}
@@ -240,7 +260,7 @@ const Kegiatan = () => {
             variant="contained"
             color="primary"
             onClick={handleKegiatan.add}
-            disabled={!object.kegiatan.title || !object.kegiatan.description}
+            disabled={object.kegiatan.status || !object.kegiatan.title || !object.kegiatan.description}
             sx={{ marginY: 2 }}
           >
             Tambah Pustaka

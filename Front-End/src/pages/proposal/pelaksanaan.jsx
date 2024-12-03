@@ -1,17 +1,12 @@
 import { Grid, TextField, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import TableGrid from 'components/table/TableGrid';
-import { useSelector } from 'react-redux';
-
-// import { useDispatch, useSelector } from 'react-redux';
-
-// import { updateBabPendahuluan } from 'store/slices/proposal';
-
-// import { useParams } from 'react-router-dom';
-// import { useSnackbar } from 'notistack';
+import { updateBab } from 'store/slices/proposal';
+import { useSnackbar } from 'notistack';
 
 export const PELAKSANAAN_INIT = {
   no: 1,
@@ -21,14 +16,15 @@ export const PELAKSANAAN_INIT = {
 };
 
 const Pelaksanaan = () => {
-  const { pelaksanaan } = useSelector((state) => state.app.proposal);
+  const { pelaksanaan } = useSelector((state) => state.app.proposal),
+    dispatch = useDispatch(),
+    { enqueueSnackbar } = useSnackbar();
   const [data, setData] = useState([]),
     [object, setObject] = useState(PELAKSANAAN_INIT);
 
   const handlePelaksanan = {
     onchange: (e) => setObject({ ...object, [e.target.name]: e.target.value }),
     add: () => {
-      console.log(object);
       if (data === null) {
         setData(object);
       } else {
@@ -37,10 +33,10 @@ const Pelaksanaan = () => {
       setObject(PELAKSANAAN_INIT);
     },
     edit: (param) => {
-      setObject({ ...param });
+      setObject({ ...param, status: true });
     },
     update: () => {
-      setData(data.map((item) => (item.no === object.no ? { ...object } : item)));
+      setData(data.map((item) => (item.no === object.no ? { ...item, ...object } : item)));
       setObject(PELAKSANAAN_INIT);
     },
     delete: (param) => {
@@ -62,18 +58,29 @@ const Pelaksanaan = () => {
     }
   };
 
-  const handleSimpan = () => {
+  const handleSimpan = async () => {
     const newData = {
       id: pelaksanaan[0]?.id,
-      proposal_id: pelaksanaan[0]?.proposals_id,
+      proposals_id: pelaksanaan[0]?.proposals_id,
       bab_title: pelaksanaan[0]?.bab_title,
       json_data: data
     };
-    console.log(newData);
+    try {
+      const res = await dispatch(updateBab(newData));
+      if (updateBab.fulfilled.match(res)) {
+        enqueueSnackbar('Berhasil menyimpan', { variant: 'success' });
+      } else if (updateBab.rejected.match(res)) {
+        enqueueSnackbar('Gagal menyimpan', { variant: 'error' });
+      }
+    } catch (error) {
+      enqueueSnackbar('Terjadi error', { variant: 'error' });
+    }
   };
 
   useEffect(() => {
-    console.log(pelaksanaan[0]);
+    if (pelaksanaan && pelaksanaan[0]?.json_data) {
+      setData(pelaksanaan[0]?.json_data);
+    }
   }, [pelaksanaan]);
   return (
     <>
@@ -112,7 +119,7 @@ const Pelaksanaan = () => {
             variant="contained"
             color="primary"
             onClick={handlePelaksanan.add}
-            disabled={!object.title || !object.description}
+            disabled={object.status || !object.title || !object.description}
             sx={{ marginY: 2 }}
           >
             Tambah Tahapan
@@ -129,7 +136,7 @@ const Pelaksanaan = () => {
             onEdit={handlePelaksanan.edit}
             onDelete={handlePelaksanan.delete}
             onUpdate={handlePelaksanan.update}
-            actionedit={false}
+            actionedit={object.status}
             detail={handlePelaksanan.detail}
           />
         </Grid>

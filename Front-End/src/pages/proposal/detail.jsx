@@ -20,7 +20,7 @@ const ProposalDetail = () => {
   const title = 'Proposal Detail';
   const { id } = useParams(),
     dispatch = useDispatch(),
-    [value, setValue] = React.useState('4');
+    [value, setValue] = React.useState('1');
 
   const handleChange = (event, newValue) => {
     event.preventDefault();
@@ -35,7 +35,7 @@ const ProposalDetail = () => {
     <TabContext value={value}>
       <MainCard title={title}>
         <Box
-          sx={{ maxWidth: { xs: 320, sm: 480 }, margin: '0 auto', justifyContent: 'center', display: 'flex', bgcolor: 'background.paper' }}
+          sx={{ maxWidth: { xs: 320, sm: 550 }, margin: '0 auto', justifyContent: 'center', display: 'flex', bgcolor: 'background.paper' }}
         >
           <Tabs value={value} onChange={handleChange} variant="scrollable" scrollButtons="auto" aria-label="scrollable auto tabs example">
             <Tab label="Pendahuluan" value="1" />

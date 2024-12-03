@@ -80,6 +80,16 @@ export const updateDapus = createAsyncThunk('proposal/update-dapus', async (para
   }
 });
 
+export const updateBab = createAsyncThunk('proposal/update-bab', async (params, { rejectWithValue }) => {
+  try {
+    const res = await axiosInstance.put(`/update-bab`, params);
+
+    return res.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || 'An error occurred');
+  }
+});
+
 const initialState = {
   data: [],
   detail_id: {},
@@ -208,6 +218,17 @@ const proposalSlice = createSlice({
         state.error = null;
       })
       .addCase(updateDapus.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      // Update Bab
+      .addCase(updateBab.fulfilled, (state, action) => {
+        state.loading = false;
+        state.dapus = action.payload.data;
+        state.message = action.payload.message;
+        state.error = null;
+      })
+      .addCase(updateBab.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       });

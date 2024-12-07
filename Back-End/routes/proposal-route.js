@@ -20,14 +20,14 @@ const router = express.Router();
 
 // routes/proposals-route.js
 router.post('/get-proposals/:user_id', getListProposals);
-router.post('/get-proposal/:proposal_id', getProposal);
+router.post('/get-proposal/:proposals_id', getProposal);
 router.post('/add-proposal', addProposal);
-router.delete('/delete-proposal/:proposal_id', deleteProposal);
-router.put('/update-proposal/:proposal_id', updateProposal);
-// router.post('/init-proposal/:proposal_id', initProposal);
+router.delete('/delete-proposal/:proposals_id', deleteProposal);
+router.put('/update-proposal/:proposals_id', updateProposal);
+// router.post('/init-proposal/:proposals_id', initProposal);
 
 // routes/proposal-bab-route.js
-router.post('/get-listProposal-bab/:proposal_id', getListProposalBab);
+router.post('/get-listProposal-bab/:proposals_id', getListProposalBab);
 router.post('/get-detail-bab', getDetailBab);
 router.put('/update-bab-pendahuluan', updateBabPendahuluan);
 router.put('/update-bab', updateBab);

@@ -5,8 +5,8 @@ const Proposals = require('../models/proposals');
 
 const getListProposalBab = async (req, res) => {
   try {
-    const { proposal_id } = req.params;
-    const [data] = await ProposalBab.getListProposalBab(proposal_id);
+    const { proposals_id } = req.params;
+    const [data] = await ProposalBab.getListProposalBab(proposals_id);
 
     if (data.length === 0) {
       return res.json({
@@ -16,7 +16,7 @@ const getListProposalBab = async (req, res) => {
     }
     return res.json({
       message: 'success',
-      proposal_id: proposal_id,
+      proposals_id: proposals_id,
       pendahuluan: {
         latar_belakang: data[0].json_data,
         rumusan_masalah: data[1].json_data,
@@ -64,8 +64,8 @@ const getDetailBab = async (req, res) => {
 const updateBabPendahuluan = async (req, res) => {
   let array_bab = [];
   try {
-    const { proposal_id } = req.body;
-    const [data] = await ProposalBab.getListProposalBab(proposal_id);
+    const { proposals_id } = req.body;
+    const [data] = await ProposalBab.getListProposalBab(proposals_id);
 
     //get data proposal
     data.map((item) => {
@@ -96,7 +96,7 @@ const updateBabPendahuluan = async (req, res) => {
     );
 
     const result = await Promise.all(updateDB);
-    const [lastUpdate] = await Proposals.updateLatestProposal(proposal_id);
+    const [lastUpdate] = await Proposals.updateLatestProposal(proposals_id);
 
     // check result all update
     result.map((item) => {

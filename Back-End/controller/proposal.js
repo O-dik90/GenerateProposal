@@ -28,13 +28,13 @@ const getListProposals = async (req, res) => {
 
 const getProposal = async (req, res) => {
   try {
-    const { proposal_id } = req.params;
+    const { proposals_id } = req.params;
 
-    if (proposal_id === undefined || proposal_id === 0) {
+    if (proposals_id === undefined || proposals_id === 0) {
       throw new Error('proposal id not found');
     }
 
-    const [result] = await Proposals.getProposalId(proposal_id);
+    const [result] = await Proposals.getProposalId(proposals_id);
 
     if (result.length === 0) {
       throw new Error('data not found');
@@ -95,8 +95,8 @@ const addProposal = async (req, res) => {
 
 const initProposal = async (req, res) => {
   try {
-    const { proposal_id } = req.params;
-    const [data] = await Proposals.initProposal(proposal_id);
+    const { proposals_id } = req.params;
+    const [data] = await Proposals.initProposal(proposals_id);
 
     return res.status(200).json({
       message: 'success',
@@ -112,13 +112,13 @@ const initProposal = async (req, res) => {
 
 const deleteProposal = async (req, res) => {
   try {
-    const { proposal_id } = req.params;
+    const { proposals_id } = req.params;
 
-    if (!proposal_id) {
+    if (!proposals_id) {
       throw new Error('Proposal ID is required');
     }
 
-    const [result] = await Proposals.deleteProposal(proposal_id);
+    const [result] = await Proposals.deleteProposal(proposals_id);
 
     if (result.affectedRows === 0) {
       throw new Error('Proposal not found');
@@ -136,20 +136,20 @@ const deleteProposal = async (req, res) => {
 
 const updateProposal = async (req, res) => {
   try {
-    const { proposal_id } = req.params;
+    const { proposals_id } = req.params;
     const { title, description, year, type, category } = req.body;
 
-    if (!proposal_id) {
+    if (!proposals_id) {
       throw new Error('Proposal ID is required');
     }
 
-    const [data] = await Proposals.getProposalId(proposal_id);
+    const [data] = await Proposals.getProposalId(proposals_id);
 
     if (!data) {
       throw new Error('data not found');
     }
 
-    const [result] = await Proposals.updateProposal(proposal_id, {
+    const [result] = await Proposals.updateProposal(proposals_id, {
       title,
       description,
       year,

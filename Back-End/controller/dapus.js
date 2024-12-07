@@ -1,30 +1,16 @@
 const ProposalBab = require('../models/proposal-bab');
 
 const genMLA = (data) => {
-  let { category, authors_name, title, publisher, year, url, volume, issue } =
+  let { reference, authors_name, title, publisher, year, url, volume, issue } =
     data;
 
-  // if (author) {
-  //   switch (author.length) {
-  //     case 1:
-  //       author = `${authors_name[0]}`;
-  //       break;
-  //     case 2:
-  //       author = `${authors_name[0]} and ${author[1]}`;
-  //       break;
-  //     default:
-  //       author = `${authors_name[0]}, et al.`;
-  //       break;
-  //   }
-  // }
-
-  switch (category) {
-    case 'journal':
+  switch (reference) {
+    case 'jurnal':
       return {
         ...data,
         res: `${authors_name}. "${title}." *${publisher}*, ${year}, ${volume}, ${issue}.`,
       };
-    case 'book':
+    case 'buku':
       return {
         ...data,
         res: `${authors_name}. *${title}*. ${publisher}, ${year}.`,
@@ -59,10 +45,11 @@ const addDapus = async (req, res) => {
 const updateDapus = async (req, res) => {
   try {
     const params = req.body;
+
     if (!params) {
       return res.status(404).json({ message: 'invalid params' });
     }
-    const citations = params?.data?.map((item) => genMLA(item));
+    const citations = params?.json_data?.map((item) => genMLA(item));
 
     const [updateData] = await ProposalBab.updateDapus(
       params?.id,
@@ -84,7 +71,7 @@ const updateDapus = async (req, res) => {
       });
     }
 
-    return res.status(200).json({ message: 'success', data: detailDapus });
+    return res.status(200).json({ message: 'success' });
   } catch (error) {
     res.status(500).json({
       message: 'Server Error',

@@ -1,8 +1,8 @@
 const dbPool = require('../../config/db');
 
-const getListProposalBab = (proposal_id) => {
+const getListProposalBab = (proposals_id) => {
   const query = `SELECT * FROM proposal_bab where proposals_id = ?`;
-  return dbPool.execute(query, [proposal_id]);
+  return dbPool.execute(query, [proposals_id]);
 };
 
 const getDetailProposalBab = (id, proposals_id) => {

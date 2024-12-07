@@ -3,7 +3,7 @@ import { Box, Button, Grid, MenuItem, TextField } from '@mui/material';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-const GeneralForm = ({ buttonForm, formData, errors, Fields, handleChange, handleSubmit }) => {
+const GeneralForm = ({ buttonForm, buttonDisable, formData, errors, Fields, handleChange, handleSubmit }) => {
   const renderField = (field) => {
     if (field.type === 'select') {
       // Render Select Dropdown
@@ -57,7 +57,7 @@ const GeneralForm = ({ buttonForm, formData, errors, Fields, handleChange, handl
         ))}
       </Grid>
       <Box sx={{ mt: 3, mb: 2 }}>
-        <Button variant="contained" color="primary" type="submit">
+        <Button variant="contained" color="primary" type="submit" disabled={buttonDisable}>
           {buttonForm}
         </Button>
       </Box>
@@ -67,6 +67,7 @@ const GeneralForm = ({ buttonForm, formData, errors, Fields, handleChange, handl
 
 GeneralForm.propTypes = {
   buttonForm: PropTypes.string.isRequired,
+  buttonDisable: PropTypes.bool,
   formData: PropTypes.object.isRequired,
   errors: PropTypes.object,
   Fields: PropTypes.arrayOf(

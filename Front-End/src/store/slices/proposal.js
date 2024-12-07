@@ -72,6 +72,7 @@ export const updateBabPendahuluan = createAsyncThunk('proposal/update-pendahulua
 
 export const updateDapus = createAsyncThunk('proposal/update-dapus', async (params, { rejectWithValue }) => {
   try {
+    console.log('api', params);
     const res = await axiosInstance.put(`/update-dapus`, params);
 
     return res.data;

@@ -4,7 +4,6 @@ import Box from '@mui/material/Box';
 import Dapus from './dapus';
 import Kegiatan from './kegiatan';
 import MainCard from 'components/MainCard';
-import NewDapus from './newDapus';
 import Pelaksanaan from './pelaksanaan';
 import Pendahuluan from './pendahuluan';
 import Tab from '@mui/material/Tab';
@@ -20,7 +19,7 @@ const ProposalDetail = () => {
   const title = 'Proposal Detail';
   const { id } = useParams(),
     dispatch = useDispatch(),
-    [value, setValue] = React.useState('6');
+    [value, setValue] = React.useState('4');
 
   const handleChange = (event, newValue) => {
     event.preventDefault();
@@ -43,7 +42,6 @@ const ProposalDetail = () => {
             <Tab label="Pelaksanaan" value="3" />
             <Tab label="Kegiatan" value="4" />
             <Tab label="Daftar Pustaka" value="5" />
-            <Tab label="New Daftar Pustaka" value="6" />
           </Tabs>
         </Box>
         <TabPanel value="1" sx={{ marginTop: 5 }}>
@@ -60,9 +58,6 @@ const ProposalDetail = () => {
         </TabPanel>
         <TabPanel value="5">
           <Dapus />
-        </TabPanel>
-        <TabPanel value="6">
-          <NewDapus />
         </TabPanel>
       </MainCard>
     </TabContext>

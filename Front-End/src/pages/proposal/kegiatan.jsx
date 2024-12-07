@@ -1,168 +1,142 @@
-import { Grid, TextField, Typography } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Button from '@mui/material/Button';
+import { GeneralForm } from 'components/form/GeneralForm';
 import Stack from '@mui/material/Stack';
 import TableGrid from 'components/table/TableGrid';
 import { updateBab } from 'store/slices/proposal';
 import { useSnackbar } from 'notistack';
 
-const INIT = {
+const INIT_STATE = {
   no: 1,
   title: '',
   description: '',
   status: false
 };
-export const BIAYA_INIT = INIT;
-export const KEGIATAN_INIT = INIT;
+
+const FIELD_CONFIG = {
+  biaya: [
+    { name: 'title', label: 'Judul', type: 'text', size: 12 },
+    { name: 'description', label: 'Deskripsi', type: 'textarea', size: 12, rows: 10 }
+  ],
+  kegiatan: [
+    { name: 'title', label: 'Judul', type: 'text', size: 12 },
+    { name: 'description', label: 'Deskripsi', type: 'textarea', size: 12, rows: 10 }
+  ]
+};
 
 const Kegiatan = () => {
-  const { biaya } = useSelector((state) => state.app.proposal),
-    dispatch = useDispatch(),
-    { enqueueSnackbar } = useSnackbar();
-  const [data, setData] = useState({
-    biaya: [],
-    kegiatan: []
-  });
-  const [object, setObject] = useState({
-    biaya: BIAYA_INIT,
-    kegiatan: KEGIATAN_INIT
-  });
+  const { biaya } = useSelector((state) => state.app.proposal);
+  const dispatch = useDispatch();
+  const { enqueueSnackbar } = useSnackbar();
 
-  const handleBiaya = {
-    onchange: (param) => {
-      const { name, value } = param.target;
+  const [data, setData] = useState({ biaya: [], kegiatan: [] });
+  const [object, setObject] = useState({ biaya: { ...INIT_STATE }, kegiatan: { ...INIT_STATE } });
+  const [errors, setErrors] = useState({ biaya: {}, kegiatan: {} });
 
-      setObject((prev) => ({
-        ...prev,
-        biaya: {
-          ...prev.biaya,
-          [name]: value
-        }
-      }));
-    },
-    add: () => {
-      if (data.biaya === null) {
-        setData((prev) => ({
-          ...prev,
-          biaya: [{ ...object.biaya, no: 1 }]
-        }));
-      } else {
-        const newBiaya = [...data.biaya, { ...object.biaya, no: data.biaya.length + 1 }];
-        setData((prev) => ({ ...prev, biaya: newBiaya }));
-      }
-
-      setObject((prev) => ({ ...prev, biaya: BIAYA_INIT }));
-    },
-    edit: (param) => {
-      setObject((prev) => ({ ...prev, biaya: { ...param, status: true } }));
-    },
-    update: () => {
-      const updatedBiaya = data.biaya.map((item) => (item.no === object.biaya.no ? { ...item, ...object.biaya } : item));
-      setData((prev) => ({ ...prev, biaya: updatedBiaya }));
-      setObject((prev) => ({ ...prev, biaya: BIAYA_INIT }));
-    },
-    delete: (param) => {
-      const filteredBiaya = data.biaya.filter((item) => item.no !== param?.no).map((item, index) => ({ ...item, no: index + 1 }));
-      setData((prev) => ({ ...prev, biaya: filteredBiaya }));
-    },
-    detail: (param) => {
-      return (
-        <>
-          <Typography variant="h5" gutterBottom component="div">
-            Deskripsi
-          </Typography>
-          {param && (
-            <Typography variant="body1" gutterBottom component="div">
-              {param?.description}
-            </Typography>
-          )}
-        </>
-      );
-    }
+  const validateFields = (key) => {
+    const fields = object[key];
+    const newErrors = {};
+    if (!fields.title) newErrors.title = 'Judul wajib diisi';
+    if (!fields.description) newErrors.description = 'Deskripsi wajib diisi';
+    return newErrors;
   };
 
-  const handleKegiatan = {
-    onchange: (param) => {
-      const { name, value } = param.target;
-
+  const handleAction = {
+    onchange: (key) => (e) => {
+      const { name, value } = e.target;
       setObject((prev) => ({
         ...prev,
-        kegiatan: {
-          ...prev.kegiatan,
-          [name]: value
-        }
+        [key]: { ...prev[key], [name]: value }
       }));
     },
-    add: () => {
-      if (data.kegiatan === null) {
-        setData((prev) => ({
-          ...prev,
-          kegiatan: [{ ...object.kegiatan, no: 1 }]
-        }));
-      } else {
-        const newKegiatan = [...data.kegiatan, { ...object.kegiatan, no: data.kegiatan.length + 1 }];
-        setData((prev) => ({ ...prev, kegiatan: newKegiatan }));
+
+    add: (key) => (e) => {
+      e.preventDefault();
+      const validationErrors = validateFields(key);
+      if (Object.keys(validationErrors).length > 0) {
+        setErrors((prev) => ({ ...prev, [key]: validationErrors }));
+        return;
       }
 
-      setObject((prev) => ({ ...prev, kegiatan: KEGIATAN_INIT }));
-    },
-    edit: (param) => {
-      setObject((prev) => ({ ...prev, kegiatan: { ...param, status: true } }));
-    },
-    update: () => {
-      const updatedKegiatan = data.kegiatan.map((item) => (item.no === object.kegiatan.no ? { ...item, ...object.kegiatan } : item));
-      setData((prev) => ({ ...prev, kegiatan: updatedKegiatan }));
-      setObject((prev) => ({ ...prev, kegiatan: KEGIATAN_INIT }));
+      setData((prev) => ({
+        ...prev,
+        [key]: [...prev[key], { ...object[key], no: prev[key].length + 1 }]
+      }));
+
+      setObject((prev) => ({ ...prev, [key]: { ...INIT_STATE } }));
+      setErrors((prev) => ({ ...prev, [key]: {} }));
     },
 
-    delete: (param) => {
-      const filteredKegiatan = data.kegiatan.filter((item) => item.no !== param?.no).map((item, index) => ({ ...item, no: index + 1 }));
-      setData((prev) => ({ ...prev, kegiatan: filteredKegiatan }));
+    edit: (key) => (item) => {
+      setObject((prev) => ({ ...prev, [key]: { ...item, status: true } }));
     },
-    detail: (param) => {
-      return (
-        <>
-          <Typography variant="h5" gutterBottom component="div">
-            Deskripsi
-          </Typography>
-          {param && (
-            <Typography variant="body1" gutterBottom component="div">
-              {param?.description}
-            </Typography>
-          )}
-        </>
-      );
-    }
+
+    update: (key) => (e) => {
+      e.preventDefault();
+      const validationErrors = validateFields(key);
+      if (Object.keys(validationErrors).length > 0) {
+        setErrors((prev) => ({ ...prev, [key]: validationErrors }));
+        return;
+      }
+
+      setData((prev) => ({
+        ...prev,
+        [key]: prev[key].map((item) => (item.no === object[key].no ? { ...item, ...object[key] } : item))
+      }));
+
+      setObject((prev) => ({ ...prev, [key]: { ...INIT_STATE } }));
+      setErrors((prev) => ({ ...prev, [key]: {} }));
+    },
+
+    delete: (key) => (item) => {
+      setData((prev) => ({
+        ...prev,
+        [key]: prev[key].filter((row) => row.no !== item.no).map((row, index) => ({ ...row, no: index + 1 }))
+      }));
+    },
+
+    detail: (item) => (
+      <>
+        <Typography variant="h5" gutterBottom>
+          Deskripsi
+        </Typography>
+        <Typography variant="body1" gutterBottom>
+          {item.description}
+        </Typography>
+      </>
+    ),
+
+    disable: (key) => !object[key].title || !object[key].description || object[key].status
   };
-
-  const handleSimpan = async () => {
-    const newData = {
+  const handleSave = async () => {
+    const payload = {
       id: biaya[0]?.id,
       proposals_id: biaya[0]?.proposals_id,
       bab_title: biaya[0]?.bab_title,
       json_data: data
     };
+
     try {
-      const res = await dispatch(updateBab(newData));
-      if (updateBab.fulfilled.match(res)) {
+      const result = await dispatch(updateBab(payload));
+      if (updateBab.fulfilled.match(result)) {
         enqueueSnackbar('Berhasil menyimpan', { variant: 'success' });
-      } else if (updateBab.rejected.match(res)) {
+      } else {
         enqueueSnackbar('Gagal menyimpan', { variant: 'error' });
       }
     } catch (error) {
-      enqueueSnackbar('Terjadi error', { variant: 'error' });
+      enqueueSnackbar('Terjadi kesalahan', { variant: 'error' });
     }
   };
 
   useEffect(() => {
-    if (biaya !== null) {
-      setData((prev) => ({
-        ...prev,
-        biaya: biaya[0]?.json_data?.biaya,
-        kegiatan: biaya[0]?.json_data?.kegiatan
-      }));
+    if (biaya) {
+      setData({
+        biaya: biaya[0]?.json_data?.biaya || [],
+        kegiatan: biaya[0]?.json_data?.kegiatan || []
+      });
     }
   }, [biaya]);
 
@@ -172,127 +146,45 @@ const Kegiatan = () => {
         BAB 4. BIAYA DAN JADWAL KEGIATAN
       </Typography>
 
-      <Grid container spacing={1}>
-        <Grid item xs={12} sx={{ marginTop: 2 }}>
+      {['biaya', 'kegiatan'].map((key, index) => (
+        <Grid item xs={12} key={key} sx={{ marginTop: index === 0 ? 2 : 4 }}>
           <Typography variant="h5" gutterBottom>
-            4.1 Anggaran Biaya
+            {key === 'biaya' ? '4.1 Anggaran Biaya' : '4.2 Jadwal Kegiatan'}
           </Typography>
           <Typography variant="h6" gutterBottom>
-            Tuliskan anggaran biaya yang akan digunakan dalam penelitian.
+            {key === 'biaya'
+              ? 'Tuliskan anggaran biaya yang akan digunakan dalam penelitian.'
+              : 'Tuliskan jadwal kegiatan yang akan digunakan dalam penelitian.'}
           </Typography>
-          <Stack direction="column" spacing={2}>
-            <TextField
-              placeholder="Judul"
-              name="title"
-              type="text"
-              variant="outlined"
-              value={object.biaya.title}
-              onChange={handleBiaya.onchange}
-              fullWidth
-            />
-            <TextField
-              placeholder="Deskripsi"
-              name="description"
-              type="text"
-              variant="outlined"
-              value={object.biaya.description}
-              onChange={handleBiaya.onchange}
-              multiline
-              minRows={10}
-              fullWidth
-            />
-          </Stack>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleBiaya.add}
-            disabled={object.biaya.status || !object.biaya.title || !object.biaya.description}
-            sx={{ marginY: 2 }}
-          >
-            Tambah Pustaka
-          </Button>
-          <TableGrid
-            key="grid-kegiatan"
-            columns={[
-              { name: 'No', field: 'no', width: '4rem' },
-              { name: 'Judul', field: 'title' }
-            ]}
-            rows={data.biaya || []}
-            expand={true}
-            action
-            onEdit={handleBiaya.edit}
-            onDelete={handleBiaya.delete}
-            onUpdate={handleBiaya.update}
-            actionedit={false}
-            detail={handleBiaya.detail}
-          />
-        </Grid>
-        <Grid item xs={12} sx={{ marginTop: 2 }}>
-          <Typography variant="h5" gutterBottom>
-            4.2 Jadwal Kegiatan
-          </Typography>
-          <Typography variant="h6" gutterBottom>
-            Tuliskan jadwal kegiatan yang akan digunakan dalam penelitian.
-          </Typography>
-          <Stack direction="column" spacing={2}>
-            <TextField
-              placeholder="Judul"
-              name="title"
-              type="text"
-              variant="outlined"
-              value={object.kegiatan.title}
-              onChange={handleKegiatan.onchange}
-              fullWidth
-            />
-            <TextField
-              placeholder="Deskripsi"
-              name="description"
-              type="text"
-              variant="outlined"
-              value={object.kegiatan.description}
-              onChange={handleKegiatan.onchange}
-              multiline
-              minRows={10}
-              fullWidth
-            />
-          </Stack>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleKegiatan.add}
-            disabled={object.kegiatan.status || !object.kegiatan.title || !object.kegiatan.description}
-            sx={{ marginY: 2 }}
-          >
-            Tambah Pustaka
-          </Button>
-          <TableGrid
-            key="grid-kegiatan"
-            columns={[
-              { name: 'No', field: 'no', width: '4rem' },
-              { name: 'Judul', field: 'title' }
-            ]}
-            rows={data?.kegiatan || []}
-            expand={true}
-            action
-            onEdit={handleKegiatan.edit}
-            onDelete={handleKegiatan.delete}
-            onUpdate={handleKegiatan.update}
-            actionedit={false}
-            detail={handleKegiatan.detail}
-          />
-        </Grid>
-      </Grid>
 
-      <Stack
-        direction="row"
-        spacing={2}
-        sx={{
-          justifyContent: 'space-evenly',
-          alignItems: 'center',
-          marginY: 5
-        }}
-      >
-        <Button variant="contained" color="success" onClick={handleSimpan} sx={{ width: '25rem' }}>
+          <GeneralForm
+            buttonForm={`Tambah ${key === 'biaya' ? 'Biaya' : 'Kegiatan'}`}
+            buttonDisable={handleAction.disable(key)}
+            formData={object[key]}
+            errors={errors[key]}
+            Fields={FIELD_CONFIG[key]}
+            handleChange={handleAction.onchange(key)}
+            handleSubmit={handleAction.add(key)}
+          />
+
+          <TableGrid
+            key={`grid-${key}`}
+            columns={[
+              { name: 'No', field: 'no', width: '4rem' },
+              { name: 'Judul', field: 'title' }
+            ]}
+            rows={data[key] || []}
+            expand
+            action
+            onEdit={handleAction.edit(key)}
+            onDelete={handleAction.delete(key)}
+            detail={handleAction.detail}
+          />
+        </Grid>
+      ))}
+
+      <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 4 }}>
+        <Button variant="contained" color="success" onClick={handleSave} sx={{ width: '25rem' }}>
           Simpan
         </Button>
       </Stack>

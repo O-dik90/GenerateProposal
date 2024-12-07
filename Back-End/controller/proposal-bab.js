@@ -37,6 +37,30 @@ const getListProposalBab = async (req, res) => {
   }
 };
 
+const getDetailBab = async (req, res) => {
+  try {
+    const { id, proposals_id } = req.body;
+    const [data] = await ProposalBab.getDetailProposalBab(id, proposals_id);
+
+    console.log(data);
+    if (data.length === 0) {
+      return res.json({
+        message: 'data not found',
+        data: [],
+      });
+    }
+    return res.json({
+      message: 'success',
+      data: data,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Server Error',
+      serverMessage: error,
+    });
+  }
+};
+
 const updateBabPendahuluan = async (req, res) => {
   let array_bab = [];
   try {
@@ -112,7 +136,10 @@ const updateBab = async (req, res) => {
         message: 'error update data',
       });
     }
-    const [detail] = await ProposalBab.getDetailProposalBab(params?.id);
+    const [detail] = await ProposalBab.getDetailProposalBab(
+      params?.id,
+      params?.proposals_id
+    );
     if (updateData.affectedRows > 0) {
       await Proposals.updateLatestProposal(params?.proposals_id);
 
@@ -140,4 +167,5 @@ module.exports = {
   getListProposalBab,
   updateBabPendahuluan,
   updateBab,
+  getDetailBab,
 };

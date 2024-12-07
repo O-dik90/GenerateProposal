@@ -5,11 +5,11 @@ const getListProposalBab = (proposal_id) => {
   return dbPool.execute(query, [proposal_id]);
 };
 
-const getDetailProposalBab = (id) => {
+const getDetailProposalBab = (id, proposals_id) => {
   const query = `
-    SELECT * from proposal_bab where id = ?
+    SELECT * from proposal_bab where id = ? and proposals_id = ?
   `;
-  return dbPool.execute(query, [id]);
+  return dbPool.execute(query, [id, proposals_id]);
 };
 
 const updateBabPendahuluan = (id, json_data) => {

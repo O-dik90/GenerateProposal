@@ -10,6 +10,7 @@ const {
 const {
   getListProposalBab,
   updateBabPendahuluan,
+  getDetailBab,
   updateBab,
 } = require('../controller/proposal-bab');
 
@@ -27,11 +28,12 @@ router.put('/update-proposal/:proposal_id', updateProposal);
 
 // routes/proposal-bab-route.js
 router.post('/get-listProposal-bab/:proposal_id', getListProposalBab);
+router.post('/get-detail-bab', getDetailBab);
 router.put('/update-bab-pendahuluan', updateBabPendahuluan);
+router.put('/update-bab', updateBab);
 
 //routes/dapus
 router.post('/gen-dapus', addDapus);
 router.put('/update-dapus', updateDapus);
-router.put('/update-bab', updateBab);
 
 module.exports = router;

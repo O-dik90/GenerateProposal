@@ -16,10 +16,24 @@ export const masterTahunLomba = createAsyncThunk('master/list-tahun', async (par
   return response.data;
 });
 
+export const masterDapusStyle = createAsyncThunk('master/list-dapus-style', async (params) => {
+  const response = await axiosInstance.post('/master-dapus', params);
+  return response.data;
+});
+
+export const masterDapusRef = createAsyncThunk('master/list-dapus-ref', async (params) => {
+  const response = await axiosInstance.post('/master-dapus', params);
+  return response.data;
+});
+
 const initialState = {
   lomba: [],
   pkm: [],
   tahun_lomba: [],
+  dapus: {
+    style: [],
+    reference: []
+  },
   loading: false,
   error: null
 };
@@ -44,8 +58,6 @@ const masterSlice = createSlice({
         state.loading = false;
         state.error = action.error.message;
       })
-
-      //
       .addCase(masterPkm.fulfilled, (state, action) => {
         state.loading = false;
         state.pkm = action.payload.data;
@@ -61,6 +73,25 @@ const masterSlice = createSlice({
         state.error = null;
       })
       .addCase(masterTahunLomba.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      // Master Dapus
+      .addCase(masterDapusStyle.fulfilled, (state, action) => {
+        state.loading = false;
+        state.dapus.style = action.payload.data;
+        state.error = null;
+      })
+      .addCase(masterDapusStyle.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      .addCase(masterDapusRef.fulfilled, (state, action) => {
+        state.loading = false;
+        state.dapus.reference = action.payload.data;
+        state.error = null;
+      })
+      .addCase(masterDapusRef.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       });

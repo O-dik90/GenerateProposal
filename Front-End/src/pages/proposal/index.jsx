@@ -52,10 +52,23 @@ const ProposalTable = () => {
 
   useEffect(() => {
     dispatch(fetchProposal(1));
-    dispatch(masterPkm({ source_name: 'PKM' }));
-    dispatch(masterLomba({ source_name: 'LOMBA' }));
-    dispatch(masterTahunLomba({ source_name: 'TAHUN_LOMBA' }));
   }, [dispatch]);
+
+  useEffect(() => {
+    const loadMasterData = async () => {
+      if (pkm.length === 0) {
+        await dispatch(masterPkm({ source_name: 'PKM' }));
+      }
+      if (lomba.length === 0) {
+        await dispatch(masterLomba({ source_name: 'LOMBA' }));
+      }
+      if (tahun_lomba.length === 0) {
+        await dispatch(masterTahunLomba({ source_name: 'TAHUN_LOMBA' }));
+      }
+    };
+
+    loadMasterData();
+  }, [dispatch, pkm.length, lomba.length, tahun_lomba.length]);
 
   const columns = [
     {
@@ -134,15 +147,19 @@ const ProposalTable = () => {
     }
   ];
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       if (btnAction === 'Buat') {
-        dispatch(createProposal(object));
-        enqueueSnackbar('Berhasil Menambah!', { variant: 'success' });
+        const res = await dispatch(createProposal(object));
+        if (createProposal.fulfilled.match(res)) {
+          enqueueSnackbar('Berhasil Menambah!', { variant: 'success' });
+        }
       } else {
-        dispatch(updateProposal(object));
-        enqueueSnackbar('Berhasil Menyimpan!', { variant: 'success' });
+        const res = await dispatch(updateProposal(object));
+        if (updateProposal.fulfilled.match(res)) {
+          enqueueSnackbar('Berhasil Menyimpan!', { variant: 'success' });
+        }
       }
     } catch (error) {
       enqueueSnackbar('Gagal!', { variant: 'error' });
@@ -151,6 +168,7 @@ const ProposalTable = () => {
     setBtnAction('Buat');
     setObject(INITIAL);
   };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setObject((prevObject) => ({
@@ -170,10 +188,12 @@ const ProposalTable = () => {
     setOpen(true);
   };
 
-  const handleDelete = (param) => {
+  const handleDelete = async (param) => {
     try {
-      dispatch(deleteProposal(param));
-      enqueueSnackbar('Berhasil Menghapus!', { variant: 'info' });
+      const res = await dispatch(deleteProposal(param));
+      if (deleteProposal.fulfilled.match(res)) {
+        enqueueSnackbar('Berhasil Menghapus!', { variant: 'success' });
+      }
     } catch (error) {
       enqueueSnackbar('Gagal!', { variant: 'error' });
     }
@@ -239,16 +259,7 @@ const ProposalTable = () => {
         <DialogTitle>Proposal Baru</DialogTitle>
         <DialogContent>
           <Box sx={{ width: '100%' }}>
-            <Stack
-              direction="row"
-              spacing={2}
-              // useFlexGap
-              // sx={{
-              //   justifyContent: 'flex-start',
-              //   alignItems: 'flex-start',
-              //   flexWrap: 'wrap'
-              // }}
-            >
+            <Stack direction="row" spacing={2}>
               <Select id="lomba" name="type" displayEmpty value={object.type} onChange={handleChange} sx={{ width: '10rem' }}>
                 <MenuItem disabled value="">
                   <em>Pilih Lomba</em>
@@ -269,7 +280,8 @@ const ProposalTable = () => {
                   </MenuItem>
                 ))}
               </Select>
-
+            </Stack>
+            <Stack direction="row" spacing={2} sx={{ marginTop: 1 }}>
               <Select id="pkm" name="category" displayEmpty value={object.category} onChange={handleChange} sx={{ width: '100%' }}>
                 <MenuItem disabled value="">
                   <em>Pilih PKM</em>

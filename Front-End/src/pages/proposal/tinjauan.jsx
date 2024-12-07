@@ -79,7 +79,6 @@ const Tinjauan = () => {
   };
 
   useEffect(() => {
-    console.log(tinjauan[0]?.json_data);
     if (tinjauan && tinjauan[0]?.json_data) {
       setData(tinjauan[0]?.json_data);
     }

@@ -6,10 +6,9 @@ import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import TableGrid from 'components/table/TableGrid';
 import { updateDapus } from 'store/slices/proposal';
+import { useSnackbar } from 'notistack';
 
 export const selector = {
-  // gaya: ['mla'], // mla, apa, chicago
-  // referensi: ['buku'] // jurnal, buku, url
   style: ['mla'],
   reference: [
     {
@@ -30,14 +29,6 @@ export const ref_penulis = {
 };
 
 export const DAPUS_INIT = {
-  // no: 0,
-  // nama_pengarang: '',
-  // judul: '',
-  // penerbit: '',
-  // tahun_terbit: '',
-  // edisi: '',
-  // data_pengarang: [],
-  // status: false
   no: 0,
   category: 'book',
   style: 'mla',
@@ -51,10 +42,6 @@ export const DAPUS_INIT = {
 };
 
 export const PENGARANG_INIT = {
-  // no: 0,
-  // nama_depan: '',
-  // nama_belakang: '',
-  // status: false,
   no: 0,
   first_name: '',
   last_name: ''
@@ -63,6 +50,7 @@ export const PENGARANG_INIT = {
 const Dapus = () => {
   const { dapus } = useSelector((state) => state.app.proposal);
   const [data, setData] = useState([]),
+    { enqueueSnackbar } = useSnackbar(),
     dispatch = useDispatch(),
     [object, setObject] = useState({
       author: PENGARANG_INIT,
@@ -252,15 +240,22 @@ const Dapus = () => {
         </>
       );
     },
-    save: () => {
-      console.log('data', data);
-      dispatch(updateDapus({ id: dapus[0]?.id, data: data }));
+    save: async () => {
+      try {
+        const res = await dispatch(updateDapus({ id: dapus[0]?.id, data: data }));
+
+        if (updateDapus.fulfilled.match(res)) {
+          enqueueSnackbar('Berhasil menyimpan', { variant: 'success' });
+        } else if (updateDapus.rejected.match(res)) {
+          enqueueSnackbar('Gagal menyimpan', { variant: 'error' });
+        }
+      } catch (error) {
+        enqueueSnackbar('Terjadi error', { variant: 'error' });
+      }
     }
   };
 
   useEffect(() => {
-    console.log('redux-data', dapus);
-
     if (dapus !== null) {
       setData(dapus[0]?.json_data);
     }
@@ -329,42 +324,6 @@ const Dapus = () => {
             Keterangan untuk gaya penulisan dan referensi dalama penulisna daftar pustaka
           </Typography>
         </Grid>
-        <Grid item xs={12} sx={{ marginTop: 2 }}>
-          <Stack direction="row" spacing={2}>
-            <TextField
-              placeholder="Nama Depan"
-              name="first_name"
-              type="text"
-              variant="outlined"
-              value={object.author.first_name}
-              onChange={handlePengarang.onchange}
-              fullWidth
-            />
-            <TextField
-              placeholder="Nama Belakang"
-              name="last_name"
-              type="text"
-              variant="outlined"
-              value={object.author.last_name}
-              onChange={handlePengarang.onchange}
-              fullWidth
-            />
-          </Stack>
-          <Button variant="contained" color="primary" onClick={handlePengarang.new} sx={{ marginY: 2 }}>
-            Tambah Pengarang
-          </Button>
-          <TableGrid
-            key="grid-1"
-            columns={columns.pengarang}
-            rows={object.dapus.authors_data}
-            expand={false}
-            action
-            onEdit={handlePengarang.edit}
-            onDelete={handlePengarang.delete}
-            onUpdate={handlePengarang.update}
-            actionedit={object.author.status}
-          />
-        </Grid>
         <Grid item xs={12} sm={5} sx={{ marginTop: 2 }}>
           <TextField
             placeholder="Judul"
@@ -413,6 +372,42 @@ const Dapus = () => {
             value={object.dapus.publisher}
             onChange={handleDapus.onchange}
             fullWidth
+          />
+        </Grid>
+        <Grid item xs={12} sx={{ marginTop: 2 }}>
+          <Stack direction="row" spacing={2}>
+            <TextField
+              placeholder="Nama Depan"
+              name="first_name"
+              type="text"
+              variant="outlined"
+              value={object.author.first_name}
+              onChange={handlePengarang.onchange}
+              fullWidth
+            />
+            <TextField
+              placeholder="Nama Belakang"
+              name="last_name"
+              type="text"
+              variant="outlined"
+              value={object.author.last_name}
+              onChange={handlePengarang.onchange}
+              fullWidth
+            />
+          </Stack>
+          <Button variant="contained" color="primary" onClick={handlePengarang.new} sx={{ marginY: 2 }}>
+            Tambah Pengarang
+          </Button>
+          <TableGrid
+            key="grid-1"
+            columns={columns.pengarang}
+            rows={object.dapus.authors_data}
+            expand={false}
+            action
+            onEdit={handlePengarang.edit}
+            onDelete={handlePengarang.delete}
+            onUpdate={handlePengarang.update}
+            actionedit={object.author.status}
           />
         </Grid>
         <Grid

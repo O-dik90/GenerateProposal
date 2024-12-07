@@ -143,7 +143,7 @@ TableGrid.propTypes = {
     })
   ).isRequired,
   rows: PropTypes.arrayOf(PropTypes.object).isRequired,
-  expand: PropTypes.bool,
+  expand: PropTypes.bool.isRequired,
   action: PropTypes.bool,
   onEdit: PropTypes.func,
   onUpdate: PropTypes.func,

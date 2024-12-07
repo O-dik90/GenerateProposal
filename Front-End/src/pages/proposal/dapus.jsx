@@ -190,7 +190,6 @@ const NewDapus = () => {
     },
     disabled: object.dapus.status || !object.dapus.title || !object.dapus.year || !object.dapus.publisher
   };
-
   const handleDapusJurnal = {
     save: (e) => {
       console.log('jurnal');
@@ -220,7 +219,6 @@ const NewDapus = () => {
     },
     disabled: object.dapus.status || !object.dapus.title || !object.dapus.year
   };
-
   const handlePustaka = {
     onchange: (e) => {
       const { name, value } = e.target;
@@ -312,7 +310,6 @@ const NewDapus = () => {
       return <Box sx={{ padding: 2 }}>{detailRow}</Box>;
     }
   };
-
   useEffect(() => {
     const loadMasterData = async () => {
       if (!reference.length) await dispatch(masterDapusRef({ category: 'ref' }));

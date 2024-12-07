@@ -21,6 +21,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import GenerateDocx from 'utils/generate';
 import MainCard from 'components/MainCard';
 import { format } from 'date-fns';
+import { getListBabProposal } from 'store/slices/proposal';
 import { useNavigate } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 
@@ -47,7 +48,7 @@ const ProposalTable = () => {
     [object, setObject] = useState(INITIAL),
     [btnAction, setBtnAction] = useState('Buat');
 
-  const { data, loading } = useSelector((state) => state.app.proposal),
+  const { data, detail, loading } = useSelector((state) => state.app.proposal),
     { pkm, lomba, tahun_lomba } = useSelector((state) => state.app.masterData);
 
   useEffect(() => {
@@ -205,17 +206,22 @@ const ProposalTable = () => {
     setObject(INITIAL);
   };
 
-  const handleGenerate = (param) => {
-    GenerateDocx({
-      data: {
-        latarBelakang: 'Your background text here',
-        rumusanMasalah: 'Your problem statement here',
-        tujuan: 'Your objectives here',
-        luaran: 'Your outputs here',
-        manfaat: 'Your benefits here',
-        fileName: `${param.name}-document.docx`
-      }
-    });
+  const handleGenerate = async (param) => {
+    const res = await dispatch(getListBabProposal(param?.id));
+
+    if (getListBabProposal.fulfilled.match(res)) {
+      console.log(detail);
+      GenerateDocx({
+        data: {
+          pendahuluan: detail?.pendahuluan,
+          tinjauan: detail?.tinjauan,
+          pelaksanaan: detail?.pelaksanaan,
+          biaya: detail?.biaya,
+          dapus: detail?.dapus,
+          fileName: `${param.title}-document.docx`
+        }
+      });
+    }
   };
 
   return (

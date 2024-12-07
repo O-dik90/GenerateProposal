@@ -74,8 +74,7 @@ const Kegiatan = () => {
       setObject((prev) => ({ ...prev, [key]: { ...item, status: true } }));
     },
 
-    update: (key) => (e) => {
-      e.preventDefault();
+    update: (key) => () => {
       const validationErrors = validateFields(key);
       if (Object.keys(validationErrors).length > 0) {
         setErrors((prev) => ({ ...prev, [key]: validationErrors }));
@@ -108,26 +107,25 @@ const Kegiatan = () => {
         </Typography>
       </>
     ),
+    disable: (key) => !object[key].title || !object[key].description || object[key].status,
+    save: async () => {
+      const payload = {
+        id: biaya[0]?.id,
+        proposals_id: biaya[0]?.proposals_id,
+        bab_title: biaya[0]?.bab_title,
+        json_data: data
+      };
 
-    disable: (key) => !object[key].title || !object[key].description || object[key].status
-  };
-  const handleSave = async () => {
-    const payload = {
-      id: biaya[0]?.id,
-      proposals_id: biaya[0]?.proposals_id,
-      bab_title: biaya[0]?.bab_title,
-      json_data: data
-    };
-
-    try {
-      const result = await dispatch(updateBab(payload));
-      if (updateBab.fulfilled.match(result)) {
-        enqueueSnackbar('Berhasil menyimpan', { variant: 'success' });
-      } else {
-        enqueueSnackbar('Gagal menyimpan', { variant: 'error' });
+      try {
+        const result = await dispatch(updateBab(payload));
+        if (updateBab.fulfilled.match(result)) {
+          enqueueSnackbar('Berhasil menyimpan', { variant: 'success' });
+        } else {
+          enqueueSnackbar('Gagal menyimpan', { variant: 'error' });
+        }
+      } catch (error) {
+        enqueueSnackbar('Terjadi kesalahan', { variant: 'error' });
       }
-    } catch (error) {
-      enqueueSnackbar('Terjadi kesalahan', { variant: 'error' });
     }
   };
 
@@ -178,14 +176,15 @@ const Kegiatan = () => {
             action
             onEdit={handleAction.edit(key)}
             onDelete={handleAction.delete(key)}
+            onUpdate={handleAction.update(key)}
             detail={handleAction.detail}
           />
         </Grid>
       ))}
 
       <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 4 }}>
-        <Button variant="contained" color="success" onClick={handleSave} sx={{ width: '25rem' }}>
-          Simpan
+        <Button variant="contained" color="success" onClick={handleAction.save}>
+          Simpan Kegiatan
         </Button>
       </Stack>
     </>

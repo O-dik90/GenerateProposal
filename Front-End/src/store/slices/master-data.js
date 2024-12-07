@@ -90,10 +90,6 @@ const masterSlice = createSlice({
         state.loading = false;
         state.dapus.reference = action.payload.data;
         state.error = null;
-      })
-      .addCase(masterDapusRef.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message;
       });
   }
 });

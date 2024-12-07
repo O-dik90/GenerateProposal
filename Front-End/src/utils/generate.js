@@ -13,42 +13,72 @@ import {
   convertMillimetersToTwip
 } from 'docx';
 
+import { enqueueSnackbar } from 'notistack';
 import { saveAs } from 'file-saver';
 
 const GenerateDocx = ({ data }) => {
-  const {
-    latarBelakang = 'Latar Belakang',
-    rumusanMasalah = 'Rumusan Masalah',
-    tujuan = 'Tujuan',
-    luaran = 'Luaran',
-    manfaat = 'Manfaat',
-    fileName = 'document.docx'
-  } = data || {};
+  const { pendahuluan, tinjauan, biaya, pelaksanaan, fileName } = data;
+  console.log(pendahuluan, tinjauan, biaya, pelaksanaan, fileName);
 
+  // Helper to create paragraphs from an array
+  const createParagraphsFromArray = (items, style = 'wellSpaced') =>
+    Array.isArray(items)
+      ? items.map(
+          (item) =>
+            new Paragraph({
+              text: `${item.no || ''}. ${item.data || ''}`,
+              style
+            })
+        )
+      : [];
+
+  // Helper to create paragraphs for structured JSON data
+  const createParagraphsFromJSON = (items, noSub = 1, style = 'wellSpaced') =>
+    Array.isArray(items)
+      ? items.flatMap((item) => [
+          new Paragraph({
+            text: `${noSub}.${item.no} ${item.title || ''}`,
+            heading: HeadingLevel.HEADING_2
+          }),
+          new Paragraph({
+            text: item.description || '',
+            style
+          })
+        ])
+      : [];
   // Header with page numbers
   const header = new Header({
     children: [
       new Paragraph({
-        children: [new TextRun({ children: [PageNumber.CURRENT] })],
+        children: [
+          new TextRun({
+            children: [PageNumber.CURRENT]
+          })
+        ],
         alignment: AlignmentType.RIGHT
       })
     ]
   });
 
   // Footer configurations
-  const noFooter = new Footer({
+  const emptyFooter = new Footer({
     children: [new Paragraph({ text: '' })]
   });
 
   const romanFooter = new Footer({
     children: [
       new Paragraph({
-        children: [new TextRun({ children: [PageNumber.CURRENT] })],
+        children: [
+          new TextRun({
+            children: [PageNumber.CURRENT]
+          })
+        ],
         alignment: AlignmentType.RIGHT
       })
     ]
   });
 
+  // Main document content
   const mainContent = [
     new Paragraph({
       text: 'BAB 1 PENDAHULUAN',
@@ -60,48 +90,86 @@ const GenerateDocx = ({ data }) => {
       heading: HeadingLevel.HEADING_2
     }),
     new Paragraph({
-      text: latarBelakang,
+      text: pendahuluan?.latar_belakang || 'Data tidak tersedia',
       style: 'wellSpaced'
     }),
     new Paragraph({
       text: '1.2. Rumusan Masalah',
       heading: HeadingLevel.HEADING_2
     }),
-    new Paragraph({
-      text: rumusanMasalah,
-      style: 'wellSpaced'
-    }),
+    ...createParagraphsFromArray(pendahuluan?.rumusan_masalah),
     new Paragraph({
       text: '1.3. Tujuan',
       heading: HeadingLevel.HEADING_2
     }),
-    new Paragraph({
-      text: tujuan,
-      style: 'wellSpaced'
-    }),
+    ...createParagraphsFromArray(pendahuluan?.tujuan),
     new Paragraph({
       text: '1.4. Luaran',
       heading: HeadingLevel.HEADING_2
     }),
-    new Paragraph({
-      text: luaran,
-      style: 'wellSpaced'
-    }),
+    ...createParagraphsFromArray(pendahuluan?.luaran),
     new Paragraph({
       text: '1.5. Manfaat',
       heading: HeadingLevel.HEADING_2
     }),
+    ...createParagraphsFromArray(pendahuluan?.manfaat),
+    //tinjauan pustaka
     new Paragraph({
-      text: manfaat,
-      style: 'wellSpaced'
+      text: tinjauan[0]?.bab_title || 'BAB 2',
+      heading: HeadingLevel.HEADING_1,
+      pageBreakBefore: true
+    }),
+    ...createParagraphsFromJSON(tinjauan[0]?.json_data, 2),
+    //tahap pelaksanaan
+    new Paragraph({
+      text: pelaksanaan[0]?.bab_title || 'BAB 3',
+      heading: HeadingLevel.HEADING_1,
+      pageBreakBefore: true
+    }),
+    ...createParagraphsFromJSON(pelaksanaan[0]?.json_data, 3),
+    //biaya dan jadwal kegiatan
+    new Paragraph({
+      text: biaya[0]?.bab_title || 'BAB 4',
+      heading: HeadingLevel.HEADING_1,
+      pageBreakBefore: true
     }),
     new Paragraph({
+      text: `4.1 Biaya`,
+      heading: HeadingLevel.HEADING_2
+    }),
+    ...(Array.isArray(biaya[0]?.json_data.biaya)
+      ? biaya[0].json_data.biaya.flatMap((item) => [
+          new Paragraph({
+            text: item.description || '',
+            style: 'wellSpaced'
+          })
+        ])
+      : []),
+    new Paragraph({
+      text: `4.2 Jadwal Kegiatan`,
+      heading: HeadingLevel.HEADING_2
+    }),
+    ...(Array.isArray(biaya[0]?.json_data.biaya)
+      ? biaya[0].json_data.kegiatan.flatMap((item) => [
+          new Paragraph({
+            text: item.description || '',
+            style: 'wellSpaced'
+          })
+        ])
+      : []),
+    new Paragraph({
       text: 'DAFTAR PUSTAKA',
+      heading: HeadingLevel.HEADING_1,
+      pageBreakBefore: true
+    }),
+    new Paragraph({
+      text: 'LAMPIRAN',
       heading: HeadingLevel.HEADING_1,
       pageBreakBefore: true
     })
   ];
 
+  // Document configuration
   const doc = new Document({
     styles: {
       default: {
@@ -136,8 +204,8 @@ const GenerateDocx = ({ data }) => {
         }
       ]
     },
-
     sections: [
+      // Roman numbered sections
       {
         properties: {
           page: {
@@ -152,7 +220,6 @@ const GenerateDocx = ({ data }) => {
               left: convertMillimetersToTwip(40),
               right: convertMillimetersToTwip(30)
             },
-
             pageNumbers: { formatType: NumberFormat.LOWER_ROMAN }
           }
         },
@@ -168,14 +235,14 @@ const GenerateDocx = ({ data }) => {
             pageBreakBefore: true
           }),
           new Paragraph({
-            text: 'DAFTAR TABLE',
+            text: 'DAFTAR TABEL',
             heading: HeadingLevel.HEADING_1,
             pageBreakBefore: true
           })
         ],
-
         footers: { default: romanFooter }
       },
+      // Main content with decimal page numbering
       {
         properties: {
           page: {
@@ -196,17 +263,22 @@ const GenerateDocx = ({ data }) => {
             }
           }
         },
-
         headers: { default: header },
         children: mainContent,
-        footers: { default: noFooter }
+        footers: { default: emptyFooter }
       }
     ]
   });
 
-  Packer.toBlob(doc).then((blob) => {
-    saveAs(blob, fileName);
-  });
+  // Generate and save the document
+  Packer.toBlob(doc)
+    .then((blob) => {
+      saveAs(blob, fileName || 'document.docx');
+      enqueueSnackbar('Berhasil memproses dokumen!', { variant: 'success' });
+    })
+    .catch((error) => {
+      enqueueSnackbar(`Gagal memproses dokumen! ${error.message}`, { variant: 'error' });
+    });
 };
 
 export default GenerateDocx;

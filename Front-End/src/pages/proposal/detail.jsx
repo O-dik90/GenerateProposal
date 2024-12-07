@@ -19,7 +19,7 @@ const ProposalDetail = () => {
   const title = 'Proposal Detail';
   const { id } = useParams(),
     dispatch = useDispatch(),
-    [value, setValue] = React.useState('4');
+    [value, setValue] = React.useState('1');
 
   const handleChange = (event, newValue) => {
     event.preventDefault();

@@ -46,7 +46,7 @@ const Pendahuluan = () => {
   useEffect(() => {
     if (pendahuluan) {
       setData({
-        proposal_id: Number(id),
+        proposals_id: Number(id),
         latar_belakang: pendahuluan.latar_belakang || '',
         rumusan_masalah: pendahuluan.rumusan_masalah || [],
         tujuan: pendahuluan.tujuan || [],
@@ -380,17 +380,9 @@ const Pendahuluan = () => {
         </Grid>
       </Grid>
 
-      <Stack
-        direction="row"
-        spacing={2}
-        sx={{
-          justifyContent: 'space-evenly',
-          alignItems: 'center',
-          marginY: 5
-        }}
-      >
-        <Button variant="contained" color="success" onClick={() => handleSimpan()} sx={{ width: '25rem' }}>
-          Simpan
+      <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 4 }}>
+        <Button variant="contained" color="success" onClick={handleSimpan}>
+          Simpan Pendahuluan
         </Button>
       </Stack>
     </>

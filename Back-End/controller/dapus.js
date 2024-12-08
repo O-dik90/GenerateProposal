@@ -1,38 +1,47 @@
 const ProposalBab = require('../models/proposal-bab');
+const Cite = require('citation-js');
 
-const genMLA = (data) => {
-  let { reference, authors_name, title, publisher, year, url, volume, issue } =
-    data;
+const formatCitations = (citations, style) => {
+  return citations.map((citationData) => {
+    try {
+      const citation = new Cite(citationData);
 
-  switch (reference) {
-    case 'jurnal':
-      return {
-        ...data,
-        res: `${authors_name}. "${title}." *${publisher}*, ${year}, ${volume}, ${issue}.`,
-      };
-    case 'buku':
-      return {
-        ...data,
-        res: `${authors_name}. *${title}*. ${publisher}, ${year}.`,
-      };
-    case 'url':
-      return {
-        ...data,
-        res: `${authors_name}. "${title}." *${publisher}*, ${year}, ${url}.`,
-      };
-    default:
-      return 'Invalid category';
-  }
+      return citation.format('bibliography', {
+        format: 'text',
+        style: style,
+        lang: 'en',
+      });
+    } catch (error) {
+      return `Error formatting citation: ${error.message}`;
+    }
+  });
 };
 
-const addDapus = async (req, res) => {
-  try {
-    const params = req.body;
-    const citations = params.map((item) => genMLA(item));
+const sortCitations = (citations) => {
+  return citations.sort((a, b) => {
+    const textA = a.toString().toLowerCase();
+    const textB = b.toString().toLowerCase();
+    return textA.localeCompare(textB);
+  });
+};
 
-    res.status(200).json({
+const genCitations = async (req, res) => {
+  try {
+    const citationsArray = req.body.citations;
+    const style = req.body.style || 'mla';
+
+    if (!Array.isArray(citationsArray) || citationsArray.length === 0) {
+      return res.status(400).json({
+        message: 'Invalid input. Please provide an array of citation data.',
+      });
+    }
+
+    const formattedCitations = formatCitations(citationsArray, style);
+    const sortedCitations = sortCitations(formattedCitations);
+
+    return res.json({
       message: 'success',
-      data: citations,
+      citations: sortedCitations,
     });
   } catch (error) {
     res.status(500).json({
@@ -46,34 +55,45 @@ const updateDapus = async (req, res) => {
   try {
     const params = req.body;
 
-    if (!params) {
-      return res.status(404).json({ message: 'invalid params' });
-    }
-    const citations = params?.json_data?.map((item) => genMLA(item));
-
-    const [updateData] = await ProposalBab.updateDapus(
-      params?.id,
-      JSON.stringify(citations)
-    );
-
-    if (updateData.length === 0) {
-      return res.json({
-        message: 'fail update data',
+    if (!params?.id) {
+      return res.status(400).json({
+        message: 'Invalid input: Missing required field `id`.',
       });
     }
 
-    const [detailDapus] = await ProposalBab.getDetailProposalBab(params?.id);
+    console.log(params.data);
+    // add new object for generate citations
 
-    if (detailDapus.length === 0) {
-      return res.json({
-        message: 'data not found',
+    const [updateData] = await ProposalBab.updateBab(
+      params.id,
+      JSON.stringify(params.data)
+    );
+
+    if (!updateData || updateData.length === 0) {
+      return res.status(404).json({
+        message: 'Failed to update data: Data not found or invalid.',
+      });
+    }
+
+    const [detailDapus] = await ProposalBab.getDetailProposalBab(
+      params.id,
+      params.proposals_id
+    );
+
+    if (!detailDapus || detailDapus.length === 0) {
+      return res.status(404).json({
+        message: 'Details not found for the provided id.',
         data: [],
       });
     }
 
-    return res.status(200).json({ message: 'success' });
+    return res.status(200).json({
+      message: 'Success',
+      updatedData: detailDapus,
+    });
   } catch (error) {
-    res.status(500).json({
+    console.error('Error in updateDapus:', error.message);
+    return res.status(500).json({
       message: 'Server Error',
       serverMessage: error.message,
     });
@@ -81,6 +101,6 @@ const updateDapus = async (req, res) => {
 };
 
 module.exports = {
-  addDapus,
   updateDapus,
+  genCitations,
 };

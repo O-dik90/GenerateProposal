@@ -318,13 +318,11 @@ const NewDapus = () => {
 
     loadMasterData();
   }, [dispatch, reference, style]);
-
   useEffect(() => {
     if (dapus?.[0]?.json_data) {
       setData(dapus[0].json_data);
     }
   }, [dapus]);
-
   useEffect(() => {
     console.log(object);
   }, [object]);

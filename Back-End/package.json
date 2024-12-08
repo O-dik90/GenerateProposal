@@ -21,6 +21,7 @@
 	"homepage": "https://github.com/O-dik90/GenerateProposal#readme",
 	"dependencies": {
 		"body-parser": "^1.20.3",
+		"citation-js": "^0.7.16",
 		"cors": "^2.8.5",
 		"date-fns": "^4.1.0",
 		"dotenv": "^16.4.5",

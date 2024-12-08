@@ -14,7 +14,7 @@ const {
   updateBab,
 } = require('../controller/proposal-bab');
 
-const { addDapus, updateDapus } = require('../controller/dapus');
+const { updateDapus, genCitations } = require('../controller/dapus');
 
 const router = express.Router();
 
@@ -33,7 +33,7 @@ router.put('/update-bab-pendahuluan', updateBabPendahuluan);
 router.put('/update-bab', updateBab);
 
 //routes/dapus
-router.post('/gen-dapus', addDapus);
 router.put('/update-dapus', updateDapus);
+router.post('/gen-citations', genCitations);
 
 module.exports = router;

@@ -21,15 +21,6 @@ const updateBabPendahuluan = (id, json_data) => {
   return dbPool.execute(query, [json_data, id]);
 };
 
-const updateDapus = (id, json_data) => {
-  const query = `
-    UPDATE proposal_bab
-    set json_data = ?
-    where id = ? and bab_title like '%DAFTAR PUSTAKA%'
-  `;
-  return dbPool.execute(query, [json_data, id]);
-};
-
 const updateBab = (id, json_data) => {
   const query = `
     UPDATE proposal_bab
@@ -44,6 +35,5 @@ module.exports = {
   getListProposalBab,
   getDetailProposalBab,
   updateBabPendahuluan,
-  updateDapus,
   updateBab,
 };

@@ -34,7 +34,7 @@ const ProposalDetail = () => {
     <TabContext value={value}>
       <MainCard title={title}>
         <Box
-          sx={{ maxWidth: { xs: 320, sm: 550 }, margin: '0 auto', justifyContent: 'center', display: 'flex', bgcolor: 'background.paper' }}
+          sx={{ maxWidth: { xs: 320, sm: 800 }, margin: '0 auto', justifyContent: 'center', display: 'flex', bgcolor: 'background.paper' }}
         >
           <Tabs value={value} onChange={handleChange} variant="scrollable" scrollButtons="auto" aria-label="scrollable auto tabs example">
             <Tab label="Pendahuluan" value="1" />

@@ -1,128 +1,153 @@
-import { Box, Button, Grid, MenuItem, Select, Stack, Typography } from '@mui/material';
+import { Button, Grid, MenuItem, Select, Stack, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { masterDapusRef, masterDapusStyle } from 'store/slices/master-data';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { GeneralForm } from 'components/form/GeneralForm';
 import TableGrid from 'components/table/TableGrid';
-import { updateDapus } from 'store/slices/proposal';
-import { useSnackbar } from 'notistack';
 
-const DAPUS_INIT = {
+export const BOOK_INIT = {
   no: 0,
-  style: '',
-  reference: '',
-  authors_name: [''],
-  title: '',
-  publisher: '',
-  year: '',
+  type: '', //required
+  title: '', //required
+  author: [], //required
+  publisher: '', //required
+  publisher_place: '', //required
+  issued: { date_parts: [] }, //required
   edition: '',
-  authors_data: [],
+  volume: '',
+  isbn: '',
+  page: '',
+  abstract: '',
+  url: '',
+  access: { date_parts: [] },
+  style: '',
   status: false
 };
-
-const PENGARANG_INIT = {
+export const JOURNAL_INIT = {
   no: 0,
-  first_name: '',
-  last_name: '',
+  type: '', //required
+  title: '', //required
+  author: [], //required
+  container_title: '', //required
+  publisher: '',
+  publisher_place: '',
+  issued: { date_parts: [] }, //required
+  volume: '', //required
+  issue: '', //required
+  page: '', //required
+  doi: '',
+  issn: '',
+  abstract: '',
+  url: '',
+  access: { date_parts: [] },
+  style: '',
+  status: false
+};
+export const URL_INIT = {
+  no: 0,
+  type: '', //required
+  title: '', //required
+  author: [], //required
+  container_title: '',
+  publisher: '',
+  url: '', //required
+  issued: { date_parts: [] }, //required
+  access: { date_parts: [] },
+  abstract: '',
+  language: '',
+  note: '',
+  style: '',
+  status: false
+};
+const AUTHOR_INIT = {
+  no: 0,
+  given: '', //first name
+  family: '', //last name
   status: false
 };
 
-const NewDapus = () => {
-  const { dapus } = useSelector((state) => state.app.proposal);
+const Dapus = () => {
+  // const { dapus } = useSelector((state) => state.app.proposal);
   const { style, reference } = useSelector((state) => state.app.masterData.dapus);
   const dispatch = useDispatch();
-  const { enqueueSnackbar } = useSnackbar();
+  // const { enqueueSnackbar } = useSnackbar();
 
-  const [object, setObject] = useState({
-    author: PENGARANG_INIT,
-    dapus: DAPUS_INIT,
-    status: false
+  const [object, setObject] = useState({});
+  const [author, setAuthor] = useState({
+    object: AUTHOR_INIT,
+    data: []
   });
   const [errors, setErrors] = useState({});
   const [data, setData] = useState([]);
 
   const Fields = {
     author: [
-      { name: 'first_name', label: 'Nama Depan', type: 'text', size: 6 },
-      { name: 'last_name', label: 'Nama Belakang', type: 'text', size: 6 }
+      { name: 'given', label: 'Nama Depan', type: 'text', size: 6 },
+      { name: 'family', label: 'Nama Belakang', type: 'text', size: 6 }
     ],
     buku: [
       { name: 'title', label: 'Judul', type: 'text', size: 4 },
-      { name: 'year', label: 'Tahun Terbit', type: 'text', size: 2 },
-      { name: 'edition', label: 'Edisi', type: 'text', size: 2 },
-      { name: 'publisher', label: 'Penerbit', type: 'text', size: 4 }
+      { name: 'publisher', label: 'Penerbit', type: 'text', size: 2 },
+      { name: 'publisher_place', label: 'Tempat Terbit', type: 'text', size: 4 },
+      { name: 'date_parts', label: 'Tanggal Terbit', type: 'date', size: 2 }
     ],
     jurnal: [
       { name: 'title', label: 'Judul', type: 'text', size: 4 },
-      { name: 'year', label: 'Tahun Terbit', type: 'text', size: 2 },
+      { name: 'container_title', label: 'Nama Jurnal', type: 'text', size: 2 },
       { name: 'volume', label: 'Volume', type: 'text', size: 2 },
-      { name: 'page', label: 'Halaman', type: 'text', size: 2 }
+      { name: 'issue', label: 'Edisi', type: 'text', size: 2 },
+      { name: 'page', label: 'Halaman', type: 'text', size: 2 },
+      { name: 'date_parts', label: 'Tanggal Terbit', type: 'date', size: 4 }
+    ],
+    url: [
+      { name: 'title', label: 'Judul', type: 'text', size: 4 },
+      { name: 'url', label: 'URL', type: 'text', size: 4 },
+      { name: 'date-parts', label: 'Tanggal Akses', type: 'date', size: 4 }
     ]
   };
 
   const validateAuthor = () => {
     const newErrors = {};
-    if (!object.author.first_name) newErrors.first_name = 'Nama depan wajib diisi';
-    if (!object.author.last_name) newErrors.last_name = 'Nama belakang wajib diisi';
+    if (!author.object.given) newErrors.given = 'Nama depan wajib diisi';
+    if (!author.object.family) newErrors.family = 'Nama belakang wajib diisi';
     return newErrors;
   };
 
   const validateBuku = () => {
     const newErrors = {};
-    if (!object.dapus.title) newErrors.title = 'Judul wajib diisi';
-    if (!object.dapus.year) newErrors.year = 'Tahun terbit wajib diisi';
-    if (!object.dapus.publisher) newErrors.publisher = 'Penerbit wajib diisi';
-    if (!object.dapus.reference) newErrors.title = 'Gaya Penulisan dan referensi wajib dipilih.';
-    return newErrors;
-  };
-  const validateJurnal = () => {
-    const newErrors = {};
-    if (!object.dapus.title) newErrors.title = 'Judul wajib diisi';
-    if (!object.dapus.year) newErrors.year = 'Tahun terbit wajib diisi';
-    if (!object.dapus.volume) newErrors.publisher = 'Penerbit wajib diisi';
-    if (!object.dapus.reference) newErrors.title = 'Gaya Penulisan dan referensi wajib dipilih.';
+    if (!object.title) newErrors.title = 'Judul wajib diisi';
+    if (!object.type) newErrors.type = 'Tahun terbit wajib diisi';
+    if (!object.publisher) newErrors.publisher = 'Penerbit wajib diisi';
     return newErrors;
   };
 
-  const handlePengarang = {
+  const handleAuthor = {
     onchange: (e) => {
       const { name, value } = e.target;
-      setObject((prev) => ({
+      setAuthor((prev) => ({
         ...prev,
-        author: {
-          ...prev.author,
-          [name]: value
-        }
+        object: { ...prev.object, [name]: value }
       }));
     },
     save: (e) => {
       e.preventDefault();
+
       const validationErrors = validateAuthor();
       if (Object.keys(validationErrors).length > 0) {
         setErrors(validationErrors);
         return;
       }
-
-      setObject((prev) => ({
+      setAuthor((prev) => ({
         ...prev,
-        dapus: {
-          ...prev.dapus,
-          authors_data: [
-            ...prev.dapus.authors_data,
-            {
-              ...prev.author,
-              no: prev.dapus.authors_data.length + 1
-            }
-          ]
-        },
-        author: PENGARANG_INIT
+        data: [...prev.data, { ...prev.object, no: prev.data.length + 1 }],
+        object: AUTHOR_INIT
       }));
       setErrors({});
     },
     edit: (author) => {
       setErrors({});
-      setObject((prev) => ({ ...prev, author: { ...author, status: true } }));
+      setAuthor((prev) => ({ ...prev, object: { ...author, status: true } }));
     },
     update: () => {
       const validationErrors = validateAuthor();
@@ -130,38 +155,33 @@ const NewDapus = () => {
         setErrors(validationErrors);
         return;
       }
-      setObject((prev) => ({
+      setAuthor((prev) => ({
         ...prev,
-        dapus: {
-          ...prev.dapus,
-          authors_data: prev.dapus.authors_data.map((item) =>
-            item.no === object.author.no
-              ? {
-                  ...item,
-                  first_name: object.author.first_name,
-                  last_name: object.author.last_name
-                }
-              : item
-          )
-        },
-        author: PENGARANG_INIT
+        data: prev.data.map((item) => {
+          if (item.no === author.object.no) {
+            return { ...author.object, status: false };
+          }
+          return item;
+        }),
+        object: AUTHOR_INIT
       }));
+      setErrors({});
     },
     delete: (no) => {
-      const updatedAuthors = object.dapus.authors_data
+      const updatedAuthors = author.data
         .filter((item) => item.no !== no)
         .map((item, index) => ({
           ...item,
           no: index + 1
         }));
-      setObject((prev) => ({
+      setAuthor((prev) => ({
         ...prev,
-        dapus: { ...prev.dapus, authors_data: updatedAuthors }
+        data: updatedAuthors
       }));
     },
-    disabled: !object.author.first_name || !object.author.last_name || object.author.status
+    disabled: !author.object.given || !author.object.family || author.object.status
   };
-  const handleDapusBuku = {
+  const handleBuku = {
     save: (e) => {
       e.preventDefault();
       const validationErrors = validateBuku();
@@ -169,145 +189,113 @@ const NewDapus = () => {
         setErrors(validationErrors);
         return;
       }
-      console.log(object.dapus);
-      const no = data !== null ? data.length + 1 : 1;
 
-      const newEntry = {
-        ...object.dapus,
-        no,
-        authors_name: Array.isArray(object.dapus.authors_data)
-          ? object.dapus.authors_data.map((item) => `${item.first_name} ${item.last_name}`).join(',')
-          : ''
-      };
+      const dateArray = object.date_parts.split('-').map((value) => Number(value));
 
-      setData(data !== null ? [...data, newEntry] : [newEntry]);
-
-      setObject({
-        author: PENGARANG_INIT,
-        dapus: DAPUS_INIT
+      setData([
+        ...data,
+        {
+          ...object,
+          no: data.length + 1,
+          author: author.data.map((o) => ({
+            given: o.given,
+            family: o.family
+          })),
+          issued: {
+            date_parts: [dateArray]
+          },
+          data_additional: author.data
+        }
+      ]);
+      setAuthor({
+        object: AUTHOR_INIT,
+        data: []
       });
+      setObject({});
       setErrors({});
-    },
-    disabled: object.dapus.status || !object.dapus.title || !object.dapus.year || !object.dapus.publisher
+    }
   };
-  const handleDapusJurnal = {
-    save: (e) => {
-      console.log('jurnal');
-      e.preventDefault();
-      const validationErrors = validateJurnal();
+  const handlePustaka = {
+    ontype: (e) => {
+      const { value } = e.target;
+      switch (value) {
+        case 'book':
+          setObject({
+            ...BOOK_INIT,
+            type: value
+          });
+          break;
+        case 'article-journal':
+          setObject({
+            ...JOURNAL_INIT,
+            type: value
+          });
+          break;
+        case 'webpage':
+          setObject({
+            ...URL_INIT,
+            type: value
+          });
+          break;
+      }
+    },
+    onchange: (e) => {
+      const { name, value } = e.target;
+      setObject({
+        ...object,
+        [name]: value
+      });
+    },
+    edit: (param) => {
+      setObject({
+        ...param,
+        status: true
+      });
+      setAuthor((prev) => ({
+        ...prev,
+        data: param.data_additional
+      }));
+    },
+    update: () => {
+      const validationErrors = validateBuku();
       if (Object.keys(validationErrors).length > 0) {
         setErrors(validationErrors);
         return;
       }
-      console.log(object.dapus);
-      const no = data !== null ? data.length + 1 : 1;
-
-      const newEntry = {
-        ...object.dapus,
-        no,
-        authors_name: Array.isArray(object.dapus.authors_data)
-          ? object.dapus.authors_data.map((item) => `${item.first_name} ${item.last_name}`).join(',')
-          : ''
-      };
-      setData(data !== null ? [...data, newEntry] : [newEntry]);
-
-      setObject({
-        author: PENGARANG_INIT,
-        dapus: DAPUS_INIT
+      const dateArray = object.date_parts.split('-').map((value) => Number(value));
+      const updatedData = data.map((item) => {
+        if (item.no === object.no) {
+          return {
+            ...item,
+            ...object,
+            author: author.data.map((o) => ({
+              given: o.given,
+              family: o.family
+            })),
+            issued: {
+              date_parts: [dateArray]
+            },
+            data_additional: author.data
+          };
+        }
+        return item;
+      });
+      setData(updatedData);
+      setObject({});
+      setAuthor({
+        object: AUTHOR_INIT,
+        data: []
       });
       setErrors({});
     },
-    disabled: object.dapus.status || !object.dapus.title || !object.dapus.year
-  };
-  const handlePustaka = {
-    onchange: (e) => {
-      const { name, value } = e.target;
-      setObject((prev) => ({
-        ...prev,
-        dapus: {
-          ...prev.dapus,
-          [name]: value
-        }
-      }));
-    },
-    edit: (param) => {
-      if (param.reference === 'buku') {
-        setObject((prev) => ({ ...prev, dapus: param, status: true }));
-      } else if (param.reference === 'jurnal') {
-        setObject((prev) => ({ ...prev, dapus: param, status: true }));
-      } else if (param.reference === 'url') {
-        setObject((prev) => ({ ...prev, dapus: param, status: true }));
-      }
-    },
-    update: () => {
-      const indexToUpdate = data.findIndex((item) => item.no === object.dapus.no);
-
-      if (indexToUpdate !== -1) {
-        data.splice(indexToUpdate, 1, {
-          ...data[indexToUpdate],
-
-          authors_data: object.dapus.authors_data,
-          authors_name: Array.isArray(object.dapus.authors_data)
-            ? object.dapus.authors_data.map((o) => `${o.first_name} ${o.last_name}`).join(', ') // Join names
-            : data[indexToUpdate].authors_data,
-          title: object.dapus.title,
-          publisher: object.dapus.publisher,
-          year: object.dapus.year,
-          edition: object.dapus.edition
-        });
-      }
-      setData([...data]);
-      setObject({
-        author: PENGARANG_INIT,
-        dapus: DAPUS_INIT
-      });
-    },
     delete: (param) => {
-      const filteredDapus = data
+      const updatedData = data
         .filter((item) => item.no !== param.no)
         .map((item, index) => ({
           ...item,
           no: index + 1
         }));
-      setData(filteredDapus);
-    },
-    save: async () => {
-      if (!data || data.length === 0) {
-        enqueueSnackbar('Data pustaka kosong', { variant: 'error' });
-        return;
-      }
-
-      try {
-        const dataPustaka = {
-          id: dapus?.[0]?.id,
-          proposals_id: dapus?.[0]?.proposals_id,
-          json_data: data
-        };
-        console.log(dataPustaka);
-        const res = await dispatch(updateDapus(dataPustaka));
-
-        if (updateDapus.fulfilled.match(res)) {
-          enqueueSnackbar('Berhasil menyimpan', { variant: 'success' });
-        }
-      } catch (error) {
-        enqueueSnackbar('Gagal menyimpan data pustaka', { variant: 'error' });
-      }
-    },
-    detail: (row) => {
-      const detailRow = row && (
-        <>
-          <Typography variant="body1" gutterBottom component="div">
-            <strong>No</strong> {row.no}
-          </Typography>
-          <Typography variant="body1" gutterBottom component="div">
-            <strong>Kategori</strong> {row.reference}
-          </Typography>
-          <Typography variant="body1" gutterBottom component="div">
-            <strong>Penulis</strong> {row.authors_name}
-          </Typography>
-        </>
-      );
-      return <Box sx={{ padding: 2 }}>{detailRow}</Box>;
+      setData(updatedData);
     }
   };
   useEffect(() => {
@@ -319,13 +307,8 @@ const NewDapus = () => {
     loadMasterData();
   }, [dispatch, reference, style]);
   useEffect(() => {
-    if (dapus?.[0]?.json_data) {
-      setData(dapus[0].json_data);
-    }
-  }, [dapus]);
-  useEffect(() => {
-    console.log(object);
-  }, [object]);
+    console.log(data);
+  }, [data]);
 
   return (
     <>
@@ -337,42 +320,9 @@ const NewDapus = () => {
           <Stack direction="row" spacing={2}>
             <Select
               displayEmpty
-              readOnly={object.status}
-              value={object.dapus.style}
-              onChange={(e) =>
-                setObject((prev) => ({
-                  ...prev,
-                  dapus: {
-                    ...prev.dapus,
-                    style: e.target.value
-                  }
-                }))
-              }
-              inputProps={{ 'aria-label': 'Without label' }}
-              sx={{ width: '10rem' }}
-            >
-              <MenuItem disabled value="">
-                <em>Gaya Penulisan</em>
-              </MenuItem>
-              {style.map((o) => (
-                <MenuItem key={o.code} value={o.code} disabled={o.name !== 'MLA'}>
-                  {o.name}
-                </MenuItem>
-              ))}
-            </Select>
-            <Select
-              displayEmpty
-              readOnly={object.status}
-              value={object.dapus.reference}
-              onChange={(e) =>
-                setObject((prev) => ({
-                  ...prev,
-                  dapus: {
-                    ...prev.dapus,
-                    reference: e.target.value
-                  }
-                }))
-              }
+              readOnly={false}
+              value={object.type || ''}
+              onChange={handlePustaka.ontype}
               inputProps={{ 'aria-label': 'Without label' }}
               sx={{ width: '10rem' }}
             >
@@ -380,57 +330,75 @@ const NewDapus = () => {
                 <em>Referensi</em>
               </MenuItem>
               {reference.map((o) => (
-                <MenuItem key={o.code} value={o.code} disabled={o.code !== 'buku' && o.code !== 'jurnal'}>
+                <MenuItem key={o.code} value={o.value}>
+                  {o.name}
+                </MenuItem>
+              ))}
+            </Select>
+            <Select
+              displayEmpty
+              readOnly={false}
+              inputProps={{ 'aria-label': 'Without label' }}
+              value={object.style || ''}
+              onChange={handlePustaka.onchange}
+              sx={{ width: '10rem' }}
+              name="style"
+            >
+              <MenuItem disabled value="">
+                <em>Gaya Penulisan</em>
+              </MenuItem>
+              {style.map((o) => (
+                <MenuItem key={o.code} value={o.value}>
                   {o.name}
                 </MenuItem>
               ))}
             </Select>
           </Stack>
         </Grid>
-        {object.dapus.style && (
+        {object.style && (
           <Grid item xs={12}>
             <GeneralForm
               buttonForm="Tambah Pengarang"
-              buttonDisable={handlePengarang.disabled}
-              formData={object.author}
+              buttonDisable={handleAuthor.disabled}
+              formData={author.object}
               errors={errors}
               Fields={Fields.author}
-              handleChange={handlePengarang.onchange}
-              handleSubmit={handlePengarang.save}
+              handleChange={handleAuthor.onchange}
+              handleSubmit={handleAuthor.save}
             />
             <TableGrid
               columns={[
                 { name: 'No', field: 'no', width: '4rem' },
-                { name: 'Nama Depan', field: 'first_name' },
-                { name: 'Nama Belakang', field: 'last_name' }
+                { name: 'Nama Depan', field: 'given' },
+                { name: 'Nama Belakang', field: 'family' }
               ]}
-              rows={object.dapus.authors_data}
+              rows={author.data || []}
               action
-              onEdit={handlePengarang.edit}
-              onUpdate={handlePengarang.update}
-              onDelete={(row) => handlePengarang.delete(row.no)}
+              onEdit={handleAuthor.edit}
+              onUpdate={handleAuthor.update}
+              onDelete={(row) => handleAuthor.delete(row.no)}
               expand={false}
             />
           </Grid>
         )}
         <Grid item xs={12}>
-          {object.dapus.reference === 'buku' && (
+          {object.style && object.type === 'book' && (
             <>
               <Typography variant="body1" gutterBottom sx={{ marginTop: 1 }}>
                 Pengisian daftar pustaka buku
               </Typography>
               <GeneralForm
                 buttonForm="Tambah Pustaka Buku"
-                buttonDisable={handleDapusBuku.disabled}
-                formData={object.dapus}
+                buttonDisable={object.status}
+                formData={object}
                 errors={errors}
                 Fields={Fields.buku}
                 handleChange={handlePustaka.onchange}
-                handleSubmit={handleDapusBuku.save}
+                handleSubmit={handleBuku.save}
               />
             </>
           )}
-          {object.dapus.reference === 'jurnal' && (
+          {/* {object.dapus.reference === 'jurnal' && (
             <>
               <Typography variant="body1" gutterBottom sx={{ marginTop: 1 }}>
                 Pengisian daftar pustaka Jurnal
@@ -444,15 +412,14 @@ const NewDapus = () => {
                 handleSubmit={handleDapusJurnal.save}
               />
             </>
-          )}
+          )} */}
         </Grid>
       </Grid>
       <TableGrid
         columns={[
           { name: 'No', field: 'no', width: '4rem' },
-          { name: 'Kategori', field: 'reference', width: '6rem' },
-          { name: 'Judul', field: 'title' },
-          { name: 'Tahun', field: 'year', width: '4rem' }
+          { name: 'Referensi', field: 'type', width: '6rem' },
+          { name: 'Judul', field: 'title' }
         ]}
         rows={data}
         action
@@ -460,11 +427,11 @@ const NewDapus = () => {
         onUpdate={handlePustaka.update}
         onDelete={handlePustaka.delete}
         detail={handlePustaka.detail}
-        actionEdit={object.dapus.status}
+        actionEdit={object.status}
         expand
       />
       <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 4 }}>
-        <Button variant="contained" color="success" onClick={handlePustaka.save}>
+        <Button variant="contained" color="success">
           Simpan Pustaka
         </Button>
       </Stack>
@@ -472,4 +439,4 @@ const NewDapus = () => {
   );
 };
 
-export default NewDapus;
+export default Dapus;

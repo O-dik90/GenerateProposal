@@ -27,6 +27,24 @@ const GeneralForm = ({ buttonForm, buttonDisable, formData, errors, Fields, hand
         </TextField>
       );
     }
+    if (field.type === 'date') {
+      return (
+        <TextField
+          label={field.label}
+          name={field.name}
+          type="date"
+          value={formData[field.name] || ''}
+          onChange={handleChange}
+          fullWidth
+          variant="outlined"
+          error={!!errors[field.name]}
+          helperText={errors[field.name] || ''}
+          InputLabelProps={{
+            shrink: true
+          }}
+        />
+      );
+    }
 
     // Render TextField or TextArea
     return (

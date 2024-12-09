@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Dapus from './dapus';
 import Kegiatan from './kegiatan';
+import Lampiran from './lampiran';
 import MainCard from 'components/MainCard';
 import Pelaksanaan from './pelaksanaan';
 import Pendahuluan from './pendahuluan';
@@ -19,7 +20,7 @@ const ProposalDetail = () => {
   const title = 'Proposal Detail';
   const { id } = useParams(),
     dispatch = useDispatch(),
-    [value, setValue] = React.useState('1');
+    [value, setValue] = React.useState('5');
 
   const handleChange = (event, newValue) => {
     event.preventDefault();
@@ -42,6 +43,7 @@ const ProposalDetail = () => {
             <Tab label="Pelaksanaan" value="3" />
             <Tab label="Kegiatan" value="4" />
             <Tab label="Daftar Pustaka" value="5" />
+            <Tab label="Lampiran" value="6" />
           </Tabs>
         </Box>
         <TabPanel value="1" sx={{ marginTop: 5 }}>
@@ -58,6 +60,9 @@ const ProposalDetail = () => {
         </TabPanel>
         <TabPanel value="5">
           <Dapus />
+        </TabPanel>
+        <TabPanel value="6">
+          <Lampiran />
         </TabPanel>
       </MainCard>
     </TabContext>

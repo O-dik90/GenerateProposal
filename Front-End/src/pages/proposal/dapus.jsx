@@ -5,6 +5,8 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { GeneralForm } from 'components/form/GeneralForm';
 import TableGrid from 'components/table/TableGrid';
+import { updateDapus } from 'store/slices/proposal';
+import { useSnackbar } from 'notistack';
 
 export const BOOK_INIT = {
   no: 0,
@@ -68,10 +70,10 @@ const AUTHOR_INIT = {
 };
 
 const Dapus = () => {
-  // const { dapus } = useSelector((state) => state.app.proposal);
+  const { dapus } = useSelector((state) => state.app.proposal);
   const { style, reference } = useSelector((state) => state.app.masterData.dapus);
   const dispatch = useDispatch();
-  // const { enqueueSnackbar } = useSnackbar();
+  const { enqueueSnackbar } = useSnackbar();
 
   const [object, setObject] = useState({});
   const [author, setAuthor] = useState({
@@ -103,22 +105,41 @@ const Dapus = () => {
     url: [
       { name: 'title', label: 'Judul', type: 'text', size: 4 },
       { name: 'url', label: 'URL', type: 'text', size: 4 },
-      { name: 'date-parts', label: 'Tanggal Akses', type: 'date', size: 4 }
+      { name: 'date_parts', label: 'Tanggal Akses', type: 'date', size: 4 }
     ]
   };
-
   const validateAuthor = () => {
     const newErrors = {};
-    if (!author.object.given) newErrors.given = 'Nama depan wajib diisi';
-    if (!author.object.family) newErrors.family = 'Nama belakang wajib diisi';
+    if (!author.object.given && author.data.length === 0) newErrors.given = 'Nama depan wajib diisi';
+    if (!author.object.family && author.data.length === 0) newErrors.family = 'Nama belakang wajib diisi';
     return newErrors;
   };
-
-  const validateBuku = () => {
+  const validatePustaka = () => {
     const newErrors = {};
     if (!object.title) newErrors.title = 'Judul wajib diisi';
     if (!object.type) newErrors.type = 'Tahun terbit wajib diisi';
-    if (!object.publisher) newErrors.publisher = 'Penerbit wajib diisi';
+
+    switch (object.type) {
+      case 'book':
+        if (!object.publisher) newErrors.publisher = 'Penerbit wajib diisi';
+        if (!object.publisher_place) newErrors.publisher_place = 'Tempat penerbit wajib diisi';
+        break;
+
+      case 'article-journal':
+        if (!object.container_title) newErrors.container_title = 'Judul jurnal wajib diisi';
+        if (!object.volume) newErrors.volume = 'Volume wajib diisi';
+        if (!object.issue) newErrors.issue = 'Edisi wajib diisi';
+        if (!object.page) newErrors.page = 'Halaman wajib diisi';
+        break;
+
+      case 'article':
+        if (!object.url) newErrors.url = 'URL wajib diisi';
+        if (!object.language) newErrors.language = 'Bahasa wajib diisi';
+        break;
+
+      default:
+        break;
+    }
     return newErrors;
   };
 
@@ -181,39 +202,53 @@ const Dapus = () => {
     },
     disabled: !author.object.given || !author.object.family || author.object.status
   };
-  const handleBuku = {
-    save: (e) => {
-      e.preventDefault();
-      const validationErrors = validateBuku();
-      if (Object.keys(validationErrors).length > 0) {
-        setErrors(validationErrors);
-        return;
-      }
+  const handleSave = (type) => (e) => {
+    e.preventDefault();
 
-      const dateArray = object.date_parts.split('-').map((value) => Number(value));
+    const pustakaErrors = validatePustaka();
+    const authorErrors = validateAuthor();
+    const combinedErrors = { ...pustakaErrors, ...authorErrors };
 
-      setData([
-        ...data,
-        {
-          ...object,
-          no: data.length + 1,
-          author: author.data.map((o) => ({
-            given: o.given,
-            family: o.family
-          })),
-          issued: {
-            date_parts: [dateArray]
-          },
-          data_additional: author.data
-        }
-      ]);
-      setAuthor({
-        object: AUTHOR_INIT,
-        data: []
-      });
-      setObject({});
-      setErrors({});
+    if (Object.keys(combinedErrors).length > 0) {
+      setErrors(combinedErrors);
+      return;
     }
+
+    const dateArray = object.date_parts?.split('-').map(Number) || [];
+    const accessDateArray = object.access_date_parts?.split('-').map(Number) || [];
+
+    // Prepare the new data entry
+    const newEntry = {
+      ...object,
+      no: data.length + 1,
+      author: author.data.map((o) => ({
+        given: o.given,
+        family: o.family
+      })),
+      issued: { date_parts: [dateArray] },
+      data_additional: author.data
+    };
+
+    if (type === 'webpage') {
+      newEntry.access = { date_parts: [accessDateArray] };
+    }
+
+    setData((prevData) => [...prevData, newEntry]);
+    setAuthor({ object: AUTHOR_INIT, data: [] });
+    setObject({});
+    setErrors({});
+  };
+  const handleBuku = {
+    save: handleSave('book'),
+    disabled: object.status
+  };
+  const handleJurnal = {
+    save: handleSave('article-journal'),
+    disabled: object.status
+  };
+  const handleUrl = {
+    save: handleSave('webpage'),
+    disabled: object.status
   };
   const handlePustaka = {
     ontype: (e) => {
@@ -257,7 +292,7 @@ const Dapus = () => {
       }));
     },
     update: () => {
-      const validationErrors = validateBuku();
+      const validationErrors = validatePustaka();
       if (Object.keys(validationErrors).length > 0) {
         setErrors(validationErrors);
         return;
@@ -265,7 +300,7 @@ const Dapus = () => {
       const dateArray = object.date_parts.split('-').map((value) => Number(value));
       const updatedData = data.map((item) => {
         if (item.no === object.no) {
-          return {
+          let updatedItem = {
             ...item,
             ...object,
             author: author.data.map((o) => ({
@@ -277,6 +312,40 @@ const Dapus = () => {
             },
             data_additional: author.data
           };
+
+          // Type-specific updates
+          switch (object.type) {
+            case 'book':
+              updatedItem = {
+                ...updatedItem,
+                publisher: object.publisher,
+                publisher_place: object.publisher_place
+              };
+              break;
+
+            case 'article-journal':
+              updatedItem = {
+                ...updatedItem,
+                container_title: object.container_title,
+                volume: object.volume,
+                issue: object.issue,
+                page: object.page
+              };
+              break;
+
+            case 'webpage':
+              updatedItem = {
+                ...updatedItem,
+                url: object.url,
+                access: object.access,
+                language: object.language
+              };
+              break;
+
+            default:
+              break;
+          }
+          return updatedItem;
         }
         return item;
       });
@@ -296,6 +365,28 @@ const Dapus = () => {
           no: index + 1
         }));
       setData(updatedData);
+    },
+    save: async () => {
+      if (!data || data.length === 0) {
+        enqueueSnackbar('Data pustaka kosong', { variant: 'error' });
+        return;
+      }
+
+      try {
+        const dataPustaka = {
+          id: dapus?.[0]?.id,
+          proposals_id: dapus?.[0]?.proposals_id,
+          data: data
+        };
+        console.log(dataPustaka);
+        const res = await dispatch(updateDapus(dataPustaka));
+
+        if (updateDapus.fulfilled.match(res)) {
+          enqueueSnackbar('Berhasil menyimpan', { variant: 'success' });
+        }
+      } catch (error) {
+        enqueueSnackbar('Gagal menyimpan data pustaka', { variant: 'error' });
+      }
     }
   };
   useEffect(() => {
@@ -307,8 +398,10 @@ const Dapus = () => {
     loadMasterData();
   }, [dispatch, reference, style]);
   useEffect(() => {
-    console.log(data);
-  }, [data]);
+    if (dapus?.[0]?.json_data) {
+      setData(dapus[0].json_data);
+    }
+  }, [dapus]);
 
   return (
     <>
@@ -320,7 +413,7 @@ const Dapus = () => {
           <Stack direction="row" spacing={2}>
             <Select
               displayEmpty
-              readOnly={false}
+              readOnly={object.status}
               value={object.type || ''}
               onChange={handlePustaka.ontype}
               inputProps={{ 'aria-label': 'Without label' }}
@@ -337,7 +430,7 @@ const Dapus = () => {
             </Select>
             <Select
               displayEmpty
-              readOnly={false}
+              readOnly={object.status}
               inputProps={{ 'aria-label': 'Without label' }}
               value={object.style || ''}
               onChange={handlePustaka.onchange}
@@ -389,7 +482,7 @@ const Dapus = () => {
               </Typography>
               <GeneralForm
                 buttonForm="Tambah Pustaka Buku"
-                buttonDisable={object.status}
+                buttonDisable={handleBuku.disabled}
                 formData={object}
                 errors={errors}
                 Fields={Fields.buku}
@@ -398,27 +491,43 @@ const Dapus = () => {
               />
             </>
           )}
-          {/* {object.dapus.reference === 'jurnal' && (
+          {object.style && object.type === 'article-journal' && (
             <>
               <Typography variant="body1" gutterBottom sx={{ marginTop: 1 }}>
                 Pengisian daftar pustaka Jurnal
               </Typography>
               <GeneralForm
                 buttonForm="Tambah Pustaka Jurnal"
-                formData={object.dapus}
+                buttonDisable={handleJurnal.disabled}
+                formData={object}
                 errors={errors}
                 Fields={Fields.jurnal}
                 handleChange={handlePustaka.onchange}
-                handleSubmit={handleDapusJurnal.save}
+                handleSubmit={handleJurnal.save}
               />
             </>
-          )} */}
+          )}
+          {object.style && object.type === 'webpage' && (
+            <>
+              <Typography variant="body1" gutterBottom sx={{ marginTop: 1 }}>
+                Pengisian daftar pustaka Webpage
+              </Typography>
+              <GeneralForm
+                buttonForm="Tambah Pustaka Url"
+                buttonDisable={handleUrl.disabled}
+                formData={object}
+                errors={errors}
+                Fields={Fields.url}
+                handleChange={handlePustaka.onchange}
+                handleSubmit={handleUrl.save}
+              />
+            </>
+          )}
         </Grid>
       </Grid>
       <TableGrid
         columns={[
           { name: 'No', field: 'no', width: '4rem' },
-          { name: 'Referensi', field: 'type', width: '6rem' },
           { name: 'Judul', field: 'title' }
         ]}
         rows={data}
@@ -431,7 +540,7 @@ const Dapus = () => {
         expand
       />
       <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 4 }}>
-        <Button variant="contained" color="success">
+        <Button variant="contained" color="success" onClick={handlePustaka.save}>
           Simpan Pustaka
         </Button>
       </Stack>

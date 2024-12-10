@@ -106,8 +106,8 @@ const Tinjauan = () => {
     disable: object.status || !object.title || !object.description
   };
   useEffect(() => {
-    if (tinjauan && tinjauan[0]?.json_data) {
-      setData(tinjauan[0]?.json_data);
+    if (tinjauan && tinjauan?.json_data) {
+      setData(tinjauan?.json_data);
     }
   }, [tinjauan]);
   return (

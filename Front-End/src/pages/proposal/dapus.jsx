@@ -398,8 +398,8 @@ const Dapus = () => {
     loadMasterData();
   }, [dispatch, reference, style]);
   useEffect(() => {
-    if (dapus?.[0]?.json_data) {
-      setData(dapus[0].json_data);
+    if (dapus?.json_data) {
+      setData(dapus.json_data);
     }
   }, [dapus]);
 

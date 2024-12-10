@@ -20,8 +20,8 @@ import { useEffect, useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import GenerateDocx from 'utils/generate';
 import MainCard from 'components/MainCard';
+import { detailProposal } from 'store/slices/proposal';
 import { format } from 'date-fns';
-import { getListBabProposal } from 'store/slices/proposal';
 import { useNavigate } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 
@@ -48,7 +48,7 @@ const ProposalTable = () => {
     [object, setObject] = useState(INITIAL),
     [btnAction, setBtnAction] = useState('Buat');
 
-  const { data, detail, loading } = useSelector((state) => state.app.proposal),
+  const { data, loading } = useSelector((state) => state.app.proposal),
     { pkm, lomba, tahun_lomba } = useSelector((state) => state.app.masterData);
 
   useEffect(() => {
@@ -207,20 +207,26 @@ const ProposalTable = () => {
   };
 
   const handleGenerate = async (param) => {
-    const res = await dispatch(getListBabProposal(param?.id));
+    const res = await dispatch(detailProposal(param?.id));
 
-    if (getListBabProposal.fulfilled.match(res)) {
-      console.log(detail);
-      GenerateDocx({
-        data: {
-          pendahuluan: detail?.pendahuluan,
-          tinjauan: detail?.tinjauan,
-          pelaksanaan: detail?.pelaksanaan,
-          biaya: detail?.biaya,
-          dapus: detail?.dapus,
-          fileName: `${param.title}-document.docx`
-        }
-      });
+    if (detailProposal.fulfilled.match(res)) {
+      console.log(res);
+      if (res.payload?.generate_status) {
+        await enqueueSnackbar('Memproses data', { variant: 'success' });
+        const detail = res.payload?.data;
+        await GenerateDocx({
+          data: {
+            pendahuluan: detail?.pendahuluan,
+            tinjauan: detail?.tinjauan,
+            pelaksanaan: detail?.pelaksanaan,
+            biaya: detail?.biaya,
+            dapus: detail?.dapus,
+            fileName: `${param.title}-document.docx`
+          }
+        });
+      } else {
+        enqueueSnackbar('Data belum komplet', { variant: 'error' });
+      }
     }
   };
 

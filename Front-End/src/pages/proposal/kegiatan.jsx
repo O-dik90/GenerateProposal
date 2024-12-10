@@ -132,8 +132,8 @@ const Kegiatan = () => {
   useEffect(() => {
     if (biaya) {
       setData({
-        biaya: biaya[0]?.json_data?.biaya || [],
-        kegiatan: biaya[0]?.json_data?.kegiatan || []
+        biaya: biaya?.json_data?.biaya || [],
+        kegiatan: biaya?.json_data?.kegiatan || []
       });
     }
   }, [biaya]);

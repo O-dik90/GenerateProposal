@@ -115,21 +115,21 @@ const GenerateDocx = ({ data }) => {
     ...createParagraphsFromArray(pendahuluan?.manfaat),
     //tinjauan pustaka
     new Paragraph({
-      text: tinjauan[0]?.bab_title || 'BAB 2',
+      text: tinjauan?.bab_title || 'BAB 2',
       heading: HeadingLevel.HEADING_1,
       pageBreakBefore: true
     }),
-    ...createParagraphsFromJSON(tinjauan[0]?.json_data, 2),
+    ...createParagraphsFromJSON(tinjauan?.json_data, 2),
     //tahap pelaksanaan
     new Paragraph({
-      text: pelaksanaan[0]?.bab_title || 'BAB 3',
+      text: pelaksanaan?.bab_title || 'BAB 3',
       heading: HeadingLevel.HEADING_1,
       pageBreakBefore: true
     }),
-    ...createParagraphsFromJSON(pelaksanaan[0]?.json_data, 3),
+    ...createParagraphsFromJSON(pelaksanaan?.json_data, 3),
     //biaya dan jadwal kegiatan
     new Paragraph({
-      text: biaya[0]?.bab_title || 'BAB 4',
+      text: biaya?.bab_title || 'BAB 4',
       heading: HeadingLevel.HEADING_1,
       pageBreakBefore: true
     }),
@@ -137,8 +137,8 @@ const GenerateDocx = ({ data }) => {
       text: `4.1 Biaya`,
       heading: HeadingLevel.HEADING_2
     }),
-    ...(Array.isArray(biaya[0]?.json_data.biaya)
-      ? biaya[0].json_data.biaya.flatMap((item) => [
+    ...(Array.isArray(biaya?.json_data.biaya)
+      ? biaya.json_data.biaya.flatMap((item) => [
           new Paragraph({
             text: item.description || '',
             style: 'wellSpaced'
@@ -149,8 +149,8 @@ const GenerateDocx = ({ data }) => {
       text: `4.2 Jadwal Kegiatan`,
       heading: HeadingLevel.HEADING_2
     }),
-    ...(Array.isArray(biaya[0]?.json_data.biaya)
-      ? biaya[0].json_data.kegiatan.flatMap((item) => [
+    ...(Array.isArray(biaya?.json_data.biaya)
+      ? biaya.json_data.kegiatan.flatMap((item) => [
           new Paragraph({
             text: item.description || '',
             style: 'wellSpaced'

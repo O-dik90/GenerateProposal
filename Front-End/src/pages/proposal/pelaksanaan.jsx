@@ -105,8 +105,8 @@ const Pelaksanaan = () => {
   };
 
   useEffect(() => {
-    if (pelaksanaan && pelaksanaan[0]?.json_data) {
-      setData(pelaksanaan[0]?.json_data);
+    if (pelaksanaan && pelaksanaan?.json_data) {
+      setData(pelaksanaan?.json_data);
     }
   }, [pelaksanaan]);
   return (

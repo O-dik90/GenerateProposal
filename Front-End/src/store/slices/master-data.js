@@ -26,6 +26,15 @@ export const masterDapusRef = createAsyncThunk('master/list-dapus-ref', async (p
   return response.data;
 });
 
+export const masterLampiranRef = createAsyncThunk('master/list-lampiran-ref', async (params) => {
+  const response = await axiosInstance.post('/master-dropdown', params);
+  return response.data;
+});
+export const masterLampiranID = createAsyncThunk('master/list-lampiran-id', async (params) => {
+  const response = await axiosInstance.post('/master-dropdown', params);
+  return response.data;
+});
+
 const initialState = {
   lomba: [],
   pkm: [],
@@ -33,6 +42,10 @@ const initialState = {
   dapus: {
     style: [],
     reference: []
+  },
+  lampiran: {
+    id: [],
+    ref: []
   },
   loading: false,
   error: null
@@ -89,6 +102,16 @@ const masterSlice = createSlice({
       .addCase(masterDapusRef.fulfilled, (state, action) => {
         state.loading = false;
         state.dapus.reference = action.payload.data;
+        state.error = null;
+      })
+      .addCase(masterLampiranRef.fulfilled, (state, action) => {
+        state.loading = false;
+        state.lampiran.ref = action.payload.data;
+        state.error = null;
+      })
+      .addCase(masterLampiranID.fulfilled, (state, action) => {
+        state.loading = false;
+        state.lampiran.id = action.payload.data;
         state.error = null;
       });
   }

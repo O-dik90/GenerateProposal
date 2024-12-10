@@ -24,10 +24,10 @@ const getListProposalBab = async (req, res) => {
         tujuan: data[3].json_data,
         manfaat: data[4].json_data,
       },
-      tinjauan: data.slice(5, 6),
-      pelaksanaan: data.slice(6, 7),
-      biaya: data.slice(7, 8),
-      dapus: data.slice(-1),
+      tinjauan: data.slice(5, 6)[0],
+      pelaksanaan: data.slice(6, 7)[0],
+      biaya: data.slice(7, 8)[0],
+      dapus: data.slice(-1)[0],
     });
   } catch (error) {
     res.status(500).json({

@@ -1,6 +1,6 @@
 require('date-fns/locale');
 const Proposals = require('../models/proposals');
-
+const ProposalBab = require('../models/proposal-bab');
 const getListProposals = async (req, res) => {
   try {
     const id = req.params.user_id;
@@ -35,13 +35,31 @@ const getProposal = async (req, res) => {
     }
 
     const [result] = await Proposals.getProposalId(proposals_id);
+    const [resDetail] = await ProposalBab.getListProposalBab(proposals_id);
+    const [resGen] = await Proposals.genStatusProposal(proposals_id);
 
-    if (result.length === 0) {
-      throw new Error('data not found');
+    if (result.length === 0 || resDetail.length === 0) {
+      throw new Error('data or detail not found');
     }
     return res.json({
       message: 'success',
-      data: result,
+      generate_status: resGen.length > 0 ? false : true,
+      data: {
+        ...result[0],
+        detail: {
+          pendahuluan: {
+            latar_belakang: resDetail[0].json_data,
+            rumusan_masalah: resDetail[1].json_data,
+            luaran: resDetail[2].json_data,
+            tujuan: resDetail[3].json_data,
+            manfaat: resDetail[4].json_data,
+          },
+          tinjauan: resDetail.slice(5, 6)[0],
+          pelaksanaan: resDetail.slice(6, 7)[0],
+          biaya: resDetail.slice(7, 8)[0],
+          dapus: resDetail.slice(-1)[0],
+        },
+      },
     });
   } catch (error) {
     return res.status(500).json({

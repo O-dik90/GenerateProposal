@@ -72,6 +72,13 @@ const initProposal = (id) => {
   return dbPool.execute(query, flattenedData);
 };
 
+const genStatusProposal = (id) => {
+  const query = `
+  select json_data from proposal_bab where proposals_id = ? and json_data is null
+  `;
+  return dbPool.execute(query, [id]);
+};
+
 const updateLatestProposal = (id) => {
   const query = `
   UPDATE proposals SET last_update = NOW() WHERE id = ?
@@ -87,4 +94,5 @@ module.exports = {
   updateProposal,
   initProposal,
   updateLatestProposal,
+  genStatusProposal,
 };

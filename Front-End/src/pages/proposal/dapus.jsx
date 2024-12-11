@@ -391,8 +391,8 @@ const Dapus = () => {
   };
   useEffect(() => {
     const loadMasterData = async () => {
-      if (!reference.length) await dispatch(masterDapusRef({ category: 'ref' }));
-      if (!style.length) await dispatch(masterDapusStyle({ category: 'style' }));
+      if (reference?.length <= 0) await dispatch(masterDapusRef({ category: 'ref' }));
+      if (style?.length <= 0) await dispatch(masterDapusStyle({ category: 'style' }));
     };
 
     loadMasterData();

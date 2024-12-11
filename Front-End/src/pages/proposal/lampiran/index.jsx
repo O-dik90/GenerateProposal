@@ -1,51 +1,37 @@
-import { Button, Grid, MenuItem, Select, Stack, Typography } from '@mui/material';
-import { masterLampiranID, masterLampiranRef } from 'store/slices/master-data';
-import { useDispatch, useSelector } from 'react-redux';
-import { useEffect, useState } from 'react';
+import { Box, Button, Grid, Stack, Tab, Typography } from '@mui/material';
+import React, { useEffect, useState } from 'react';
 
-import { ID_INIT } from './initial';
-import React from 'react';
+import { Identitas } from './identitas';
+import TabContext from '@mui/lab/TabContext';
+import TabList from '@mui/lab/TabList';
+import TabPanel from '@mui/lab/TabPanel';
 
 const Lampiran = () => {
-  const { id, ref } = useSelector((state) => state.app.masterData.lampiran);
-  const dispatch = useDispatch();
+  const [data] = useState({});
+  const [value, setValue] = useState('L1');
 
-  const [object, setObject] = useState({});
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
+  const tabs = [
+    { label: 'Identitas', code: 'L1', component: <Identitas /> },
+    { label: 'Anggaran', code: 'L2', component: <></> },
+    { label: 'Susunan Tim', code: 'L3', component: <></> },
+    { label: 'Surat Pernyataan', code: 'L4', component: <></> },
+    { label: 'File Pendukung', code: 'L5', component: <></> }
+  ];
 
   const handleLampiran = {
-    oncategory: (e) => {
-      const { value } = e.target;
-      switch (value) {
-        case 'Identitas':
-          setObject({
-            ...ID_INIT,
-            category: value
-          });
-          break;
-        default:
-          setObject({});
-      }
-    },
-    onchange: (e) => {
-      const { name, value } = e.target;
-      setObject({
-        ...object,
-        [name]: value
-      });
+    save: () => {
+      console.log('Saved data:', data);
     }
   };
-  useEffect(() => {
-    const loadMasterData = async () => {
-      if (!ref.length) await dispatch(masterLampiranRef({ source_name: 'LAMPIRAN' }));
-      if (!id.length) await dispatch(masterLampiranID({ source_name: 'L1' }));
-    };
-
-    loadMasterData();
-  }, [ref, id, dispatch]);
 
   useEffect(() => {
-    console.log(object);
-  }, [object]);
+    console.log('Data Lampiran:', data);
+  }, [data]);
+
   return (
     <>
       <Typography variant="h4" gutterBottom>
@@ -57,75 +43,25 @@ const Lampiran = () => {
           <Typography variant="h6" gutterBottom>
             Berisikan tentang lampiran data yang diperlukan dalam pembuatan proposal.
           </Typography>
-          <Stack direction="row" spacing={2}>
-            <Select
-              displayEmpty
-              readOnly={false}
-              value={object.category || ''}
-              onChange={handleLampiran.oncategory}
-              inputProps={{ 'aria-label': 'Without label' }}
-              sx={{ width: '10rem' }}
-            >
-              <MenuItem disabled value="">
-                <em>Kategori</em>
-              </MenuItem>
-              {ref.map((o) => (
-                <MenuItem key={o.code} value={o.value}>
-                  {o.value}
-                </MenuItem>
-              ))}
-            </Select>
-            {object?.category === 'Identitas' && (
-              <Select
-                displayEmpty
-                readOnly={false}
-                value={object.role_person || ''}
-                onChange={handleLampiran.onchange}
-                inputProps={{ 'aria-label': 'Without label' }}
-                sx={{ width: '10rem' }}
-                name="role_person"
-              >
-                <MenuItem disabled value="">
-                  <em>Jabatan</em>
-                </MenuItem>
-                {id.map((o) => (
-                  <MenuItem key={`${o.code}-${o.value}`} value={o.value}>
-                    {o.value}
-                  </MenuItem>
+          <TabContext value={value}>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+              <TabList onChange={handleChange} aria-label="lampiran tabs">
+                {tabs?.map((item) => (
+                  <Tab key={item.code} label={item.label} value={item.code} aria-controls={`tabpanel-${item.code}`} />
                 ))}
-              </Select>
-            )}
-          </Stack>
-
-          {/* <GeneralForm
-            buttonForm="Tambah Pustaka Buku"
-            buttonDisable={handleTinjauan.disable}
-            formData={object}
-            errors={errors}
-            Fields={Fields}
-            handleChange={handleTinjauan.onchange}
-            handleSubmit={handleTinjauan.add}
-          />
-          <TableGrid
-            key="grid-tinjauan"
-            columns={[
-              { name: 'No', field: 'no', width: '4rem' },
-              { name: 'Judul', field: 'title' }
-            ]}
-            rows={data}
-            expand={true}
-            action
-            onEdit={handleTinjauan.edit}
-            onDelete={handleTinjauan.delete}
-            onUpdate={handleTinjauan.update}
-            actionedit={false}
-            detail={handleTinjauan.detail}
-          />*/}
+              </TabList>
+            </Box>
+            {tabs?.map((item) => (
+              <TabPanel key={item.code} value={item.code}>
+                {item.component}
+              </TabPanel>
+            ))}
+          </TabContext>
         </Grid>
       </Grid>
 
       <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 4 }}>
-        <Button variant="contained" color="success">
+        <Button variant="contained" color="success" onClick={handleLampiran.save}>
           Simpan Lampiran
         </Button>
       </Stack>

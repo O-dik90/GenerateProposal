@@ -2,51 +2,34 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import axiosInstance from 'api/base-url';
 
-// Create async thunks for API calls
-export const masterLomba = createAsyncThunk('master/list-lomba', async (params) => {
-  const response = await axiosInstance.post('/master-dropdown', params);
-  return response.data;
-});
-export const masterPkm = createAsyncThunk('master/list-pkm', async (params) => {
-  const response = await axiosInstance.post('/master-dropdown', params);
-  return response.data;
-});
-export const masterTahunLomba = createAsyncThunk('master/list-tahun', async (params) => {
-  const response = await axiosInstance.post('/master-dropdown', params);
-  return response.data;
-});
+// Reusable async thunk function for API calls
+const fetchMasterData = (endpoint) =>
+  createAsyncThunk(endpoint, async (params) => {
+    const response = await axiosInstance.post('/master-dropdown', params);
+    return response.data;
+  });
+const fetchMasterDapus = (endpoint) =>
+  createAsyncThunk(endpoint, async (params) => {
+    const response = await axiosInstance.post('/master-dapus', params);
+    return response.data;
+  });
 
-export const masterDapusStyle = createAsyncThunk('master/list-dapus-style', async (params) => {
-  const response = await axiosInstance.post('/master-dapus', params);
-  return response.data;
-});
-
-export const masterDapusRef = createAsyncThunk('master/list-dapus-ref', async (params) => {
-  const response = await axiosInstance.post('/master-dapus', params);
-  return response.data;
-});
-
-export const masterLampiranRef = createAsyncThunk('master/list-lampiran-ref', async (params) => {
-  const response = await axiosInstance.post('/master-dropdown', params);
-  return response.data;
-});
-export const masterLampiranID = createAsyncThunk('master/list-lampiran-id', async (params) => {
-  const response = await axiosInstance.post('/master-dropdown', params);
-  return response.data;
-});
+// Define all thunks
+export const masterLomba = fetchMasterData('master/list-lomba');
+export const masterPkm = fetchMasterData('master/list-pkm');
+export const masterTahunLomba = fetchMasterData('master/list-tahun');
+export const masterLampiranRole = fetchMasterData('master/list-lampiran-role');
+export const masterGender = fetchMasterData('master/list-gender');
+export const masterDapusStyle = fetchMasterDapus('master/list-dapus-style');
+export const masterDapusRef = fetchMasterDapus('master/list-dapus-ref');
 
 const initialState = {
   lomba: [],
   pkm: [],
-  tahun_lomba: [],
-  dapus: {
-    style: [],
-    reference: []
-  },
-  lampiran: {
-    id: [],
-    ref: []
-  },
+  tahunLomba: [],
+  gender: [],
+  dapus: { style: [], reference: [] },
+  lampiran: { role: [] },
   loading: false,
   error: null
 };
@@ -55,65 +38,46 @@ const masterSlice = createSlice({
   name: 'master',
   initialState,
   reducers: {
-    clearProposal: (state) => {
-      state.master = initialState;
-    }
+    clearMaster: () => initialState
   },
   extraReducers: (builder) => {
+    const handleFulfilled = (state, action, key) => {
+      state.loading = false;
+      state[key] = action.payload.data;
+      state.error = null;
+    };
+
+    const dapusFulfilled = (state, action, key) => {
+      state.loading = false;
+      state.dapus[key] = action.payload.data;
+      state.error = null;
+    };
+    const lampiranFulfilled = (state, action, key) => {
+      state.loading = false;
+      state.lampiran[key] = action.payload.data;
+      state.error = null;
+    };
+
+    const handleRejected = (state, action) => {
+      state.loading = false;
+      state.error = action.error.message;
+    };
+
     builder
-      // Master Data
-      .addCase(masterLomba.fulfilled, (state, action) => {
-        state.loading = false;
-        state.lomba = action.payload.data;
-        state.error = null;
-      })
-      .addCase(masterLomba.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message;
-      })
-      .addCase(masterPkm.fulfilled, (state, action) => {
-        state.loading = false;
-        state.pkm = action.payload.data;
-        state.error = null;
-      })
-      .addCase(masterPkm.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message;
-      })
-      .addCase(masterTahunLomba.fulfilled, (state, action) => {
-        state.loading = false;
-        state.tahun_lomba = action.payload.data;
-        state.error = null;
-      })
-      .addCase(masterTahunLomba.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message;
-      })
-      // Master Dapus
-      .addCase(masterDapusStyle.fulfilled, (state, action) => {
-        state.loading = false;
-        state.dapus.style = action.payload.data;
-        state.error = null;
-      })
-      .addCase(masterDapusStyle.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message;
-      })
-      .addCase(masterDapusRef.fulfilled, (state, action) => {
-        state.loading = false;
-        state.dapus.reference = action.payload.data;
-        state.error = null;
-      })
-      .addCase(masterLampiranRef.fulfilled, (state, action) => {
-        state.loading = false;
-        state.lampiran.ref = action.payload.data;
-        state.error = null;
-      })
-      .addCase(masterLampiranID.fulfilled, (state, action) => {
-        state.loading = false;
-        state.lampiran.id = action.payload.data;
-        state.error = null;
-      });
+      .addCase(masterLomba.fulfilled, (state, action) => handleFulfilled(state, action, 'lomba'))
+      .addCase(masterLomba.rejected, handleRejected)
+      .addCase(masterPkm.fulfilled, (state, action) => handleFulfilled(state, action, 'pkm'))
+      .addCase(masterPkm.rejected, handleRejected)
+      .addCase(masterTahunLomba.fulfilled, (state, action) => handleFulfilled(state, action, 'tahunLomba'))
+      .addCase(masterTahunLomba.rejected, handleRejected)
+      .addCase(masterDapusStyle.fulfilled, (state, action) => dapusFulfilled(state, action, 'style'))
+      .addCase(masterDapusStyle.rejected, handleRejected)
+      .addCase(masterDapusRef.fulfilled, (state, action) => dapusFulfilled(state, action, 'reference'))
+      .addCase(masterDapusRef.rejected, handleRejected)
+      .addCase(masterLampiranRole.fulfilled, (state, action) => lampiranFulfilled(state, action, 'role'))
+      .addCase(masterLampiranRole.rejected, handleRejected)
+      .addCase(masterGender.fulfilled, (state, action) => handleFulfilled(state, action, 'gender'))
+      .addCase(masterGender.rejected, handleRejected);
   }
 });
 

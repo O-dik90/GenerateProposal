@@ -1,13 +1,9 @@
 export const ID_INIT = {
   no: 0,
-  category: '',
   role_person: '',
   name: '',
-  gener: '',
-  id_no: {
-    NIDN: '',
-    NIM: ''
-  },
+  gender: '',
+  id_no: '',
   place_of_birth: '',
   birthday: '',
   email: '',

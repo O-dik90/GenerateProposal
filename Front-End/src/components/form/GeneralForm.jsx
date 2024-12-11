@@ -3,10 +3,9 @@ import { Box, Button, Grid, MenuItem, TextField } from '@mui/material';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-const GeneralForm = ({ buttonForm, buttonDisable, formData, errors, Fields, handleChange, handleSubmit }) => {
+const GeneralForm = ({ buttonForm, buttonDisable = false, formData, errors = {}, Fields, handleChange, handleSubmit }) => {
   const renderField = (field) => {
     if (field.type === 'select') {
-      // Render Select Dropdown
       return (
         <TextField
           select

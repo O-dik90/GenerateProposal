@@ -16,7 +16,7 @@ const GeneralForm = ({ buttonForm, buttonDisable = false, formData, errors = {},
           fullWidth
           variant="outlined"
           error={!!errors[field.name]}
-          helperText={errors[field.name] || ''}
+          helperText={errors[field.name] || field.helperText || ''}
         >
           {field.options.map((option) => (
             <MenuItem key={option.value} value={option.value}>
@@ -37,7 +37,7 @@ const GeneralForm = ({ buttonForm, buttonDisable = false, formData, errors = {},
           fullWidth
           variant="outlined"
           error={!!errors[field.name]}
-          helperText={errors[field.name] || ''}
+          helperText={errors[field.name] || field.helperText || ''}
           InputLabelProps={{
             shrink: true
           }}
@@ -58,7 +58,7 @@ const GeneralForm = ({ buttonForm, buttonDisable = false, formData, errors = {},
         fullWidth
         variant="outlined"
         error={!!errors[field.name]}
-        helperText={errors[field.name] || ''}
+        helperText={errors[field.name] || field.helperText || ''}
         InputProps={field.inputProps}
       />
     );
@@ -100,7 +100,8 @@ GeneralForm.propTypes = {
           value: PropTypes.string.isRequired,
           label: PropTypes.string.isRequired
         })
-      )
+      ),
+      helperText: PropTypes.string // Add helperText prop here
     })
   ).isRequired,
   handleChange: PropTypes.func.isRequired,

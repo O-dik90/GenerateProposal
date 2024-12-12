@@ -94,8 +94,12 @@ const Identitas = () => {
 
   useEffect(() => {
     const loadMasterData = async () => {
-      if (role?.length <= 0) await dispatch(masterLampiranRole({ source_name: 'ROLE_IDENTITAS' }));
-      if (gender?.length <= 0) await dispatch(masterGender({ source_name: 'GENDER' }));
+      if (role.length <= 0) {
+        await dispatch(masterLampiranRole({ source_name: 'ROLE_IDENTITAS' }));
+      }
+      if (gender.length <= 0) {
+        await dispatch(masterGender({ source_name: 'GENDER' }));
+      }
     };
 
     loadMasterData();
@@ -140,7 +144,7 @@ const Identitas = () => {
           { name: 'Nama Lengkap', field: 'name' }
         ]}
         rows={data}
-        expand
+        expand={false}
         action
         onEdit={handleIdentitas.edit}
         onDelete={handleIdentitas.delete}

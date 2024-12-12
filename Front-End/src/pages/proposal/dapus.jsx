@@ -15,14 +15,16 @@ export const BOOK_INIT = {
   author: [], //required
   publisher: '', //required
   publisher_place: '', //required
+  date_parts: '',
   issued: { date_parts: [] }, //required
   edition: '',
   volume: '',
-  isbn: '',
+  ISBN: '',
   page: '',
   abstract: '',
-  url: '',
-  access: { date_parts: [] },
+  URL: '',
+  access_date: '',
+  accessed: { date_parts: [] },
   style: '',
   status: false
 };
@@ -34,15 +36,17 @@ export const JOURNAL_INIT = {
   container_title: '', //required
   publisher: '',
   publisher_place: '',
+  date_parts: '',
   issued: { date_parts: [] }, //required
   volume: '', //required
   issue: '', //required
   page: '', //required
-  doi: '',
+  DOI: '',
   issn: '',
   abstract: '',
-  url: '',
-  access: { date_parts: [] },
+  URL: '',
+  access_date: '',
+  accessed: { date_parts: [] },
   style: '',
   status: false
 };
@@ -53,9 +57,11 @@ export const URL_INIT = {
   author: [], //required
   container_title: '',
   publisher: '',
-  url: '', //required
+  URL: '', //required
+  date_parts: '',
   issued: { date_parts: [] }, //required
-  access: { date_parts: [] },
+  access_date: '',
+  accessed: { date_parts: [] },
   abstract: '',
   language: '',
   note: '',
@@ -92,7 +98,21 @@ const Dapus = () => {
       { name: 'title', label: 'Judul', type: 'text', size: 4 },
       { name: 'publisher', label: 'Penerbit', type: 'text', size: 2 },
       { name: 'publisher_place', label: 'Tempat Terbit', type: 'text', size: 4 },
-      { name: 'date_parts', label: 'Tanggal Terbit', type: 'date', size: 2 }
+      { name: 'date_parts', label: 'Tanggal Terbit', type: 'date', size: 2 },
+      { name: 'ISBN', label: 'ISBN', helperText: 'Opsional / Tidak wajib', type: 'text', size: 2 },
+      { name: 'edition', label: 'Edisi', helperText: 'Opsional / Tidak wajib', type: 'text', size: 2 },
+      { name: 'volume', label: 'Volume', helperText: 'Opsional / Tidak wajib', type: 'text', size: 2 },
+      { name: 'page', label: 'Halaman', helperText: 'Opsional / Tidak wajib', type: 'text', size: 2 },
+      { name: 'URL', label: 'URL', helperText: 'Opsional / Tidak wajib', type: 'text', size: 2 },
+      { name: 'access_date', label: 'Tanggal Akses', helperText: 'Opsional / Tidak wajib', type: 'date', size: 2 },
+      {
+        name: 'abstract',
+        label: 'Abstrak',
+        helperText: 'Opsional / Tidak wajib',
+        type: 'textarea',
+        size: 12,
+        rows: 4
+      }
     ],
     jurnal: [
       { name: 'title', label: 'Judul', type: 'text', size: 4 },
@@ -100,12 +120,23 @@ const Dapus = () => {
       { name: 'volume', label: 'Volume', type: 'text', size: 2 },
       { name: 'issue', label: 'Edisi', type: 'text', size: 2 },
       { name: 'page', label: 'Halaman', type: 'text', size: 2 },
-      { name: 'date_parts', label: 'Tanggal Terbit', type: 'date', size: 4 }
+      { name: 'date_parts', label: 'Tanggal Terbit', type: 'date', size: 2 },
+      { name: 'publisher', label: 'Penerbit', type: 'text', size: 3 },
+      { name: 'publisher_place', label: 'Tempat Terbit', type: 'text', size: 3 },
+      { name: 'DOI', label: 'DOI', helperText: 'Opsional / Tidak wajib', type: 'text', size: 4 },
+      { name: 'access_date', label: 'Tanggal Akses', helperText: 'Opsional / Tidak wajib', type: 'date', size: 2 },
+      { name: 'URL', label: 'URL', helperText: 'Opsional / Tidak wajib', type: 'text', size: 6 },
+      { name: 'issn', label: 'ISSN', helperText: 'Opsional / Tidak wajib', type: 'text', size: 4 },
+      { name: 'abstract', label: 'Abstrak', helperText: 'Opsional / Tidak wajib', type: 'textarea', size: 12, rows: 4 }
     ],
     url: [
       { name: 'title', label: 'Judul', type: 'text', size: 4 },
       { name: 'url', label: 'URL', type: 'text', size: 4 },
-      { name: 'date_parts', label: 'Tanggal Akses', type: 'date', size: 4 }
+      { name: 'date_parts', label: 'Tanggal Publish', type: 'date', size: 4 },
+      { name: 'access_date', label: 'Tanggal Akses', type: 'date', size: 4 },
+      { name: 'publisher', label: 'Penerbit', helperText: 'Opsional / Tidak wajib', type: 'text', size: 4 },
+      { name: 'note', label: 'Catatan', helperText: 'Opsional / Tidak wajib', type: 'text', size: 4 },
+      { name: 'abstract', label: 'Abstrak', helperText: 'Opsional / Tidak wajib', type: 'textarea', size: 12, rows: 4 }
     ]
   };
   const validateAuthor = () => {
@@ -215,7 +246,7 @@ const Dapus = () => {
     }
 
     const dateArray = object.date_parts?.split('-').map(Number) || [];
-    const accessDateArray = object.access_date_parts?.split('-').map(Number) || [];
+    const dateAccess = object.access?.split('-').map(Number) || [];
 
     // Prepare the new data entry
     const newEntry = {
@@ -229,8 +260,8 @@ const Dapus = () => {
       data_additional: author.data
     };
 
-    if (type === 'webpage') {
-      newEntry.access = { date_parts: [accessDateArray] };
+    if (type === 'book' || type === 'webpage') {
+      newEntry.accessed = { date_parts: [dateAccess] };
     }
 
     setData((prevData) => [...prevData, newEntry]);
@@ -303,6 +334,7 @@ const Dapus = () => {
           let updatedItem = {
             ...item,
             ...object,
+            status: false,
             author: author.data.map((o) => ({
               given: o.given,
               family: o.family
@@ -374,11 +406,11 @@ const Dapus = () => {
 
       try {
         const dataPustaka = {
-          id: dapus?.[0]?.id,
-          proposals_id: dapus?.[0]?.proposals_id,
-          data: data
+          id: dapus.id,
+          proposals_id: dapus.proposals_id,
+          bab_title: dapus.bab_title,
+          json_data: data
         };
-        console.log(dataPustaka);
         const res = await dispatch(updateDapus(dataPustaka));
 
         if (updateDapus.fulfilled.match(res)) {
@@ -528,7 +560,8 @@ const Dapus = () => {
       <TableGrid
         columns={[
           { name: 'No', field: 'no', width: '4rem' },
-          { name: 'Judul', field: 'title' }
+          { name: 'Judul', field: 'title' },
+          { name: 'Daftar Pustaka', field: 'citation' }
         ]}
         rows={data}
         action

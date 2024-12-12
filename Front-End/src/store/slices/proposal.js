@@ -72,7 +72,6 @@ export const updateBabPendahuluan = createAsyncThunk('proposal/update-pendahulua
 
 export const updateDapus = createAsyncThunk('proposal/update-dapus', async (params, { rejectWithValue }) => {
   try {
-    console.log('api', params);
     const res = await axiosInstance.put(`/update-dapus`, params);
 
     return res.data;
@@ -191,7 +190,6 @@ const proposalSlice = createSlice({
       })
       .addCase(updateDapus.fulfilled, (state, action) => {
         state.loading = false;
-        state.dapus = action.payload.data;
         state.message = action.payload.message;
         state.error = null;
       })

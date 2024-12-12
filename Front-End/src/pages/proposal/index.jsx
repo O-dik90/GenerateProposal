@@ -49,27 +49,28 @@ const ProposalTable = () => {
     [btnAction, setBtnAction] = useState('Buat');
 
   const { data, loading } = useSelector((state) => state.app.proposal),
-    { pkm, lomba, tahun_lomba } = useSelector((state) => state.app.masterData);
+    { pkm, lomba, tahunLomba } = useSelector((state) => state.app.masterData);
 
   useEffect(() => {
     dispatch(fetchProposal(1));
   }, [dispatch]);
 
   useEffect(() => {
+    console.log(pkm);
     const loadMasterData = async () => {
-      if (pkm.length === 0) {
+      if (pkm.length <= 0) {
         await dispatch(masterPkm({ source_name: 'PKM' }));
       }
-      if (lomba.length === 0) {
+      if (lomba.length <= 0) {
         await dispatch(masterLomba({ source_name: 'LOMBA' }));
       }
-      if (tahun_lomba.length === 0) {
+      if (tahunLomba.length <= 0) {
         await dispatch(masterTahunLomba({ source_name: 'TAHUN_LOMBA' }));
       }
     };
 
     loadMasterData();
-  }, [dispatch, pkm.length, lomba.length, tahun_lomba.length]);
+  }, [dispatch, pkm, lomba, tahunLomba]);
 
   const columns = [
     {
@@ -276,7 +277,7 @@ const ProposalTable = () => {
                 <MenuItem disabled value="">
                   <em>Pilih Lomba</em>
                 </MenuItem>
-                {lomba.map((item) => (
+                {lomba?.map((item) => (
                   <MenuItem key={item.id} value={item.code}>
                     {item.value}
                   </MenuItem>
@@ -286,7 +287,7 @@ const ProposalTable = () => {
                 <MenuItem disabled value="">
                   <em>Pilih Tahun</em>
                 </MenuItem>
-                {tahun_lomba.map((item) => (
+                {tahunLomba.map((item) => (
                   <MenuItem key={item.id} value={item.code}>
                     {item.value}
                   </MenuItem>
@@ -298,7 +299,7 @@ const ProposalTable = () => {
                 <MenuItem disabled value="">
                   <em>Pilih PKM</em>
                 </MenuItem>
-                {pkm.map((item) => (
+                {pkm?.map((item) => (
                   <MenuItem key={item.id} value={item.code}>
                     {item.value}
                   </MenuItem>

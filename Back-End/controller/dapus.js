@@ -1,20 +1,23 @@
 const ProposalBab = require('../models/proposal-bab');
 const Cite = require('citation-js');
 
-const formatCitations = (citations, style) => {
-  return citations.map((citationData) => {
-    try {
-      const citation = new Cite(citationData);
-
-      return citation.format('bibliography', {
-        format: 'text',
-        style: style,
-        lang: 'en',
-      });
-    } catch (error) {
-      return `Error formatting citation: ${error.message}`;
+const formatCitations = (citationData) => {
+  try {
+    if (typeof citationData !== 'string') {
+      citationData = JSON.stringify(citationData);
     }
-  });
+    // Replace all underscores with hyphens
+    citationData = citationData.replace(/_/g, '-');
+    const citation = new Cite(citationData);
+
+    return citation.format('bibliography', {
+      format: 'text',
+      style: citationData.style || 'mla',
+      lang: 'en',
+    });
+  } catch (error) {
+    return `Error formatting citation: ${error.message}`;
+  }
 };
 
 const sortCitations = (citations) => {
@@ -28,7 +31,6 @@ const sortCitations = (citations) => {
 const genCitations = async (req, res) => {
   try {
     const citationsArray = req.body.citations;
-    const style = req.body.style || 'mla';
 
     if (!Array.isArray(citationsArray) || citationsArray.length === 0) {
       return res.status(400).json({
@@ -36,7 +38,7 @@ const genCitations = async (req, res) => {
       });
     }
 
-    const formattedCitations = formatCitations(citationsArray, style);
+    const formattedCitations = formatCitations(citationsArray);
     const sortedCitations = sortCitations(formattedCitations);
 
     return res.json({
@@ -60,13 +62,23 @@ const updateDapus = async (req, res) => {
         message: 'Invalid input: Missing required field `id`.',
       });
     }
+    if (!params?.json_data) {
+      return res.status(400).json({
+        message: 'Invalid input: Missing required field `json_data`.',
+      });
+    }
 
-    console.log(params.data);
-    // add new object for generate citations
+    const newData = params.json_data.map((data) => {
+      const genCitations = formatCitations(data);
+      return {
+        ...data,
+        citation: genCitations,
+      };
+    });
 
     const [updateData] = await ProposalBab.updateBab(
       params.id,
-      JSON.stringify(params.data)
+      JSON.stringify(newData)
     );
 
     if (!updateData || updateData.length === 0) {

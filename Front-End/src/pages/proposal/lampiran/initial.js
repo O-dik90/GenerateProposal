@@ -13,12 +13,14 @@ export const ID_INIT = {
     awards: [],
     education: [],
     course: [],
+    research: [],
     comunity_service: []
   }
 };
 
 export const ACT_INIT = {
   no: 0,
+  type: '',
   act_name: '',
   act_role: '',
   act_start_date: '',
@@ -27,6 +29,7 @@ export const ACT_INIT = {
 
 export const AWARDS_INIT = {
   no: 0,
+  type: '',
   award_name: '',
   award_year: '',
   award_giver: ''
@@ -34,6 +37,7 @@ export const AWARDS_INIT = {
 
 export const EDU_INIT = {
   no: 0,
+  type: '',
   degree: '',
   field_of_study: '',
   institution: '',
@@ -41,13 +45,23 @@ export const EDU_INIT = {
 };
 export const COURSE_INIT = {
   no: 0,
+  type: '',
   name: '',
   course_type: '',
   credits: ''
 };
 
+export const RESEARCH_INIT = {
+  no: 0,
+  type: '',
+  title: '',
+  source: '',
+  year: ''
+};
+
 export const COMU_INIT = {
   no: 0,
+  type: '',
   title: '',
   source: '',
   year: ''

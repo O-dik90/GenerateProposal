@@ -1,10 +1,10 @@
+import { ACT_INIT, AWARDS_INIT, ID_INIT } from './initial';
 import { MenuItem, Select, Stack } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { masterGender, masterLampiranRole } from 'store/slices/master-data';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { GeneralForm } from 'components/form/GeneralForm';
-import { ID_INIT } from './initial';
 import TableGrid from 'components/table/TableGrid';
 
 const Identitas = () => {
@@ -13,6 +13,7 @@ const Identitas = () => {
   const dispatch = useDispatch(),
     [object, setObject] = React.useState(ID_INIT),
     [data, setData] = useState([]),
+    [detail, setDetail] = useState([]),
     [errors, setErrors] = useState({});
   const Fields = {
     personal: [
@@ -32,6 +33,12 @@ const Identitas = () => {
       },
       { name: 'place_of_birth', label: 'Tempat Lahir', type: 'text', size: 3 },
       { name: 'birthday', label: 'Tanggal Lahir', type: 'date', size: 3 }
+    ],
+    kegiatan: [
+      { name: 'act_name', label: 'Nama Kegiatan', type: 'text', size: 6 },
+      { name: 'act_role', label: 'Status Kegiatan', type: 'text', size: 6 },
+      { name: 'act_start_date', label: 'Tanggal Mulai Kegiatan', type: 'date', size: 6 },
+      { name: 'act_end_date', label: 'Tanggal Selesai Kegiatan', type: 'date', size: 6 }
     ]
   };
 
@@ -89,6 +96,106 @@ const Identitas = () => {
       const updatedData = [...data];
       updatedData.splice(param, 1);
       setData(updatedData);
+    },
+    detail: (param) => {
+      const handleDetail = {
+        ontype: (e) => {
+          const { value } = e.target;
+          switch (value) {
+            case 'activities':
+              setDetail({
+                ...ACT_INIT,
+                type: value
+              });
+              break;
+            case 'award':
+              setDetail({
+                ...AWARDS_INIT,
+                type: value
+              });
+              break;
+          }
+        },
+        onchange: (e) => {
+          const { name, value } = e.target;
+          setDetail({
+            ...detail,
+            [name]: value
+          });
+        }
+      };
+      return (
+        <Stack direction="column" spacing={2}>
+          <Select id="type" displayEmpty value={detail.type || ''} onChange={handleDetail.onchange} sx={{ width: '15rem' }} name="type">
+            <MenuItem disabled value="">
+              <em>Data Tambahan</em>
+            </MenuItem>
+            {(param?.role_person === 'KETUA' || param?.role_person === 'ANGGOTA') && [
+              <MenuItem key="activities" value="activities">
+                Kegiatan
+              </MenuItem>,
+              <MenuItem key="award" value="award">
+                Penghargan
+              </MenuItem>
+            ]}
+            {param?.role_person === 'DOSEN' && [
+              <MenuItem key="education" value="education">
+                Riwayat Pendidikan
+              </MenuItem>,
+              <>
+                <MenuItem key="course" value="course">
+                  Tri Dharma - Pendidikan
+                </MenuItem>
+                <MenuItem key="research" value="research">
+                  Tri Dharma - Penelitian
+                </MenuItem>
+                <MenuItem key="comunity_service" value="comunity_service">
+                  Tri Dharma - Penelitian
+                </MenuItem>
+              </>
+            ]}
+          </Select>
+          <GeneralForm
+            buttonForm="Tambah Detail"
+            buttonDisable={false}
+            formData={detail}
+            errors={errors}
+            Fields={Fields.kegiatan}
+            handleChange={() => {}}
+            handleSubmit={() => {}}
+          />
+          <TableGrid
+            key={`grid-detail-kegiatan`}
+            columns={[
+              { name: 'No', field: 'no', width: '4rem' },
+              { name: 'Jabatan', field: 'role_person', width: '6rem' },
+              { name: 'Nama Lengkap', field: 'name' }
+            ]}
+            rows={[]}
+            expand={false}
+            action
+            onEdit={() => {}}
+            onDelete={() => {}}
+            onUpdate={() => {}}
+            detail={''}
+          />
+          <TableGrid
+            key={`grid-detail-penghargaan`}
+            columns={[
+              { name: 'No', field: 'no', width: '4rem' },
+              { name: 'Jabatan', field: 'role_person', width: '6rem' },
+              { name: 'Nama Lengkap', field: 'name' }
+            ]}
+            rows={[]}
+            expand={false}
+            action
+            onEdit={() => {}}
+            onDelete={() => {}}
+            onUpdate={() => {}}
+            detail={''}
+          />
+        </Stack>
+      );
     }
   };
 
@@ -106,8 +213,8 @@ const Identitas = () => {
   }, [dispatch, gender, role]);
 
   useEffect(() => {
-    console.log(data);
-  }, [data]);
+    console.log(detail);
+  }, [data, detail]);
   return (
     <Stack direction="column" spacing={2}>
       <Select
@@ -144,15 +251,20 @@ const Identitas = () => {
           { name: 'Nama Lengkap', field: 'name' }
         ]}
         rows={data}
-        expand={false}
+        expand
         action
         onEdit={handleIdentitas.edit}
         onDelete={handleIdentitas.delete}
         onUpdate={handleIdentitas.update}
-        detail={''}
+        detail={handleIdentitas.detail}
       />
     </Stack>
   );
+};
+
+export const AdditionalIdentitas = ({ data = [] }) => {
+  console.log(data);
+  return <>test</>;
 };
 
 export { Identitas };

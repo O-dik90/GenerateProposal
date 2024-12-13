@@ -8,6 +8,7 @@ export const ID_INIT = {
   birthday: '',
   email: '',
   phone: '',
+  status: false,
   add_data: {
     activities: [],
     awards: [],
@@ -35,18 +36,18 @@ export const AWARDS_INIT = {
   award_giver: ''
 };
 
-export const EDU_INIT = {
+export const EDUCATION_INIT = {
   no: 0,
   type: '',
   degree: '',
-  field_of_study: '',
+  major: '',
   institution: '',
   graduation_year: ''
 };
 export const COURSE_INIT = {
   no: 0,
   type: '',
-  name: '',
+  course_name: '',
   course_type: '',
   credits: ''
 };
@@ -54,17 +55,17 @@ export const COURSE_INIT = {
 export const RESEARCH_INIT = {
   no: 0,
   type: '',
-  title: '',
-  source: '',
-  year: ''
+  research_title: '',
+  research_source: '',
+  research_year: ''
 };
 
-export const COMU_INIT = {
+export const COMMUNITY_INIT = {
   no: 0,
   type: '',
-  title: '',
-  source: '',
-  year: ''
+  com_title: '',
+  com_source: '',
+  com_year: ''
 };
 
 export const STRUCTURE_INIT = {

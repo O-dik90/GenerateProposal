@@ -1,52 +1,51 @@
-import { ACT_INIT, AWARDS_INIT, ID_INIT } from './initial';
-import { MenuItem, Select, Stack } from '@mui/material';
+import { ACT_INIT, AWARDS_INIT, COMMUNITY_INIT, COURSE_INIT, EDUCATION_INIT, ID_INIT, RESEARCH_INIT } from './initial';
+import { Box, Grid, MenuItem, Select, Stack, Typography } from '@mui/material';
+import { Fields, columns } from './initial-form';
 import React, { useEffect, useState } from 'react';
 import { masterGender, masterLampiranRole } from 'store/slices/master-data';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { GeneralForm } from 'components/form/GeneralForm';
+import PropTypes from 'prop-types';
 import TableGrid from 'components/table/TableGrid';
 
 const Identitas = () => {
   const { gender } = useSelector((state) => state.app.masterData);
   const { role } = useSelector((state) => state.app.masterData.lampiran);
   const dispatch = useDispatch(),
-    [object, setObject] = React.useState(ID_INIT),
-    [data, setData] = useState([]),
-    [detail, setDetail] = useState([]),
-    [errors, setErrors] = useState({});
-  const Fields = {
-    personal: [
-      { name: 'name', label: 'Nama Lengkap', type: 'text', size: 6 },
-      { name: 'email', label: 'Alamat Email', type: 'email', size: 3 },
-      { name: 'phone', label: 'No Telepon/HP', type: 'text', size: 3 },
-      { name: 'id_no', label: 'NIM / NIDM', type: 'text', size: 4 },
+    [object, setObject] = useState(ID_INIT),
+    [data, setData] = useState([
       {
-        name: 'gender',
-        label: 'Jenis Kelamin',
-        type: 'select',
-        options: [
-          { value: 'L', label: 'Laki-laki' },
-          { value: 'P', label: 'Perempuan' }
-        ],
-        size: 2
-      },
-      { name: 'place_of_birth', label: 'Tempat Lahir', type: 'text', size: 3 },
-      { name: 'birthday', label: 'Tanggal Lahir', type: 'date', size: 3 }
-    ],
-    kegiatan: [
-      { name: 'act_name', label: 'Nama Kegiatan', type: 'text', size: 6 },
-      { name: 'act_role', label: 'Status Kegiatan', type: 'text', size: 6 },
-      { name: 'act_start_date', label: 'Tanggal Mulai Kegiatan', type: 'date', size: 6 },
-      { name: 'act_end_date', label: 'Tanggal Selesai Kegiatan', type: 'date', size: 6 }
-    ]
-  };
+        no: 1,
+        role_person: 'KETUA',
+        name: 'odik yudi nugroho',
+        gender: '',
+        id_no: '',
+        place_of_birth: '',
+        birthday: '',
+        email: '',
+        phone: '',
+        add_data: {
+          activities: [],
+          awards: [],
+          education: [],
+          course: [],
+          research: [],
+          comunity_service: []
+        }
+      }
+    ]),
+    [errors, setErrors] = useState({});
 
   const validate = () => {
     const newErrors = {};
     if (!object.name) newErrors.name = 'Nama wajib diisi. Untuk Dosen disertakan gelar';
     if (!object.email) newErrors.email = 'Email wajib diisi';
     if (!object.phone) newErrors.phone = 'No Telepon wajib diisi';
+    if (!object.gender) newErrors.gender = 'Jenis Kelamin wajib diisi';
+    if (!object.id_no) newErrors.id_no = 'NIM / NIDM wajib diisi';
+    if (!object.place_of_birth) newErrors.place_of_birth = 'Tempat Lahir wajib diisi';
+    if (!object.birthday) newErrors.birthday = 'Tanggal Lahir wajib diisi';
 
     return newErrors;
   };
@@ -65,6 +64,7 @@ const Identitas = () => {
 
       if (Object.keys(newErrors).length > 0) {
         setErrors(newErrors);
+        return;
       } else {
         console.log('Form Data Submitted:', object);
         setErrors({});
@@ -97,106 +97,7 @@ const Identitas = () => {
       updatedData.splice(param, 1);
       setData(updatedData);
     },
-    detail: (param) => {
-      const handleDetail = {
-        ontype: (e) => {
-          const { value } = e.target;
-          switch (value) {
-            case 'activities':
-              setDetail({
-                ...ACT_INIT,
-                type: value
-              });
-              break;
-            case 'award':
-              setDetail({
-                ...AWARDS_INIT,
-                type: value
-              });
-              break;
-          }
-        },
-        onchange: (e) => {
-          const { name, value } = e.target;
-          setDetail({
-            ...detail,
-            [name]: value
-          });
-        }
-      };
-      return (
-        <Stack direction="column" spacing={2}>
-          <Select id="type" displayEmpty value={detail.type || ''} onChange={handleDetail.onchange} sx={{ width: '15rem' }} name="type">
-            <MenuItem disabled value="">
-              <em>Data Tambahan</em>
-            </MenuItem>
-            {(param?.role_person === 'KETUA' || param?.role_person === 'ANGGOTA') && [
-              <MenuItem key="activities" value="activities">
-                Kegiatan
-              </MenuItem>,
-              <MenuItem key="award" value="award">
-                Penghargan
-              </MenuItem>
-            ]}
-            {param?.role_person === 'DOSEN' && [
-              <MenuItem key="education" value="education">
-                Riwayat Pendidikan
-              </MenuItem>,
-              <>
-                <MenuItem key="course" value="course">
-                  Tri Dharma - Pendidikan
-                </MenuItem>
-                <MenuItem key="research" value="research">
-                  Tri Dharma - Penelitian
-                </MenuItem>
-                <MenuItem key="comunity_service" value="comunity_service">
-                  Tri Dharma - Penelitian
-                </MenuItem>
-              </>
-            ]}
-          </Select>
-          <GeneralForm
-            buttonForm="Tambah Detail"
-            buttonDisable={false}
-            formData={detail}
-            errors={errors}
-            Fields={Fields.kegiatan}
-            handleChange={() => {}}
-            handleSubmit={() => {}}
-          />
-          <TableGrid
-            key={`grid-detail-kegiatan`}
-            columns={[
-              { name: 'No', field: 'no', width: '4rem' },
-              { name: 'Jabatan', field: 'role_person', width: '6rem' },
-              { name: 'Nama Lengkap', field: 'name' }
-            ]}
-            rows={[]}
-            expand={false}
-            action
-            onEdit={() => {}}
-            onDelete={() => {}}
-            onUpdate={() => {}}
-            detail={''}
-          />
-          <TableGrid
-            key={`grid-detail-penghargaan`}
-            columns={[
-              { name: 'No', field: 'no', width: '4rem' },
-              { name: 'Jabatan', field: 'role_person', width: '6rem' },
-              { name: 'Nama Lengkap', field: 'name' }
-            ]}
-            rows={[]}
-            expand={false}
-            action
-            onEdit={() => {}}
-            onDelete={() => {}}
-            onUpdate={() => {}}
-            detail={''}
-          />
-        </Stack>
-      );
-    }
+    detail: (param) => <AdditionalData dataDetail={param} />
   };
 
   useEffect(() => {
@@ -212,14 +113,15 @@ const Identitas = () => {
     loadMasterData();
   }, [dispatch, gender, role]);
 
-  useEffect(() => {
-    console.log(detail);
-  }, [data, detail]);
+  // useEffect(() => {
+  //   console.log(act);
+  // }, [act]);
   return (
     <Stack direction="column" spacing={2}>
       <Select
         id="role_person"
         displayEmpty
+        readOnly={object.status}
         value={object.role_person}
         onChange={handleIdentitas.onchange}
         sx={{ width: '15rem' }}
@@ -234,22 +136,20 @@ const Identitas = () => {
           </MenuItem>
         ))}
       </Select>
-      <GeneralForm
-        buttonForm="Tambah Data"
-        buttonDisable={false}
-        formData={object}
-        errors={errors}
-        Fields={Fields.personal}
-        handleChange={handleIdentitas.onchange}
-        handleSubmit={handleIdentitas.add}
-      />
+      {object.role_person && (
+        <GeneralForm
+          buttonForm="Tambah Data"
+          buttonDisable={false}
+          formData={object}
+          errors={errors}
+          Fields={Fields.personal}
+          handleChange={handleIdentitas.onchange}
+          handleSubmit={handleIdentitas.add}
+        />
+      )}
       <TableGrid
         key={`grid-Identitas`}
-        columns={[
-          { name: 'No', field: 'no', width: '4rem' },
-          { name: 'Jabatan', field: 'role_person', width: '6rem' },
-          { name: 'Nama Lengkap', field: 'name' }
-        ]}
+        columns={columns.identitas}
         rows={data}
         expand
         action
@@ -262,9 +162,230 @@ const Identitas = () => {
   );
 };
 
-export const AdditionalIdentitas = ({ data = [] }) => {
-  console.log(data);
-  return <>test</>;
+export const AdditionalData = ({ dataDetail = {} }) => {
+  const [detail, setDetail] = useState({
+    act: [],
+    award: [],
+    education: [],
+    course: [],
+    research: [],
+    comunity_service: []
+  });
+
+  const [object, setObject] = useState({
+      act: ACT_INIT,
+      award: AWARDS_INIT,
+      education: EDUCATION_INIT,
+      course: COURSE_INIT,
+      research: RESEARCH_INIT,
+      comunity_service: COMMUNITY_INIT
+    }),
+    [errorDetail, setErrorDetail] = useState({});
+
+  const validate = (key) => {
+    const newErrors = {};
+
+    const validationRules = {
+      act: (data) => {
+        if (!data.act_name || !data.act_role || !data.act_start_date)
+          return { act_name: 'Wajib diisi', act_role: 'Wajib diisi', act_start_date: 'Wajib diisi' };
+      },
+      award: (data) => {
+        if (!data.award_name || !data.award_giver || !data.award_year)
+          return {
+            award_name: 'Wajib diisi',
+            award_giver: 'Wajib diisi',
+            award_year: 'Wajib diisi'
+          };
+      },
+      education: (data) => {
+        if (!data.degree || !data.institution || !data.major || !data.graduation_year)
+          return {
+            degree: 'Wajib diisi',
+            major: 'Wajib diisi',
+            institution: 'Wajib diisi',
+            graduation_year: 'Wajib diisi'
+          };
+      },
+      course: (data) => {
+        if (!data.course_name || !data.course_type || !data.credits)
+          return {
+            course_name: 'Wajib diisi',
+            course_type: 'Wajib diisi',
+            credits: 'Wajib diisi'
+          };
+      },
+      research: (data) => {
+        if (!data.research_title || !data.research_year || !data.research_source)
+          return {
+            research_title: 'Wajib diisi',
+            research_year: 'Wajib diisi',
+            research_source: 'Wajib diisi'
+          };
+      },
+      comunity_service: (data) => {
+        if (!data.com_title || isNaN(data.com_year) || !data.com_source)
+          return {
+            com_title: 'Wajib diisi',
+            com_year: 'Wajib diisi',
+            com_source: 'Wajib diisi'
+          };
+      }
+    };
+
+    if (validationRules[key] && object[key]) {
+      const error = validationRules[key](object[key]);
+      if (error) Object.assign(newErrors, error);
+    }
+
+    return newErrors;
+  };
+
+  const dosenDetail = [
+    { key: 'education', label: 'Pendidikan' },
+    { key: 'course', label: 'Pendidikan' },
+    { key: 'research', label: 'Penelitian' },
+    { key: 'comunity_service', label: 'Pengabdian' }
+  ];
+  const reset = (key) => {
+    switch (key) {
+      case 'act':
+        setObject((prev) => ({ ...prev, act: ACT_INIT }));
+        break;
+      case 'award':
+        setObject((prev) => ({ ...prev, award: AWARDS_INIT }));
+        break;
+      case 'education':
+        setObject((prev) => ({ ...prev, education: EDUCATION_INIT }));
+        break;
+      case 'course':
+        setObject((prev) => ({ ...prev, course: COURSE_INIT }));
+        break;
+      case 'research':
+        setObject((prev) => ({ ...prev, research: RESEARCH_INIT }));
+        break;
+      case 'comunity_service':
+        setObject((prev) => ({ ...prev, comunity_service: COMMUNITY_INIT }));
+        break;
+      default:
+        break;
+    }
+  };
+  const handleAct = {
+    onchange: (key) => (e) => {
+      const { name, value } = e.target;
+      setObject((prevData) => ({
+        ...prevData,
+        [key]: {
+          ...prevData[key],
+          [name]: value
+        }
+      }));
+    },
+    add: (key) => (e) => {
+      e.preventDefault();
+      const newErrors = validate(key);
+      if (Object.keys(newErrors).length > 0) {
+        setErrorDetail(newErrors);
+        return;
+      }
+      setDetail((prev) => ({
+        ...prev,
+        [key]: prev[key].length === 0 ? [{ ...object[key], no: 1 }] : [...prev[key], { ...object[key], no: prev[key].length + 1 }]
+      }));
+      reset(key);
+      setErrorDetail({});
+    },
+    edit: (key) => (param) => {
+      setObject((prev) => ({ ...prev, [key]: param }));
+    },
+    update: (key) => () => {
+      setDetail((prev) => ({
+        ...prev,
+        [key]: prev[key].map((item) => (item.no === object[key].no ? { ...item, ...object[key] } : item))
+      }));
+      reset(key);
+    },
+    delete: (key) => (item) => {
+      setDetail((prev) => ({
+        ...prev,
+        [key]: prev[key].filter((row) => row.no !== item.no).map((row, index) => ({ ...row, no: index + 1 }))
+      }));
+    }
+  };
+
+  useEffect(() => {
+    console.log(errorDetail);
+  }, [dataDetail, errorDetail]);
+
+  return (
+    <>
+      <Box sx={{ margin: 5 }}>
+        <Grid container>
+          {dataDetail?.role_person !== 'DOSEN' &&
+            ['act', 'award'].map((key, index) => (
+              <Grid item xs={12} key={`${key}-${index}`} sx={{ marginBottom: 15 }}>
+                <Typography variant="h5" gutterBottom>
+                  Detail {key === 'act' ? 'Kegiatan' : 'Penghargaan'}
+                </Typography>
+                {/* GeneralForm for adding new activities */}
+                <GeneralForm
+                  buttonForm={`Tambah Detail ${key === 'act' ? 'Kegiatan' : 'Penghargaan'}`}
+                  buttonDisable={false}
+                  formData={object[key]}
+                  errors={errorDetail}
+                  Fields={Fields[key]}
+                  handleChange={handleAct.onchange(key)}
+                  handleSubmit={handleAct.add(key)}
+                />
+                <TableGrid
+                  key={`grid-detail-penghargaan`}
+                  columns={columns[key]}
+                  rows={detail[key]}
+                  expand={false}
+                  action
+                  onEdit={handleAct.edit(key)}
+                  onDelete={handleAct.delete(key)}
+                  onUpdate={handleAct.update(key)}
+                />
+              </Grid>
+            ))}
+          {dataDetail?.role_person === 'DOSEN' &&
+            dosenDetail.map((item, index) => (
+              <Grid item xs={12} key={`${item.key}-${index}`} sx={{ marginBottom: 15 }}>
+                <Typography variant="h5" gutterBottom>
+                  Detail {item.key === 'education' ? item.label : `Tri Dharma ${item.label}`}
+                </Typography>
+                {/* GeneralForm for adding new activities */}
+                <GeneralForm
+                  buttonForm={`Tambah Detail ${item.key === 'education' ? item.label : `Tri Dharma ${item.label}`}`}
+                  buttonDisable={false}
+                  formData={object[item.key]}
+                  errors={errorDetail}
+                  Fields={Fields[item.key]}
+                  handleChange={handleAct.onchange(item.key)}
+                  handleSubmit={handleAct.add(item.key)}
+                />
+                <TableGrid
+                  key={`grid-detail-penghargaan`}
+                  columns={columns[item.key]}
+                  rows={detail[item.key]}
+                  expand={false}
+                  action
+                  onEdit={handleAct.edit(item.key)}
+                  onDelete={handleAct.delete(item.key)}
+                  onUpdate={handleAct.update(item.key)}
+                />
+              </Grid>
+            ))}
+        </Grid>
+      </Box>
+    </>
+  );
+};
+
+AdditionalData.propTypes = {
+  dataDetail: PropTypes.object
 };
 
 export { Identitas };

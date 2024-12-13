@@ -12,6 +12,7 @@ const Lampiran = () => {
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
+    console.log('New value:', newValue);
   };
 
   const tabs = [

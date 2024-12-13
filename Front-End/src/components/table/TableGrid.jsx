@@ -3,7 +3,6 @@ import { Box, Collapse, IconButton, Paper, Table, TableBody, TableCell, TableCon
 import React, { useState } from 'react';
 
 import PropTypes from 'prop-types';
-import Typography from '@mui/material/Typography';
 
 const TableGrid = ({ columns, rows, expand, action, onEdit, onDelete, onUpdate, detail }) => {
   const [editingRow, setEditingRow] = useState(null);
@@ -121,11 +120,7 @@ const CollapsibleRow = ({ row, columns, expand, onEdit, onDelete, onUpdate, acti
       <TableRow>
         <TableCell sx={{ py: 0 }} colSpan={columns.length + (expand ? 2 : 1)}>
           <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }}>
-              <Typography variant="h6" gutterBottom component="div">
-                {typeof detail === 'function' ? detail(row) : detail}
-              </Typography>
-            </Box>
+            <>{typeof detail === 'function' ? detail(row) : detail}</>
           </Collapse>
         </TableCell>
       </TableRow>

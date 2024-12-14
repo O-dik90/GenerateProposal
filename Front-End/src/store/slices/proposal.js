@@ -100,6 +100,7 @@ const initialState = {
   biaya: {},
   tinjauan: {},
   dapus: {},
+  lampiran: {},
   loading: false,
   message: null,
   error: null
@@ -172,6 +173,7 @@ const proposalSlice = createSlice({
         state.biaya = action.payload.biaya;
         state.tinjauan = action.payload.tinjauan;
         state.dapus = action.payload.dapus;
+        state.lampiran = action.payload.lampiran;
         state.message = action.payload.message;
         state.error = null;
       })

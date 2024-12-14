@@ -1,104 +1,72 @@
 import { ACT_INIT, AWARDS_INIT, COMMUNITY_INIT, COURSE_INIT, EDUCATION_INIT, ID_INIT, RESEARCH_INIT } from './initial';
 import { Box, Grid, MenuItem, Select, Stack, Typography } from '@mui/material';
-import { Fields, columns } from './initial-form';
-import React, { useEffect, useState } from 'react';
+import { initialFields } from './initial-form';
+import React, { useCallback, useEffect, useState } from 'react';
 import { masterGender, masterLampiranRole } from 'store/slices/master-data';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { GeneralForm } from 'components/form/GeneralForm';
+import GenForm from 'components/general-form';
 import PropTypes from 'prop-types';
-import TableGrid from 'components/table/TableGrid';
+import { TableForm } from 'components/table-form';
+import { lampiranColumns } from './initial-column';
 
 const Identitas = () => {
   const { gender } = useSelector((state) => state.app.masterData);
   const { role } = useSelector((state) => state.app.masterData.lampiran);
   const dispatch = useDispatch(),
     [object, setObject] = useState(ID_INIT),
-    [data, setData] = useState([
-      {
-        no: 1,
-        role_person: 'KETUA',
-        name: 'odik yudi nugroho',
-        gender: '',
-        id_no: '',
-        place_of_birth: '',
-        birthday: '',
-        email: '',
-        phone: '',
-        add_data: {
-          activities: [],
-          awards: [],
-          education: [],
-          course: [],
-          research: [],
-          comunity_service: []
-        }
-      }
-    ]),
-    [errors, setErrors] = useState({});
+    [data, setData] = useState([]);
 
-  const validate = () => {
-    const newErrors = {};
-    if (!object.name) newErrors.name = 'Nama wajib diisi. Untuk Dosen disertakan gelar';
-    if (!object.email) newErrors.email = 'Email wajib diisi';
-    if (!object.phone) newErrors.phone = 'No Telepon wajib diisi';
-    if (!object.gender) newErrors.gender = 'Jenis Kelamin wajib diisi';
-    if (!object.id_no) newErrors.id_no = 'NIM / NIDM wajib diisi';
-    if (!object.place_of_birth) newErrors.place_of_birth = 'Tempat Lahir wajib diisi';
-    if (!object.birthday) newErrors.birthday = 'Tanggal Lahir wajib diisi';
-
-    return newErrors;
-  };
-
-  const handleIdentitas = {
-    onchange: (e) => {
-      const { name, value } = e.target;
-      setObject((prevData) => ({
-        ...prevData,
-        [name]: value
-      }));
-    },
-    add: (e) => {
-      e.preventDefault();
-      const newErrors = validate();
-
-      if (Object.keys(newErrors).length > 0) {
-        setErrors(newErrors);
-        return;
-      } else {
-        console.log('Form Data Submitted:', object);
-        setErrors({});
-        setData((prev) => [...prev, { ...object, no: prev.length === 0 ? 1 : prev.length + 1 }]);
-      }
-      setObject(ID_INIT);
-    },
+  const handlePersonal = {
     edit: (param) => {
-      setObject(param);
-    },
-    update: () => {
-      const newErrors = validate();
-      if (Object.keys(newErrors).length > 0) {
-        setErrors(newErrors);
-      }
-
-      setData((prev) => {
-        const updatedData = [...prev];
-        const index = updatedData.findIndex((item) => item.no === object.no);
-        if (index !== -1) {
-          updatedData[index] = { ...object, no: object.no };
-        }
-        return updatedData;
-      });
-      setErrors({});
-      setObject(ID_INIT);
+      setObject({ ...param, status: true });
     },
     delete: (param) => {
       const updatedData = [...data];
       updatedData.splice(param, 1);
       setData(updatedData);
     },
-    detail: (param) => <AdditionalData dataDetail={param} />
+    detail: (param) => <AdditionalData dataDetail={param} />,
+    save: async () => {
+      const payload = {
+        id: biaya[0]?.id,
+        proposals_id: biaya[0]?.proposals_id,
+        bab_title: biaya[0]?.bab_title,
+        json_data: data
+      };
+
+      try {
+        const result = await dispatch(updateBab(payload));
+        if (updateBab.fulfilled.match(result)) {
+          enqueueSnackbar('Berhasil menyimpan', { variant: 'success' });
+        } else {
+          enqueueSnackbar('Gagal menyimpan', { variant: 'error' });
+        }
+      } catch (error) {
+        enqueueSnackbar('Terjadi kesalahan', { variant: 'error' });
+      }
+    }
   };
+
+  const handleForm = useCallback(
+    (values) => {
+      if (object?.status) {
+        setData((prevData) =>
+          prevData.map((item) => {
+            if (item.no === object.no) {
+              return { ...item, ...values, status: false };
+            }
+            return item;
+          })
+        );
+      } else {
+        const newItem = { ...values, no: data.length + 1 };
+        setData((prevData) => [...prevData, newItem]);
+      }
+      setObject(ID_INIT);
+    },
+    [data, object.no, object?.status]
+  );
 
   useEffect(() => {
     const loadMasterData = async () => {
@@ -113,9 +81,10 @@ const Identitas = () => {
     loadMasterData();
   }, [dispatch, gender, role]);
 
-  // useEffect(() => {
-  //   console.log(act);
-  // }, [act]);
+  useEffect(() => {
+    console.log(data);
+  }, [data]);
+
   return (
     <Stack direction="column" spacing={2}>
       <Select
@@ -123,7 +92,12 @@ const Identitas = () => {
         displayEmpty
         readOnly={object.status}
         value={object.role_person}
-        onChange={handleIdentitas.onchange}
+        onChange={(e) =>
+          setObject((prevObject) => ({
+            ...prevObject,
+            role_person: e.target.value
+          }))
+        }
         sx={{ width: '15rem' }}
         name="role_person"
       >
@@ -136,28 +110,29 @@ const Identitas = () => {
           </MenuItem>
         ))}
       </Select>
-      {object.role_person && (
-        <GeneralForm
-          buttonForm="Tambah Data"
-          buttonDisable={false}
-          formData={object}
-          errors={errors}
-          Fields={Fields.personal}
-          handleChange={handleIdentitas.onchange}
-          handleSubmit={handleIdentitas.add}
-        />
-      )}
-      <TableGrid
-        key={`grid-Identitas`}
-        columns={columns.identitas}
-        rows={data}
-        expand
-        action
-        onEdit={handleIdentitas.edit}
-        onDelete={handleIdentitas.delete}
-        onUpdate={handleIdentitas.update}
-        detail={handleIdentitas.detail}
-      />
+      <Grid item xs={12} key={`Identitas`} sx={{ marginBottom: 15 }}>
+        <Typography variant="h5" gutterBottom>
+          Detail Identitas
+        </Typography>
+        {/* GeneralForm for adding new activities */}
+        {object.role_person && (
+          <GenForm
+            formFields={initialFields.personal}
+            buttonDisable={false}
+            onSubmit={(values) => handleForm(values)}
+            titleButton={object?.status ? `Update Data Personal` : `Tambah Data Personal`}
+            initialValuesUpdate={object}
+          />
+        )}
+        <Stack direction="column" sx={{ marginTop: 5 }}>
+          <TableForm
+            columns={lampiranColumns.personal(handlePersonal.edit, handlePersonal.delete, object.status)}
+            rows={data || []}
+            expand
+            detail={handlePersonal.detail}
+          />
+        </Stack>
+      </Grid>
     </Stack>
   );
 };
@@ -173,73 +148,13 @@ export const AdditionalData = ({ dataDetail = {} }) => {
   });
 
   const [object, setObject] = useState({
-      act: ACT_INIT,
-      award: AWARDS_INIT,
-      education: EDUCATION_INIT,
-      course: COURSE_INIT,
-      research: RESEARCH_INIT,
-      comunity_service: COMMUNITY_INIT
-    }),
-    [errorDetail, setErrorDetail] = useState({});
-
-  const validate = (key) => {
-    const newErrors = {};
-
-    const validationRules = {
-      act: (data) => {
-        if (!data.act_name || !data.act_role || !data.act_start_date)
-          return { act_name: 'Wajib diisi', act_role: 'Wajib diisi', act_start_date: 'Wajib diisi' };
-      },
-      award: (data) => {
-        if (!data.award_name || !data.award_giver || !data.award_year)
-          return {
-            award_name: 'Wajib diisi',
-            award_giver: 'Wajib diisi',
-            award_year: 'Wajib diisi'
-          };
-      },
-      education: (data) => {
-        if (!data.degree || !data.institution || !data.major || !data.graduation_year)
-          return {
-            degree: 'Wajib diisi',
-            major: 'Wajib diisi',
-            institution: 'Wajib diisi',
-            graduation_year: 'Wajib diisi'
-          };
-      },
-      course: (data) => {
-        if (!data.course_name || !data.course_type || !data.credits)
-          return {
-            course_name: 'Wajib diisi',
-            course_type: 'Wajib diisi',
-            credits: 'Wajib diisi'
-          };
-      },
-      research: (data) => {
-        if (!data.research_title || !data.research_year || !data.research_source)
-          return {
-            research_title: 'Wajib diisi',
-            research_year: 'Wajib diisi',
-            research_source: 'Wajib diisi'
-          };
-      },
-      comunity_service: (data) => {
-        if (!data.com_title || isNaN(data.com_year) || !data.com_source)
-          return {
-            com_title: 'Wajib diisi',
-            com_year: 'Wajib diisi',
-            com_source: 'Wajib diisi'
-          };
-      }
-    };
-
-    if (validationRules[key] && object[key]) {
-      const error = validationRules[key](object[key]);
-      if (error) Object.assign(newErrors, error);
-    }
-
-    return newErrors;
-  };
+    act: ACT_INIT,
+    award: AWARDS_INIT,
+    education: EDUCATION_INIT,
+    course: COURSE_INIT,
+    research: RESEARCH_INIT,
+    comunity_service: COMMUNITY_INIT
+  });
 
   const dosenDetail = [
     { key: 'education', label: 'Pendidikan' },
@@ -272,32 +187,8 @@ export const AdditionalData = ({ dataDetail = {} }) => {
     }
   };
   const handleAct = {
-    onchange: (key) => (e) => {
-      const { name, value } = e.target;
-      setObject((prevData) => ({
-        ...prevData,
-        [key]: {
-          ...prevData[key],
-          [name]: value
-        }
-      }));
-    },
-    add: (key) => (e) => {
-      e.preventDefault();
-      const newErrors = validate(key);
-      if (Object.keys(newErrors).length > 0) {
-        setErrorDetail(newErrors);
-        return;
-      }
-      setDetail((prev) => ({
-        ...prev,
-        [key]: prev[key].length === 0 ? [{ ...object[key], no: 1 }] : [...prev[key], { ...object[key], no: prev[key].length + 1 }]
-      }));
-      reset(key);
-      setErrorDetail({});
-    },
     edit: (key) => (param) => {
-      setObject((prev) => ({ ...prev, [key]: param }));
+      setObject((prev) => ({ ...prev, [key]: { ...param, status: true } }));
     },
     update: (key) => () => {
       setDetail((prev) => ({
@@ -314,9 +205,29 @@ export const AdditionalData = ({ dataDetail = {} }) => {
     }
   };
 
+  const handleForm = useCallback(
+    (values, key) => {
+      if (object[key]?.status) {
+        setDetail((prevDetail) => ({
+          ...prevDetail,
+          [key]: prevDetail[key]?.map((item) => (item.no === object[key]?.no ? { ...item, ...values, status: false } : item))
+        }));
+        reset(key);
+      } else {
+        const newItem = { ...values, no: detail[key]?.length + 1 };
+        setDetail((prevDetail) => ({
+          ...prevDetail,
+          [key]: [...(prevDetail[key] || []), newItem]
+        }));
+      }
+    },
+    [detail, object]
+  );
+
   useEffect(() => {
-    console.log(errorDetail);
-  }, [dataDetail, errorDetail]);
+    dataDetail.add_data = { ...dataDetail.add_data, ...detail };
+    console.log('detail', dataDetail);
+  }, [dataDetail, detail]);
 
   return (
     <>
@@ -329,25 +240,25 @@ export const AdditionalData = ({ dataDetail = {} }) => {
                   Detail {key === 'act' ? 'Kegiatan' : 'Penghargaan'}
                 </Typography>
                 {/* GeneralForm for adding new activities */}
-                <GeneralForm
-                  buttonForm={`Tambah Detail ${key === 'act' ? 'Kegiatan' : 'Penghargaan'}`}
-                  buttonDisable={false}
-                  formData={object[key]}
-                  errors={errorDetail}
-                  Fields={Fields[key]}
-                  handleChange={handleAct.onchange(key)}
-                  handleSubmit={handleAct.add(key)}
-                />
-                <TableGrid
-                  key={`grid-detail-penghargaan`}
-                  columns={columns[key]}
-                  rows={detail[key]}
-                  expand={false}
-                  action
-                  onEdit={handleAct.edit(key)}
-                  onDelete={handleAct.delete(key)}
-                  onUpdate={handleAct.update(key)}
-                />
+                <Stack direction="column" spacing={5}>
+                  <GenForm
+                    formFields={initialFields[key]}
+                    buttonDisable={false}
+                    onSubmit={(values) => handleForm(values, key)}
+                    titleButton={
+                      object[key]?.status
+                        ? `Update Data ${key === 'act' ? 'Kegiatan' : 'Penghargaan'}`
+                        : `Tambah Data ${key === 'act' ? 'Kegiatan' : 'Penghargaan'}`
+                    }
+                    initialValuesUpdate={object[key]}
+                  />
+                  <TableForm
+                    columns={lampiranColumns[key](handleAct.edit(key), handleAct.delete(key), object[key].status)}
+                    rows={detail[key] || []}
+                    expand={false}
+                    detail={''}
+                  />
+                </Stack>
               </Grid>
             ))}
           {dataDetail?.role_person === 'DOSEN' &&
@@ -356,26 +267,25 @@ export const AdditionalData = ({ dataDetail = {} }) => {
                 <Typography variant="h5" gutterBottom>
                   Detail {item.key === 'education' ? item.label : `Tri Dharma ${item.label}`}
                 </Typography>
-                {/* GeneralForm for adding new activities */}
-                <GeneralForm
-                  buttonForm={`Tambah Detail ${item.key === 'education' ? item.label : `Tri Dharma ${item.label}`}`}
-                  buttonDisable={false}
-                  formData={object[item.key]}
-                  errors={errorDetail}
-                  Fields={Fields[item.key]}
-                  handleChange={handleAct.onchange(item.key)}
-                  handleSubmit={handleAct.add(item.key)}
-                />
-                <TableGrid
-                  key={`grid-detail-penghargaan`}
-                  columns={columns[item.key]}
-                  rows={detail[item.key]}
-                  expand={false}
-                  action
-                  onEdit={handleAct.edit(item.key)}
-                  onDelete={handleAct.delete(item.key)}
-                  onUpdate={handleAct.update(item.key)}
-                />
+                <Stack direction="column" spacing={5}>
+                  <GenForm
+                    formFields={initialFields[item.key]}
+                    buttonDisable={false}
+                    onSubmit={(values) => handleForm(values, item.key)}
+                    titleButton={
+                      object[item.keykey]?.status
+                        ? `Update Data ${item.key === 'education' ? item.label : `Tri Dharma ${item.label}`}`
+                        : `Tambah Data ${item.key === 'education' ? item.label : `Tri Dharma ${item.label}`}`
+                    }
+                    initialValuesUpdate={object[item.key]}
+                  />
+                  <TableForm
+                    columns={lampiranColumns[item.key](handleAct.edit(item.key), handleAct.delete(item.key), object[item.key].status)}
+                    rows={detail[item.key] || []}
+                    expand={false}
+                    detail={''}
+                  />
+                </Stack>
               </Grid>
             ))}
         </Grid>

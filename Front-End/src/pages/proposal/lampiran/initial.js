@@ -4,13 +4,13 @@ export const ID_INIT = {
   name: '',
   gender: '',
   id_no: '',
-  place_of_birth: '',
-  birthday: '',
+  birth_place: '',
+  birth_date: '',
   email: '',
   phone: '',
   status: false,
   add_data: {
-    activities: [],
+    act: [],
     awards: [],
     education: [],
     course: [],
@@ -25,7 +25,8 @@ export const ACT_INIT = {
   act_name: '',
   act_role: '',
   act_start_date: '',
-  act_end_date: ''
+  act_end_date: '',
+  status: false
 };
 
 export const AWARDS_INIT = {

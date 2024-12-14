@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Stack, Tab, Typography } from '@mui/material';
+import { Box, Grid, Tab, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 
 import { Identitas } from './identitas';
@@ -22,12 +22,6 @@ const Lampiran = () => {
     { label: 'Surat Pernyataan', code: 'L4', component: <></> },
     { label: 'File Pendukung', code: 'L5', component: <></> }
   ];
-
-  const handleLampiran = {
-    save: () => {
-      console.log('Saved data:', data);
-    }
-  };
 
   useEffect(() => {
     console.log('Data Lampiran:', data);
@@ -60,12 +54,6 @@ const Lampiran = () => {
           </TabContext>
         </Grid>
       </Grid>
-
-      <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 4 }}>
-        <Button variant="contained" color="success" onClick={handleLampiran.save}>
-          Simpan Lampiran
-        </Button>
-      </Stack>
     </>
   );
 };

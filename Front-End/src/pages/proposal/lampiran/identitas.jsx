@@ -1,6 +1,5 @@
 import { ACT_INIT, AWARDS_INIT, COMMUNITY_INIT, COURSE_INIT, EDUCATION_INIT, ID_INIT, RESEARCH_INIT } from './initial';
-import { Box, Grid, MenuItem, Select, Stack, Typography } from '@mui/material';
-import { initialFields } from './initial-form';
+import { Box, Button, Grid, MenuItem, Select, Stack, Typography } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
 import { masterGender, masterLampiranRole } from 'store/slices/master-data';
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,11 +7,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import GenForm from 'components/general-form';
 import PropTypes from 'prop-types';
 import { TableForm } from 'components/table-form';
+import { initialFields } from './initial-form';
 import { lampiranColumns } from './initial-column';
 
 const Identitas = () => {
   const { gender } = useSelector((state) => state.app.masterData);
-  const { role } = useSelector((state) => state.app.masterData.lampiran);
+  const { role } = useSelector((state) => state.app.masterData.lampiran),
+    { lampiran } = useSelector((state) => state.app.proposal);
   const dispatch = useDispatch(),
     [object, setObject] = useState(ID_INIT),
     [data, setData] = useState([]);
@@ -26,27 +27,36 @@ const Identitas = () => {
       updatedData.splice(param, 1);
       setData(updatedData);
     },
-    detail: (param) => <AdditionalData dataDetail={param} />,
+    detail: (param) => {
+      return <AdditionalData dataDetail={param} updateDetail={handleAddtional} />;
+    },
     save: async () => {
       const payload = {
-        id: biaya[0]?.id,
-        proposals_id: biaya[0]?.proposals_id,
-        bab_title: biaya[0]?.bab_title,
+        id: lampiran?.id,
+        proposals_id: lampiran?.proposals_id,
+        bab_title: lampiran?.bab_title,
         json_data: data
       };
 
-      try {
-        const result = await dispatch(updateBab(payload));
-        if (updateBab.fulfilled.match(result)) {
-          enqueueSnackbar('Berhasil menyimpan', { variant: 'success' });
-        } else {
-          enqueueSnackbar('Gagal menyimpan', { variant: 'error' });
-        }
-      } catch (error) {
-        enqueueSnackbar('Terjadi kesalahan', { variant: 'error' });
-      }
+      console.log('payload', payload);
+
+      // try {
+      //   const result = await dispatch(updateBab(payload));
+      //   if (updateBab.fulfilled.match(result)) {
+      //     enqueueSnackbar('Berhasil menyimpan', { variant: 'success' });
+      //   } else {
+      //     enqueueSnackbar('Gagal menyimpan', { variant: 'error' });
+      //   }
+      // } catch (error) {
+      //   enqueueSnackbar('Terjadi kesalahan', { variant: 'error' });
+      // }
     }
   };
+
+  //still infinity rendering
+  const handleAddtional = useCallback((newDetail) => {
+    console.log('newDetail', newDetail);
+  }, []);
 
   const handleForm = useCallback(
     (values) => {
@@ -80,10 +90,6 @@ const Identitas = () => {
 
     loadMasterData();
   }, [dispatch, gender, role]);
-
-  useEffect(() => {
-    console.log(data);
-  }, [data]);
 
   return (
     <Stack direction="column" spacing={2}>
@@ -137,15 +143,15 @@ const Identitas = () => {
   );
 };
 
-export const AdditionalData = ({ dataDetail = {} }) => {
-  const [detail, setDetail] = useState({
-    act: [],
-    award: [],
-    education: [],
-    course: [],
-    research: [],
-    comunity_service: []
-  });
+export const AdditionalData = ({ dataDetail = {}, updateDetail }) => {
+  const [detail, setDetail] = useState(() => ({
+    act: dataDetail.act || [],
+    award: dataDetail.award || [],
+    education: dataDetail.education || [],
+    course: dataDetail.course || [],
+    research: dataDetail.research || [],
+    comunity_service: dataDetail.comunity_service || []
+  }));
 
   const [object, setObject] = useState({
     act: ACT_INIT,
@@ -162,30 +168,32 @@ export const AdditionalData = ({ dataDetail = {} }) => {
     { key: 'research', label: 'Penelitian' },
     { key: 'comunity_service', label: 'Pengabdian' }
   ];
-  const reset = (key) => {
+
+  // Reset logic for `object` state.
+  const reset = useCallback((key) => {
+    setObject((prev) => ({ ...prev, [key]: initialStateForKey(key) }));
+  }, []);
+
+  const initialStateForKey = (key) => {
     switch (key) {
       case 'act':
-        setObject((prev) => ({ ...prev, act: ACT_INIT }));
-        break;
+        return ACT_INIT;
       case 'award':
-        setObject((prev) => ({ ...prev, award: AWARDS_INIT }));
-        break;
+        return AWARDS_INIT;
       case 'education':
-        setObject((prev) => ({ ...prev, education: EDUCATION_INIT }));
-        break;
+        return EDUCATION_INIT;
       case 'course':
-        setObject((prev) => ({ ...prev, course: COURSE_INIT }));
-        break;
+        return COURSE_INIT;
       case 'research':
-        setObject((prev) => ({ ...prev, research: RESEARCH_INIT }));
-        break;
+        return RESEARCH_INIT;
       case 'comunity_service':
-        setObject((prev) => ({ ...prev, comunity_service: COMMUNITY_INIT }));
-        break;
+        return COMMUNITY_INIT;
       default:
-        break;
+        return {};
     }
   };
+
+  // Logic for editing, updating, and deleting rows in the table.
   const handleAct = {
     edit: (key) => (param) => {
       setObject((prev) => ({ ...prev, [key]: { ...param, status: true } }));
@@ -193,7 +201,7 @@ export const AdditionalData = ({ dataDetail = {} }) => {
     update: (key) => () => {
       setDetail((prev) => ({
         ...prev,
-        [key]: prev[key].map((item) => (item.no === object[key].no ? { ...item, ...object[key] } : item))
+        [key]: prev[key].map((item) => (item.no === object[key].no ? { ...item, ...object[key], status: false } : item))
       }));
       reset(key);
     },
@@ -214,20 +222,28 @@ export const AdditionalData = ({ dataDetail = {} }) => {
         }));
         reset(key);
       } else {
-        const newItem = { ...values, no: detail[key]?.length + 1 };
+        const newItem = { ...values, no: (detail[key]?.length || 0) + 1 };
         setDetail((prevDetail) => ({
           ...prevDetail,
           [key]: [...(prevDetail[key] || []), newItem]
         }));
       }
     },
-    [detail, object]
+    [detail, object, reset]
   );
 
   useEffect(() => {
-    dataDetail.add_data = { ...dataDetail.add_data, ...detail };
-    console.log('detail', dataDetail);
-  }, [dataDetail, detail]);
+    const updatedDataDetail = {
+      ...dataDetail,
+      add_data: {
+        ...dataDetail.add_data,
+        ...detail
+      }
+    };
+
+    console.log('Updating parent with new detail:', updatedDataDetail);
+    updateDetail(updatedDataDetail);
+  }, [detail, dataDetail, updateDetail]);
 
   return (
     <>
@@ -239,7 +255,6 @@ export const AdditionalData = ({ dataDetail = {} }) => {
                 <Typography variant="h5" gutterBottom>
                   Detail {key === 'act' ? 'Kegiatan' : 'Penghargaan'}
                 </Typography>
-                {/* GeneralForm for adding new activities */}
                 <Stack direction="column" spacing={5}>
                   <GenForm
                     formFields={initialFields[key]}
@@ -273,7 +288,7 @@ export const AdditionalData = ({ dataDetail = {} }) => {
                     buttonDisable={false}
                     onSubmit={(values) => handleForm(values, item.key)}
                     titleButton={
-                      object[item.keykey]?.status
+                      object[item.key]?.status
                         ? `Update Data ${item.key === 'education' ? item.label : `Tri Dharma ${item.label}`}`
                         : `Tambah Data ${item.key === 'education' ? item.label : `Tri Dharma ${item.label}`}`
                     }
@@ -288,6 +303,11 @@ export const AdditionalData = ({ dataDetail = {} }) => {
                 </Stack>
               </Grid>
             ))}
+          <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 4 }}>
+            <Button variant="contained" color="success">
+              Simpan Kegiatan
+            </Button>
+          </Stack>
         </Grid>
       </Box>
     </>
@@ -295,7 +315,8 @@ export const AdditionalData = ({ dataDetail = {} }) => {
 };
 
 AdditionalData.propTypes = {
-  dataDetail: PropTypes.object
+  dataDetail: PropTypes.object.isRequired,
+  updateDetail: PropTypes.func
 };
 
 export { Identitas };

@@ -27,7 +27,8 @@ const getListProposalBab = async (req, res) => {
       tinjauan: data.slice(5, 6)[0],
       pelaksanaan: data.slice(6, 7)[0],
       biaya: data.slice(7, 8)[0],
-      dapus: data.slice(-1)[0],
+      dapus: data.slice(8, 9)[0],
+      lampiran: data.slice(-1)[0],
     });
   } catch (error) {
     res.status(500).json({

@@ -1,5 +1,5 @@
 import { Box, Grid, Tab, Typography } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import { Identitas } from './identitas';
 import TabContext from '@mui/lab/TabContext';
@@ -7,12 +7,10 @@ import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 
 const Lampiran = () => {
-  const [data] = useState({});
   const [value, setValue] = useState('L1');
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
-    console.log('New value:', newValue);
   };
 
   const tabs = [
@@ -22,10 +20,6 @@ const Lampiran = () => {
     { label: 'Surat Pernyataan', code: 'L4', component: <></> },
     { label: 'File Pendukung', code: 'L5', component: <></> }
   ];
-
-  useEffect(() => {
-    console.log('Data Lampiran:', data);
-  }, [data]);
 
   return (
     <>

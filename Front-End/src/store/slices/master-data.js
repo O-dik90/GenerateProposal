@@ -2,7 +2,6 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import axiosInstance from 'api/base-url';
 
-// Reusable async thunk function for API calls
 const fetchMasterData = (endpoint) =>
   createAsyncThunk(endpoint, async (params) => {
     const response = await axiosInstance.post('/master-dropdown', params);

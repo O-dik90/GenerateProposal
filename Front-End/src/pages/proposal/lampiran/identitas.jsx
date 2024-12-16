@@ -1,5 +1,5 @@
 import { ACT_INIT, AWARDS_INIT, COMMUNITY_INIT, COURSE_INIT, EDUCATION_INIT, ID_INIT, RESEARCH_INIT } from './initial';
-import { Box, Button, Grid, MenuItem, Select, Stack, Typography } from '@mui/material';
+import { Box, Grid, MenuItem, Select, Stack, Typography } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
 import { masterGender, masterLampiranRole } from 'store/slices/master-data';
 import { useDispatch, useSelector } from 'react-redux';
@@ -23,8 +23,7 @@ const Identitas = () => {
       setObject({ ...param, status: true });
     },
     delete: (param) => {
-      const updatedData = [...data];
-      updatedData.splice(param, 1);
+      const updatedData = data.filter((item) => item.no !== param.no).map((item, index) => ({ ...item, no: index + 1 }));
       setData(updatedData);
     },
     detail: (param) => {
@@ -39,17 +38,6 @@ const Identitas = () => {
       };
 
       console.log('payload', payload);
-
-      // try {
-      //   const result = await dispatch(updateBab(payload));
-      //   if (updateBab.fulfilled.match(result)) {
-      //     enqueueSnackbar('Berhasil menyimpan', { variant: 'success' });
-      //   } else {
-      //     enqueueSnackbar('Gagal menyimpan', { variant: 'error' });
-      //   }
-      // } catch (error) {
-      //   enqueueSnackbar('Terjadi kesalahan', { variant: 'error' });
-      // }
     }
   };
 
@@ -303,11 +291,6 @@ export const AdditionalData = ({ dataDetail = {}, updateDetail }) => {
                 </Stack>
               </Grid>
             ))}
-          <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 4 }}>
-            <Button variant="contained" color="success">
-              Simpan Kegiatan
-            </Button>
-          </Stack>
         </Grid>
       </Box>
     </>

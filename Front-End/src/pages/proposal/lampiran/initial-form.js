@@ -1,51 +1,6 @@
 import * as Yup from 'yup';
 
-export const columns = {
-  identitas: [
-    { name: 'No', field: 'no', width: '4rem' },
-    { name: 'Jabatan', field: 'role_person', width: '6rem' },
-    { name: 'Nama Lengkap', field: 'name' }
-  ],
-  act: [
-    { name: 'No', field: 'no', width: '4rem' },
-    { name: 'Jenis Kegiatan', field: 'act_name' },
-    { name: 'Status dalam Kegiatan', field: 'act_role' },
-    { name: 'Tanggal mulai Kegiatan', field: 'act_start_date', width: '15rem' },
-    { name: 'Tanggal selesai Kegiatan', field: 'act_end_date', width: '15rem' }
-  ],
-  award: [
-    { name: 'No', field: 'no', width: '4rem' },
-    { name: 'Jenis Penghargaan', field: 'award_name' },
-    { name: 'Pihak Pemberi Penghargaan', field: 'award_giver', width: '20rem' },
-    { name: 'Tahun', field: 'award_year', width: '10rem' }
-  ],
-  education: [
-    { name: 'No', field: 'no', width: '4rem' },
-    { name: 'Pendidikan', field: 'degree' },
-    { name: 'Jurusan', field: 'major' },
-    { name: 'Asal Universitas', field: 'institution' },
-    { name: 'Tahun', field: 'graduation_year', width: '15rem' }
-  ],
-  course: [
-    { name: 'No', field: 'no', width: '4rem' },
-    { name: 'Mata Kuliah', field: 'course_name' },
-    { name: 'Wajib/Pilihan', field: 'course_type' },
-    { name: 'SKS', field: 'credits', width: '5rem' }
-  ],
-  research: [
-    { name: 'No', field: 'no', width: '4rem' },
-    { name: 'Judul Penelitian', field: 'research_title' },
-    { name: 'Sumber', field: 'research_source' },
-    { name: 'Tahun', field: 'research_year' }
-  ],
-  comunity_service: [
-    { name: 'No', field: 'no', width: '4rem' },
-    { name: 'Judul', field: 'com_title' },
-    { name: 'Sumber', field: 'com_source' },
-    { name: 'Tahun', field: 'com_year' }
-  ]
-};
-
+// ** Regional Identitas
 export const initialFields = {
   personal: [
     {
@@ -289,3 +244,195 @@ export const initialFields = {
     }
   ]
 };
+
+//** Regional Anggaran
+export const budgetFields = {
+  materials: [
+    {
+      name: 'output_type',
+      label: 'Jenis Pengeluaran',
+      type: 'text',
+      placeholder: '',
+      validation: Yup.string().required('Wajib diisi'),
+      width: 6
+    },
+    {
+      name: 'volume',
+      label: 'Volume',
+      type: 'text',
+      placeholder: '',
+      validation: Yup.string().required('Wajib diisi'),
+      width: 2
+    },
+    {
+      name: 'unit_price',
+      label: 'Harga Satuan (Rp)',
+      type: 'text',
+      placeholder: '',
+      validation: Yup.string().required('Wajib diisi'),
+      width: 2
+    },
+    {
+      name: 'total_price',
+      label: 'Total Harga (Rp)',
+      type: 'text',
+      placeholder: '',
+      validation: Yup.string().required('Wajib diisi'),
+      width: 2
+    }
+  ],
+  services: [
+    {
+      name: 'output_type',
+      label: 'Jenis Pengeluaran',
+      type: 'text',
+      placeholder: '',
+      validation: Yup.string().required('Wajib diisi'),
+      width: 6
+    },
+    {
+      name: 'volume',
+      label: 'Volume',
+      type: 'text',
+      placeholder: '',
+      validation: Yup.string().required('Wajib diisi'),
+      width: 2
+    },
+    {
+      name: 'unit_price',
+      label: 'Harga Satuan (Rp)',
+      type: 'text',
+      placeholder: '',
+      validation: Yup.string().required('Wajib diisi'),
+      width: 2
+    },
+    {
+      name: 'total_price',
+      label: 'Total Harga (Rp)',
+      type: 'text',
+      placeholder: '',
+      validation: Yup.string().required('Wajib diisi'),
+      width: 2
+    }
+  ],
+  transports: [
+    {
+      name: 'output_type',
+      label: 'Jenis Pengeluaran',
+      type: 'text',
+      placeholder: '',
+      validation: Yup.string().required('Wajib diisi'),
+      width: 6
+    },
+    {
+      name: 'volume',
+      label: 'Volume',
+      type: 'text',
+      placeholder: '',
+      validation: Yup.string().required('Wajib diisi'),
+      width: 2
+    },
+    {
+      name: 'unit_price',
+      label: 'Harga Satuan (Rp)',
+      type: 'text',
+      placeholder: '',
+      validation: Yup.string().required('Wajib diisi'),
+      width: 2
+    },
+    {
+      name: 'total_price',
+      label: 'Total Harga (Rp)',
+      type: 'text',
+      placeholder: '',
+      validation: Yup.string().required('Wajib diisi'),
+      width: 2
+    }
+  ],
+  others: [
+    {
+      name: 'output_type',
+      label: 'Jenis Pengeluaran',
+      type: 'text',
+      placeholder: '',
+      validation: Yup.string().required('Wajib diisi'),
+      width: 6
+    },
+    {
+      name: 'volume',
+      label: 'Volume',
+      type: 'text',
+      placeholder: '',
+      validation: Yup.string().required('Wajib diisi'),
+      width: 2
+    },
+    {
+      name: 'unit_price',
+      label: 'Harga Satuan (Rp)',
+      type: 'text',
+      placeholder: '',
+      validation: Yup.string().required('Wajib diisi'),
+      width: 2
+    },
+    {
+      name: 'total_price',
+      label: 'Total Harga (Rp)',
+      type: 'text',
+      placeholder: '',
+      validation: Yup.string().required('Wajib diisi'),
+      width: 2
+    }
+  ]
+};
+
+// ** Regional Susunan Tim
+export const structureFields = [
+  {
+    name: 'name',
+    label: 'Nama Lengkap',
+    type: 'text',
+    placeholder: '',
+    validation: Yup.string().required('Wajib diisi'),
+    width: 4
+  },
+  {
+    name: 'program',
+    label: 'Program Studi',
+    type: 'text',
+    placeholder: '',
+    validation: Yup.string().required('Wajib diisi'),
+    width: 4
+  },
+  {
+    name: 'id_no',
+    label: 'NIM / NIDM',
+    type: 'text',
+    placeholder: '',
+    validation: Yup.string().required('Wajib diisi'),
+    width: 2
+  },
+  {
+    name: 'time_allocation',
+    label: 'Alokasi Waktu (jam/minggu)',
+    type: 'number',
+    placeholder: '',
+    validation: Yup.string().required('Wajib diisi').min(1, 'Minimal 1 jam/minggu'),
+    width: 2
+  },
+  {
+    name: 'major',
+    label: 'Bidang Ilmu',
+    type: 'text',
+    placeholder: '',
+    validation: Yup.string().required('Wajib diisi')
+  },
+  {
+    name: 'tas_description',
+    label: 'Uraian Tugas',
+    type: 'textarea',
+    placeholder: '',
+    validation: Yup.string().required('Wajib diisi'),
+    row: 5,
+    width: 12
+  }
+];

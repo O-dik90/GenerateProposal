@@ -1,7 +1,7 @@
+import { DeleteFilled, EditFilled } from '@ant-design/icons';
 import { IconButton, Stack } from '@mui/material';
 
-import { DeleteFilled, EditFilled } from '@ant-design/icons';
-
+// ** Regional Identitas
 export const lampiranColumns = {
   personal: (handleEdit, handleDelete, status) => [
     { name: 'No', field: 'no', width: '4rem', align: 'center' },
@@ -170,3 +170,56 @@ export const lampiranColumns = {
     }
   ]
 };
+
+// ** Regional Anggaran
+export const budgetColumns = (handleEdit, handleDelete, status) => [
+  { name: 'No', field: 'no', width: '4rem', align: 'center' },
+  { name: 'Jenis Pengeluaran', field: 'output_type' },
+  { name: 'Jumlah', field: 'volume', width: '5rem' },
+  { name: 'Harga Satuan (Rp)', field: 'unit_price', width: '10rem' },
+  { name: 'Total Harga (Rp)', field: 'total_price', width: '10rem' },
+  {
+    name: 'Aksi',
+    field: 'action',
+    width: '5rem',
+    cell: (value, row) => {
+      return (
+        <Stack direction="row" spacing={1}>
+          <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)} disabled={status}>
+            <EditFilled />
+          </IconButton>
+          <IconButton aria-label="delete" size="small" color="error" onClick={() => handleDelete(row)} disabled={status}>
+            <DeleteFilled />
+          </IconButton>
+        </Stack>
+      );
+    }
+  }
+];
+// ** Regional Susunan Tim
+export const structureColumns = (handleEdit, handleDelete, status) => [
+  { name: 'No', field: 'no', width: '4rem', align: 'center' },
+  { name: 'Nama Lengkap', field: 'name' },
+  { name: 'Program Studi', field: 'program' },
+  { name: 'NIM / NIDM', field: 'id_no' },
+  { name: 'Bidang Ilmu', field: 'major' },
+  { name: 'Alokasi Waktu (jam/minggu)', field: 'time_allocation' },
+  { name: 'Uraian Tugas', field: 'tas_description' },
+  {
+    name: 'Aksi',
+    field: 'action',
+    width: '5rem',
+    cell: (value, row) => {
+      return (
+        <Stack direction="row" spacing={1}>
+          <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)} disabled={status}>
+            <EditFilled />
+          </IconButton>
+          <IconButton aria-label="delete" size="small" color="error" onClick={() => handleDelete(row)} disabled={status}>
+            <DeleteFilled />
+          </IconButton>
+        </Stack>
+      );
+    }
+  }
+];

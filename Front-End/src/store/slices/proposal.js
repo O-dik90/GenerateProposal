@@ -70,9 +70,12 @@ export const updateBabPendahuluan = createAsyncThunk('proposal/update-pendahulua
   }
 });
 
-export const updateDapus = createAsyncThunk('proposal/update-dapus', async (params, { rejectWithValue }) => {
+export const updateDapus = createAsyncThunk('proposal/update-dapus', async (params, { dispatch, rejectWithValue }) => {
   try {
     const res = await axiosInstance.put(`/update-dapus`, params);
+    if (res.status === 200) {
+      await dispatch(getListBabProposal(params.proposals_id));
+    }
 
     return res.data;
   } catch (error) {

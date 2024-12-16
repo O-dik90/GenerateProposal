@@ -430,7 +430,7 @@ const Dapus = () => {
     loadMasterData();
   }, [dispatch, reference, style]);
   useEffect(() => {
-    if (dapus?.json_data) {
+    if (dapus && dapus?.json_data) {
       setData(dapus.json_data);
     }
   }, [dapus]);

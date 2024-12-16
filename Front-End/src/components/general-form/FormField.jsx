@@ -11,6 +11,7 @@ const FormField = ({
   onChange,
   onBlur,
   error,
+  row,
   touched,
   InputLabelProps,
   placeholder,
@@ -47,6 +48,29 @@ const FormField = ({
       </Stack>
     );
   }
+  if (type === 'textarea') {
+    return (
+      <Stack spacing={1}>
+        <TextField
+          id={name}
+          name={name}
+          label={label}
+          value={value}
+          onChange={onChange}
+          onBlur={onBlur}
+          placeholder={placeholder}
+          fullWidth
+          error={Boolean(touched && error)}
+          helperText={touched && error}
+          variant={'outlined'}
+          size={size}
+          multiline
+          rows={row || 4}
+          InputLabelProps={InputLabelProps}
+        />
+      </Stack>
+    );
+  }
 
   return (
     <Stack spacing={1}>
@@ -73,7 +97,7 @@ const FormField = ({
 FormField.propTypes = {
   name: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
-  type: PropTypes.oneOf(['text', 'email', 'password', 'number', 'select', 'date']).isRequired,
+  type: PropTypes.oneOf(['text', 'email', 'password', 'number', 'select', 'textarea', 'date']).isRequired,
   value: PropTypes.any.isRequired,
   onChange: PropTypes.func.isRequired,
   onBlur: PropTypes.func.isRequired,
@@ -82,6 +106,7 @@ FormField.propTypes = {
   placeholder: PropTypes.string,
   withoutLabel: PropTypes.bool,
   size: PropTypes.string,
+  row: PropTypes.number,
   InputProps: PropTypes.object,
   InputLabelProps: PropTypes.object,
   options: PropTypes.arrayOf(

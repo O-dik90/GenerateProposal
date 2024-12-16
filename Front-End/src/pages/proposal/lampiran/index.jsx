@@ -1,13 +1,15 @@
 import { Box, Grid, Tab, Typography } from '@mui/material';
 import React, { useState } from 'react';
 
+import { Anggaran } from './anggaran';
 import { Identitas } from './identitas';
+import { StrukturOrganisasi } from './struktur-organisasi';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 
 const Lampiran = () => {
-  const [value, setValue] = useState('L1');
+  const [value, setValue] = useState('L2');
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -15,8 +17,8 @@ const Lampiran = () => {
 
   const tabs = [
     { label: 'Identitas', code: 'L1', component: <Identitas /> },
-    { label: 'Anggaran', code: 'L2', component: <></> },
-    { label: 'Susunan Tim', code: 'L3', component: <></> },
+    { label: 'Anggaran', code: 'L2', component: <Anggaran /> },
+    { label: 'Susunan Tim', code: 'L3', component: <StrukturOrganisasi /> },
     { label: 'Surat Pernyataan', code: 'L4', component: <></> },
     { label: 'File Pendukung', code: 'L5', component: <></> }
   ];

@@ -1,3 +1,4 @@
+// ** Regional Identitas
 export const ID_INIT = {
   no: 0,
   role_person: '',
@@ -18,7 +19,6 @@ export const ID_INIT = {
     comunity_service: []
   }
 };
-
 export const ACT_INIT = {
   no: 0,
   type: '',
@@ -28,7 +28,6 @@ export const ACT_INIT = {
   act_end_date: '',
   status: false
 };
-
 export const AWARDS_INIT = {
   no: 0,
   type: '',
@@ -36,7 +35,6 @@ export const AWARDS_INIT = {
   award_year: '',
   award_giver: ''
 };
-
 export const EDUCATION_INIT = {
   no: 0,
   type: '',
@@ -52,7 +50,6 @@ export const COURSE_INIT = {
   course_type: '',
   credits: ''
 };
-
 export const RESEARCH_INIT = {
   no: 0,
   type: '',
@@ -60,7 +57,6 @@ export const RESEARCH_INIT = {
   research_source: '',
   research_year: ''
 };
-
 export const COMMUNITY_INIT = {
   no: 0,
   type: '',
@@ -69,12 +65,32 @@ export const COMMUNITY_INIT = {
   com_year: ''
 };
 
+// ** Regional Anggaran
+export const BUDGET_INIT = {
+  total_price: '',
+  materials: [],
+  services: [],
+  transports: [],
+  others: []
+};
+
+export const DETAIL_BUDGET_INIT = {
+  no: 0,
+  category: '',
+  output_type: '',
+  volume: '',
+  unit_price: '',
+  total_price: '',
+  status: false
+};
+
+// ** Regional Susunan Tim
 export const STRUCTURE_INIT = {
   no: 0,
   name: '',
   program: '',
-  number_id: '',
-  field_of_study: '',
+  id_no: '',
+  major: '',
   time_allocation: '',
   task_description: ''
 };

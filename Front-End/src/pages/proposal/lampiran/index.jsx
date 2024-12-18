@@ -9,7 +9,7 @@ import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 
 const Lampiran = () => {
-  const [value, setValue] = useState('L2');
+  const [value, setValue] = useState('L1');
 
   const handleChange = (event, newValue) => {
     setValue(newValue);

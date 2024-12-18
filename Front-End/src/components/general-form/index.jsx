@@ -30,12 +30,11 @@ const GenForm = ({ formFields = [], buttonDisable = false, onSubmit, titleButton
     <Formik
       initialValues={initialValues}
       validationSchema={validationSchema}
-      enableReinitialize // To update the form when initialValues change
+      enableReinitialize
       onSubmit={async (values, { setSubmitting, resetForm }) => {
         if (onSubmit) {
-          await onSubmit(values); // Call onSubmit passed in props
+          await onSubmit(values);
         }
-        // Reset the form fields after successful submission
         resetForm();
         setSubmitting(false);
       }}

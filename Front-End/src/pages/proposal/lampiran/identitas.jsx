@@ -27,7 +27,9 @@ const Identitas = () => {
       setData(updatedData);
     },
     detail: (param) => {
-      return <AdditionalData dataDetail={param} updateDetail={handleAddtional} />;
+      const dataDetail = data.find((item) => item.no === param.no);
+      console.log('params', dataDetail);
+      return <AdditionalData detail={param} updateDetail={handleDetail} />;
     },
     save: async () => {
       const payload = {
@@ -41,11 +43,9 @@ const Identitas = () => {
     }
   };
 
-  //still infinity rendering
-  const handleAddtional = useCallback((newDetail) => {
-    console.log('newDetail', newDetail);
-  }, []);
-
+  const handleDetail = (param) => {
+    console.log('data update', param);
+  };
   const handleForm = useCallback(
     (values) => {
       if (object?.status) {
@@ -78,6 +78,10 @@ const Identitas = () => {
 
     loadMasterData();
   }, [dispatch, gender, role]);
+
+  useEffect(() => {
+    console.log('parent', data);
+  }, [data]);
 
   return (
     <Stack direction="column" spacing={2}>
@@ -131,24 +135,28 @@ const Identitas = () => {
   );
 };
 
-export const AdditionalData = ({ dataDetail = {}, updateDetail }) => {
-  const [detail, setDetail] = useState(() => ({
-    act: dataDetail.act || [],
-    award: dataDetail.award || [],
-    education: dataDetail.education || [],
-    course: dataDetail.course || [],
-    research: dataDetail.research || [],
-    comunity_service: dataDetail.comunity_service || []
-  }));
+const AdditionalData = ({ data = {}, updateDetail = () => {} }) => {
+  const initialDetailState = {
+    act: data?.add_data?.act || [],
+    award: data?.add_data?.award || [],
+    education: data?.add_data?.education || [],
+    course: data?.add_data?.course || [],
+    research: data?.add_data?.research || [],
+    comunity_service: data?.add_data?.comunity_service || []
+  };
 
-  const [object, setObject] = useState({
+  const [detail, setDetail] = useState(initialDetailState);
+
+  const initialObjectState = {
     act: ACT_INIT,
     award: AWARDS_INIT,
     education: EDUCATION_INIT,
     course: COURSE_INIT,
     research: RESEARCH_INIT,
     comunity_service: COMMUNITY_INIT
-  });
+  };
+
+  const [object, setObject] = useState(initialObjectState);
 
   const dosenDetail = [
     { key: 'education', label: 'Pendidikan' },
@@ -157,41 +165,25 @@ export const AdditionalData = ({ dataDetail = {}, updateDetail }) => {
     { key: 'comunity_service', label: 'Pengabdian' }
   ];
 
-  // Reset logic for `object` state.
-  const reset = useCallback((key) => {
+  const resetObjectKey = useCallback((key) => {
     setObject((prev) => ({ ...prev, [key]: initialStateForKey(key) }));
   }, []);
 
   const initialStateForKey = (key) => {
-    switch (key) {
-      case 'act':
-        return ACT_INIT;
-      case 'award':
-        return AWARDS_INIT;
-      case 'education':
-        return EDUCATION_INIT;
-      case 'course':
-        return COURSE_INIT;
-      case 'research':
-        return RESEARCH_INIT;
-      case 'comunity_service':
-        return COMMUNITY_INIT;
-      default:
-        return {};
-    }
+    const initialStates = {
+      act: ACT_INIT,
+      award: AWARDS_INIT,
+      education: EDUCATION_INIT,
+      course: COURSE_INIT,
+      research: RESEARCH_INIT,
+      comunity_service: COMMUNITY_INIT
+    };
+    return initialStates[key] || {};
   };
 
-  // Logic for editing, updating, and deleting rows in the table.
   const handleAct = {
     edit: (key) => (param) => {
       setObject((prev) => ({ ...prev, [key]: { ...param, status: true } }));
-    },
-    update: (key) => () => {
-      setDetail((prev) => ({
-        ...prev,
-        [key]: prev[key].map((item) => (item.no === object[key].no ? { ...item, ...object[key], status: false } : item))
-      }));
-      reset(key);
     },
     delete: (key) => (item) => {
       setDetail((prev) => ({
@@ -203,102 +195,66 @@ export const AdditionalData = ({ dataDetail = {}, updateDetail }) => {
 
   const handleForm = useCallback(
     (values, key) => {
-      if (object[key]?.status) {
-        setDetail((prevDetail) => ({
-          ...prevDetail,
-          [key]: prevDetail[key]?.map((item) => (item.no === object[key]?.no ? { ...item, ...values, status: false } : item))
-        }));
-        reset(key);
-      } else {
-        const newItem = { ...values, no: (detail[key]?.length || 0) + 1 };
-        setDetail((prevDetail) => ({
-          ...prevDetail,
-          [key]: [...(prevDetail[key] || []), newItem]
-        }));
-      }
+      const isEdit = object[key]?.status;
+
+      setDetail((prevDetail) => {
+        const updatedData = isEdit
+          ? prevDetail[key].map((item) => (item.no === object[key]?.no ? { ...item, ...values, status: false } : item))
+          : [...(prevDetail[key] || []), { ...values, no: (prevDetail[key]?.length || 0) + 1 }];
+
+        return { ...prevDetail, [key]: updatedData };
+      });
+
+      resetObjectKey(key);
+
+      updateDetail({ ...data, add_data: detail });
     },
-    [detail, object, reset]
+    [data, detail, object, resetObjectKey, updateDetail]
   );
 
   useEffect(() => {
-    const updatedDataDetail = {
-      ...dataDetail,
-      add_data: {
-        ...dataDetail.add_data,
-        ...detail
-      }
-    };
+    console.log('detail data', data);
+  }, [data]);
 
-    console.log('Updating parent with new detail:', updatedDataDetail);
-    updateDetail(updatedDataDetail);
-  }, [detail, dataDetail, updateDetail]);
+  const renderSection = (keys, isDosen) =>
+    keys.map((keyItem, index) => {
+      const { key, label } = isDosen ? keyItem : { key: keyItem, label: keyItem === 'act' ? 'Kegiatan' : 'Penghargaan' };
+
+      const title = isDosen ? `Tri Dharma ${label}` : key === 'act' ? 'Kegiatan' : 'Penghargaan';
+
+      return (
+        <Grid item xs={12} key={`${key}-${index}`} sx={{ marginBottom: 15 }}>
+          <Typography variant="h5" gutterBottom>
+            Detail {key === 'education' ? label : title}
+          </Typography>
+          <Stack direction="column" spacing={5}>
+            <GenForm
+              formFields={initialFields[key]}
+              buttonDisable={false}
+              onSubmit={(values) => handleForm(values, key)}
+              titleButton={object[key]?.status ? `Update Data ${title}` : `Tambah Data ${title}`}
+              initialValuesUpdate={object[key]}
+            />
+            <TableForm
+              columns={lampiranColumns[key](handleAct.edit(key), handleAct.delete(key), object[key]?.status)}
+              rows={detail[key] || []}
+              expand={false}
+              detail={''}
+            />
+          </Stack>
+        </Grid>
+      );
+    });
 
   return (
-    <>
-      <Box sx={{ margin: 5 }}>
-        <Grid container>
-          {dataDetail?.role_person !== 'DOSEN' &&
-            ['act', 'award'].map((key, index) => (
-              <Grid item xs={12} key={`${key}-${index}`} sx={{ marginBottom: 15 }}>
-                <Typography variant="h5" gutterBottom>
-                  Detail {key === 'act' ? 'Kegiatan' : 'Penghargaan'}
-                </Typography>
-                <Stack direction="column" spacing={5}>
-                  <GenForm
-                    formFields={initialFields[key]}
-                    buttonDisable={false}
-                    onSubmit={(values) => handleForm(values, key)}
-                    titleButton={
-                      object[key]?.status
-                        ? `Update Data ${key === 'act' ? 'Kegiatan' : 'Penghargaan'}`
-                        : `Tambah Data ${key === 'act' ? 'Kegiatan' : 'Penghargaan'}`
-                    }
-                    initialValuesUpdate={object[key]}
-                  />
-                  <TableForm
-                    columns={lampiranColumns[key](handleAct.edit(key), handleAct.delete(key), object[key].status)}
-                    rows={detail[key] || []}
-                    expand={false}
-                    detail={''}
-                  />
-                </Stack>
-              </Grid>
-            ))}
-          {dataDetail?.role_person === 'DOSEN' &&
-            dosenDetail.map((item, index) => (
-              <Grid item xs={12} key={`${item.key}-${index}`} sx={{ marginBottom: 15 }}>
-                <Typography variant="h5" gutterBottom>
-                  Detail {item.key === 'education' ? item.label : `Tri Dharma ${item.label}`}
-                </Typography>
-                <Stack direction="column" spacing={5}>
-                  <GenForm
-                    formFields={initialFields[item.key]}
-                    buttonDisable={false}
-                    onSubmit={(values) => handleForm(values, item.key)}
-                    titleButton={
-                      object[item.key]?.status
-                        ? `Update Data ${item.key === 'education' ? item.label : `Tri Dharma ${item.label}`}`
-                        : `Tambah Data ${item.key === 'education' ? item.label : `Tri Dharma ${item.label}`}`
-                    }
-                    initialValuesUpdate={object[item.key]}
-                  />
-                  <TableForm
-                    columns={lampiranColumns[item.key](handleAct.edit(item.key), handleAct.delete(item.key), object[item.key].status)}
-                    rows={detail[item.key] || []}
-                    expand={false}
-                    detail={''}
-                  />
-                </Stack>
-              </Grid>
-            ))}
-        </Grid>
-      </Box>
-    </>
+    <Box sx={{ margin: 5 }}>
+      <Grid container>{data?.role_person !== 'DOSEN' ? renderSection(['act', 'award'], false) : renderSection(dosenDetail, true)}</Grid>
+    </Box>
   );
 };
 
 AdditionalData.propTypes = {
-  dataDetail: PropTypes.object.isRequired,
+  data: PropTypes.object.isRequired,
   updateDetail: PropTypes.func
 };
 

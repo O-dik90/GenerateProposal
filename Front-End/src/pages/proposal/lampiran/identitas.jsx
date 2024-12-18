@@ -1,5 +1,5 @@
+import { ACT_INIT, AWARDS_INIT, COMMUNITY_INIT, COURSE_INIT, DEFAULT_ID_INIT, EDUCATION_INIT, ID_INIT, RESEARCH_INIT } from './initial';
 import { Box, Grid, MenuItem, Select, Stack, Typography } from '@mui/material';
-import { DEFAULT_ID_INIT, ID_INIT } from './initial';
 import React, { useCallback, useEffect, useState } from 'react';
 import { masterGender, masterLampiranRole } from 'store/slices/master-data';
 import { useDispatch, useSelector } from 'react-redux';
@@ -17,6 +17,45 @@ const Identitas = () => {
     [object, setObject] = useState(ID_INIT),
     [data, setData] = useState(DEFAULT_ID_INIT);
 
+  const initialObjectState = {
+    act: ACT_INIT,
+    award: AWARDS_INIT,
+    education: EDUCATION_INIT,
+    course: COURSE_INIT,
+    research: RESEARCH_INIT,
+    comunity_service: COMMUNITY_INIT
+  };
+
+  const [objectDetail, setObjectDetail] = useState(initialObjectState);
+
+  const resetObjectKey = useCallback((key) => {
+    setObject((prev) => ({ ...prev, [key]: initialStateForKey(key) }));
+  }, []);
+
+  const initialStateForKey = (key) => {
+    const initialStates = {
+      act: ACT_INIT,
+      award: AWARDS_INIT,
+      education: EDUCATION_INIT,
+      course: COURSE_INIT,
+      research: RESEARCH_INIT,
+      comunity_service: COMMUNITY_INIT
+    };
+    return initialStates[key] || {};
+  };
+
+  const handleAct = {
+    edit: (key) => (param) => {
+      setDetailObject((prev) => ({ ...prev, [key]: { ...param, status: true } }));
+    },
+    delete: (key) => (item) => {
+      setDetailObject((prev) => ({
+        ...prev,
+        [key]: prev[key].filter((row) => row.no !== item.no).map((row, index) => ({ ...row, no: index + 1 }))
+      }));
+    }
+  };
+
   const roleDosen = [
     { key: 'education', role: 'DOSEN', label: 'Pendidikan' },
     { key: 'course', role: 'DOSEN', label: 'Pendidikan' },
@@ -28,14 +67,18 @@ const Identitas = () => {
     { key: 'award', role: 'MHS', label: 'Penghargaan' }
   ];
 
-  const renderSection = (role, data, onEdit, onDelete) => {
+  const renderSection = (role, data) => {
     return role.map((item, index) => (
       <Grid item xs={12} key={`${item.key}-${index}`} sx={{ marginBottom: 15 }}>
         <Typography variant="h5" gutterBottom>
           Detail {item.label}
         </Typography>
         <Stack direction="column" sx={{ marginBottom: 5 }}>
-          <TableForm columns={lampiranColumns[item.key](onEdit, onDelete)} rows={data[item.key] || []} expand={false} />
+          <TableForm
+            columns={lampiranColumns[item.key](handleAct.edit(item.key), handleAct.delete(item.key))}
+            rows={data[item.key] || []}
+            expand={false}
+          />
         </Stack>
       </Grid>
     ));
@@ -63,24 +106,30 @@ const Identitas = () => {
       console.log('detail', param);
       return (
         <Box sx={{ margin: 5 }}>
-          <Grid container>
-            {param?.role_person !== 'DOSEN'
-              ? renderSection(roleMHS, param, handleDetail.edit, handleDetail.delete)
-              : renderSection(roleDosen, param, handleDetail.edit, handleDetail.delete)}
-          </Grid>
+          <Grid container>{param?.role_person !== 'DOSEN' ? renderSection(roleMHS, param) : renderSection(roleDosen, param)}</Grid>
         </Box>
       );
     }
   };
 
-  const handleDetail = {
-    edit: (param) => {
-      console.log(param);
+  const handleDetailForm = useCallback(
+    (values, key) => {
+      const isEdit = object[key]?.status;
+
+      setObject((prevDetail) => {
+        const updatedData = isEdit
+          ? prevDetail[key].map((item) => (item.no === object[key]?.no ? { ...item, ...values, status: false } : item))
+          : [...(prevDetail[key] || []), { ...values, no: (prevDetail[key]?.length || 0) + 1 }];
+
+        return { ...prevDetail, [key]: updatedData };
+      });
+
+      resetObjectKey(key);
+
+      updateDetail({ ...data, [key]: detail });
     },
-    delete: (param) => {
-      console.log(param);
-    }
-  };
+    [data, object, resetObjectKey]
+  );
 
   const handleForm = useCallback(
     (values) => {

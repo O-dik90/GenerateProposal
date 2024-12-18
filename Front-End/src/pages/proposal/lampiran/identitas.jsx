@@ -1,11 +1,10 @@
-import { ACT_INIT, AWARDS_INIT, COMMUNITY_INIT, COURSE_INIT, EDUCATION_INIT, ID_INIT, RESEARCH_INIT } from './initial';
 import { Box, Grid, MenuItem, Select, Stack, Typography } from '@mui/material';
+import { DEFAULT_ID_INIT, ID_INIT } from './initial';
 import React, { useCallback, useEffect, useState } from 'react';
 import { masterGender, masterLampiranRole } from 'store/slices/master-data';
 import { useDispatch, useSelector } from 'react-redux';
 
 import GenForm from 'components/general-form';
-import PropTypes from 'prop-types';
 import { TableForm } from 'components/table-form';
 import { initialFields } from './initial-form';
 import { lampiranColumns } from './initial-column';
@@ -16,7 +15,31 @@ const Identitas = () => {
     { lampiran } = useSelector((state) => state.app.proposal);
   const dispatch = useDispatch(),
     [object, setObject] = useState(ID_INIT),
-    [data, setData] = useState([]);
+    [data, setData] = useState(DEFAULT_ID_INIT);
+
+  const roleDosen = [
+    { key: 'education', role: 'DOSEN', label: 'Pendidikan' },
+    { key: 'course', role: 'DOSEN', label: 'Pendidikan' },
+    { key: 'research', role: 'DOSEN', label: 'Penelitian' },
+    { key: 'comunity_service', role: 'DOSEN', label: 'Pengabdian' }
+  ];
+  const roleMHS = [
+    { key: 'act', role: 'MHS', label: 'Kegiatan' },
+    { key: 'award', role: 'MHS', label: 'Penghargaan' }
+  ];
+
+  const renderSection = (role, data, onEdit, onDelete) => {
+    return role.map((item, index) => (
+      <Grid item xs={12} key={`${item.key}-${index}`} sx={{ marginBottom: 15 }}>
+        <Typography variant="h5" gutterBottom>
+          Detail {item.label}
+        </Typography>
+        <Stack direction="column" sx={{ marginBottom: 5 }}>
+          <TableForm columns={lampiranColumns[item.key](onEdit, onDelete)} rows={data[item.key] || []} expand={false} />
+        </Stack>
+      </Grid>
+    ));
+  };
 
   const handlePersonal = {
     edit: (param) => {
@@ -25,11 +48,6 @@ const Identitas = () => {
     delete: (param) => {
       const updatedData = data.filter((item) => item.no !== param.no).map((item, index) => ({ ...item, no: index + 1 }));
       setData(updatedData);
-    },
-    detail: (param) => {
-      const dataDetail = data.find((item) => item.no === param.no);
-      console.log('params', dataDetail);
-      return <AdditionalData detail={param} updateDetail={handleDetail} />;
     },
     save: async () => {
       const payload = {
@@ -40,12 +58,30 @@ const Identitas = () => {
       };
 
       console.log('payload', payload);
+    },
+    detail: (param) => {
+      console.log('detail', param);
+      return (
+        <Box sx={{ margin: 5 }}>
+          <Grid container>
+            {param?.role_person !== 'DOSEN'
+              ? renderSection(roleMHS, param, handleDetail.edit, handleDetail.delete)
+              : renderSection(roleDosen, param, handleDetail.edit, handleDetail.delete)}
+          </Grid>
+        </Box>
+      );
     }
   };
 
-  const handleDetail = (param) => {
-    console.log('data update', param);
+  const handleDetail = {
+    edit: (param) => {
+      console.log(param);
+    },
+    delete: (param) => {
+      console.log(param);
+    }
   };
+
   const handleForm = useCallback(
     (values) => {
       if (object?.status) {
@@ -122,6 +158,7 @@ const Identitas = () => {
             initialValuesUpdate={object}
           />
         )}
+
         <Stack direction="column" sx={{ marginTop: 5 }}>
           <TableForm
             columns={lampiranColumns.personal(handlePersonal.edit, handlePersonal.delete, object.status)}
@@ -133,129 +170,6 @@ const Identitas = () => {
       </Grid>
     </Stack>
   );
-};
-
-const AdditionalData = ({ data = {}, updateDetail = () => {} }) => {
-  const initialDetailState = {
-    act: data?.add_data?.act || [],
-    award: data?.add_data?.award || [],
-    education: data?.add_data?.education || [],
-    course: data?.add_data?.course || [],
-    research: data?.add_data?.research || [],
-    comunity_service: data?.add_data?.comunity_service || []
-  };
-
-  const [detail, setDetail] = useState(initialDetailState);
-
-  const initialObjectState = {
-    act: ACT_INIT,
-    award: AWARDS_INIT,
-    education: EDUCATION_INIT,
-    course: COURSE_INIT,
-    research: RESEARCH_INIT,
-    comunity_service: COMMUNITY_INIT
-  };
-
-  const [object, setObject] = useState(initialObjectState);
-
-  const dosenDetail = [
-    { key: 'education', label: 'Pendidikan' },
-    { key: 'course', label: 'Pendidikan' },
-    { key: 'research', label: 'Penelitian' },
-    { key: 'comunity_service', label: 'Pengabdian' }
-  ];
-
-  const resetObjectKey = useCallback((key) => {
-    setObject((prev) => ({ ...prev, [key]: initialStateForKey(key) }));
-  }, []);
-
-  const initialStateForKey = (key) => {
-    const initialStates = {
-      act: ACT_INIT,
-      award: AWARDS_INIT,
-      education: EDUCATION_INIT,
-      course: COURSE_INIT,
-      research: RESEARCH_INIT,
-      comunity_service: COMMUNITY_INIT
-    };
-    return initialStates[key] || {};
-  };
-
-  const handleAct = {
-    edit: (key) => (param) => {
-      setObject((prev) => ({ ...prev, [key]: { ...param, status: true } }));
-    },
-    delete: (key) => (item) => {
-      setDetail((prev) => ({
-        ...prev,
-        [key]: prev[key].filter((row) => row.no !== item.no).map((row, index) => ({ ...row, no: index + 1 }))
-      }));
-    }
-  };
-
-  const handleForm = useCallback(
-    (values, key) => {
-      const isEdit = object[key]?.status;
-
-      setDetail((prevDetail) => {
-        const updatedData = isEdit
-          ? prevDetail[key].map((item) => (item.no === object[key]?.no ? { ...item, ...values, status: false } : item))
-          : [...(prevDetail[key] || []), { ...values, no: (prevDetail[key]?.length || 0) + 1 }];
-
-        return { ...prevDetail, [key]: updatedData };
-      });
-
-      resetObjectKey(key);
-
-      updateDetail({ ...data, add_data: detail });
-    },
-    [data, detail, object, resetObjectKey, updateDetail]
-  );
-
-  useEffect(() => {
-    console.log('detail data', data);
-  }, [data]);
-
-  const renderSection = (keys, isDosen) =>
-    keys.map((keyItem, index) => {
-      const { key, label } = isDosen ? keyItem : { key: keyItem, label: keyItem === 'act' ? 'Kegiatan' : 'Penghargaan' };
-
-      const title = isDosen ? `Tri Dharma ${label}` : key === 'act' ? 'Kegiatan' : 'Penghargaan';
-
-      return (
-        <Grid item xs={12} key={`${key}-${index}`} sx={{ marginBottom: 15 }}>
-          <Typography variant="h5" gutterBottom>
-            Detail {key === 'education' ? label : title}
-          </Typography>
-          <Stack direction="column" spacing={5}>
-            <GenForm
-              formFields={initialFields[key]}
-              buttonDisable={false}
-              onSubmit={(values) => handleForm(values, key)}
-              titleButton={object[key]?.status ? `Update Data ${title}` : `Tambah Data ${title}`}
-              initialValuesUpdate={object[key]}
-            />
-            <TableForm
-              columns={lampiranColumns[key](handleAct.edit(key), handleAct.delete(key), object[key]?.status)}
-              rows={detail[key] || []}
-              expand={false}
-              detail={''}
-            />
-          </Stack>
-        </Grid>
-      );
-    });
-
-  return (
-    <Box sx={{ margin: 5 }}>
-      <Grid container>{data?.role_person !== 'DOSEN' ? renderSection(['act', 'award'], false) : renderSection(dosenDetail, true)}</Grid>
-    </Box>
-  );
-};
-
-AdditionalData.propTypes = {
-  data: PropTypes.object.isRequired,
-  updateDetail: PropTypes.func
 };
 
 export { Identitas };

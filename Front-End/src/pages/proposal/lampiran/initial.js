@@ -10,18 +10,15 @@ export const ID_INIT = {
   email: '',
   phone: '',
   status: false,
-  add_data: {
-    act: [],
-    awards: [],
-    education: [],
-    course: [],
-    research: [],
-    comunity_service: []
-  }
+  act: [],
+  award: [],
+  education: [],
+  course: [],
+  research: [],
+  comunity_service: []
 };
 export const ACT_INIT = {
   no: 0,
-  type: '',
   act_name: '',
   act_role: '',
   act_start_date: '',
@@ -30,14 +27,12 @@ export const ACT_INIT = {
 };
 export const AWARDS_INIT = {
   no: 0,
-  type: '',
   award_name: '',
   award_year: '',
   award_giver: ''
 };
 export const EDUCATION_INIT = {
   no: 0,
-  type: '',
   degree: '',
   major: '',
   institution: '',
@@ -45,25 +40,59 @@ export const EDUCATION_INIT = {
 };
 export const COURSE_INIT = {
   no: 0,
-  type: '',
   course_name: '',
   course_type: '',
   credits: ''
 };
 export const RESEARCH_INIT = {
   no: 0,
-  type: '',
   research_title: '',
   research_source: '',
   research_year: ''
 };
 export const COMMUNITY_INIT = {
   no: 0,
-  type: '',
   com_title: '',
   com_source: '',
   com_year: ''
 };
+
+export const DEFAULT_ID_INIT = [
+  {
+    no: 1,
+    role_person: 'KETUA',
+    name: 'odik y n',
+    gender: 'L',
+    id_no: '12234567',
+    birth_place: 'Klaten',
+    birth_date: '1998-10-18',
+    email: 'nugrohoodik90@gmail.com',
+    phone: '098766543321',
+    status: false,
+    act: [
+      {
+        no: 1,
+        act_name: 'Kegiatan 1',
+        act_role: 'Ketua',
+        act_start_date: '2022-01-01',
+        act_end_date: '2022-01-01',
+        status: false
+      }
+    ],
+    award: [
+      {
+        no: 1,
+        award_name: 'Penghargaan 1',
+        award_year: '2022',
+        award_giver: 'Pemberi Penghargaan 1'
+      }
+    ],
+    education: [],
+    course: [],
+    research: [],
+    comunity_service: []
+  }
+];
 
 // ** Regional Anggaran
 export const BUDGET_INIT = {

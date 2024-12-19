@@ -121,10 +121,9 @@ export const initialFields = {
     {
       name: 'award_year',
       label: 'Tahun',
-      type: 'date',
-      InputLabelProps: { shrink: true },
+      type: 'text',
       placeholder: '',
-      validation: Yup.date().required('Wajib diisi'),
+      validation: Yup.string().required('Wajib diisi').length(4, 'Tahun harus 4 angka'),
       width: 2
     }
   ],
@@ -216,9 +215,9 @@ export const initialFields = {
       width: 2
     }
   ],
-  comunity_service: [
+  community_service: [
     {
-      name: 'com_title',
+      name: 'community_title',
       label: 'Judul',
       type: 'text',
       placeholder: 'Masukkan Judul',
@@ -226,7 +225,7 @@ export const initialFields = {
       width: 4
     },
     {
-      name: 'com_source',
+      name: 'community_source',
       label: 'Sumber',
       type: 'text',
       placeholder: 'Masukkan Sumber',

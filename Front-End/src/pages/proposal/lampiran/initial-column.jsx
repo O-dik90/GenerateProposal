@@ -1,9 +1,9 @@
-import { DeleteFilled, EditFilled } from '@ant-design/icons';
+import { DeleteFilled, EditFilled, UnorderedListOutlined } from '@ant-design/icons';
 import { IconButton, Stack } from '@mui/material';
 
 // ** Regional Identitas
 export const lampiranColumns = {
-  personal: (handleEdit, handleDelete, status) => [
+  personal: (handleEdit, handleDelete, handleDetail, status) => [
     { name: 'No', field: 'no', width: '4rem', align: 'center' },
     { name: 'Nama', field: 'name', width: '30rem' },
     { name: 'Jabatan', field: 'role_person' },
@@ -20,6 +20,9 @@ export const lampiranColumns = {
       cell: (value, row) => {
         return (
           <Stack direction="row" spacing={1}>
+            <IconButton aria-label="detail" size="small" color="info" onClick={() => handleDetail(row)} disabled={status}>
+              <UnorderedListOutlined />
+            </IconButton>
             <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)} disabled={status}>
               <EditFilled />
             </IconButton>
@@ -147,10 +150,11 @@ export const lampiranColumns = {
       }
     }
   ],
-  comunity_service: (handleEdit, handleDelete, status) => [
+  community_service: (handleEdit, handleDelete, status) => [
     { name: 'No', field: 'no', width: '4rem', align: 'center' },
-    { name: 'Nama Kegiatan', field: 'comunity_service_name' },
-    { name: 'Tahun', field: 'comunity_service_year', width: '10rem' },
+    { name: 'Nama Kegiatan', field: 'community_title' },
+    { name: 'Sumber', field: 'community_source' },
+    { name: 'Tahun', field: 'community_year', width: '10rem' },
     {
       name: 'Aksi',
       field: 'action',

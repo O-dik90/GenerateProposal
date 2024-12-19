@@ -19,42 +19,53 @@ export const ID_INIT = {
 };
 export const ACT_INIT = {
   no: 0,
+  id_personel: 0,
   act_name: '',
   act_role: '',
   act_start_date: '',
   act_end_date: '',
   status: false
 };
-export const AWARDS_INIT = {
+export const AWARD_INIT = {
   no: 0,
+  id_personel: 0,
   award_name: '',
   award_year: '',
-  award_giver: ''
+  award_giver: '',
+  status: false
 };
 export const EDUCATION_INIT = {
   no: 0,
+  id_personel: 0,
   degree: '',
   major: '',
   institution: '',
-  graduation_year: ''
+  graduation_year: '',
+  status: false
 };
 export const COURSE_INIT = {
   no: 0,
+  id_personel: 0,
   course_name: '',
   course_type: '',
-  credits: ''
+  credits: '',
+  status: false
 };
 export const RESEARCH_INIT = {
   no: 0,
+  id_personel: 0,
   research_title: '',
   research_source: '',
-  research_year: ''
+  research_year: '',
+  status: false
 };
 export const COMMUNITY_INIT = {
   no: 0,
+  id_personel: 0,
   com_title: '',
   com_source: '',
-  com_year: ''
+  com_year: '',
+  status: false
 };
 
 export const DEFAULT_ID_INIT = [
@@ -72,6 +83,7 @@ export const DEFAULT_ID_INIT = [
     act: [
       {
         no: 1,
+        id_personel: 1,
         act_name: 'Kegiatan 1',
         act_role: 'Ketua',
         act_start_date: '2022-01-01',
@@ -82,6 +94,7 @@ export const DEFAULT_ID_INIT = [
     award: [
       {
         no: 1,
+        id_personel: 1,
         award_name: 'Penghargaan 1',
         award_year: '2022',
         award_giver: 'Pemberi Penghargaan 1'
@@ -90,7 +103,7 @@ export const DEFAULT_ID_INIT = [
     education: [],
     course: [],
     research: [],
-    comunity_service: []
+    community_service: []
   }
 ];
 

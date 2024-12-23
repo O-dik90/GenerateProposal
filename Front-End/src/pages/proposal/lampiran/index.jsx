@@ -7,6 +7,8 @@ import { StrukturOrganisasi } from './struktur-organisasi';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
+import { SuratPernyataan } from './surat-pernyataan';
+import { FilePendukung } from './file-pendukung';
 
 const Lampiran = () => {
   const [value, setValue] = useState('L1');
@@ -19,8 +21,8 @@ const Lampiran = () => {
     { label: 'Identitas', code: 'L1', component: <Identitas /> },
     { label: 'Anggaran', code: 'L2', component: <Anggaran /> },
     { label: 'Susunan Tim', code: 'L3', component: <StrukturOrganisasi /> },
-    { label: 'Surat Pernyataan', code: 'L4', component: <></> },
-    { label: 'File Pendukung', code: 'L5', component: <></> }
+    { label: 'Surat Pernyataan', code: 'L4', component: <SuratPernyataan /> },
+    { label: 'File Pendukung', code: 'L5', component: <FilePendukung /> }
   ];
 
   return (

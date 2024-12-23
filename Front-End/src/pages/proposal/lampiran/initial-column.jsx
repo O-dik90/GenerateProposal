@@ -20,7 +20,7 @@ export const lampiranColumns = {
       cell: (value, row) => {
         return (
           <Stack direction="row" spacing={1}>
-            <IconButton aria-label="detail" size="small" color="info" onClick={() => handleDetail(row)} disabled={status}>
+            <IconButton aria-label="detail" size="small" color="info" onClick={() => handleDetail(row)}>
               <UnorderedListOutlined />
             </IconButton>
             <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)} disabled={status}>

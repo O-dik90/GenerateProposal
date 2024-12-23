@@ -134,7 +134,6 @@ const Identitas = () => {
       setOpen((prev) => !prev);
     }
   };
-
   const handleFormDetail = useCallback(
     (values, key) => {
       if (detailObject[key]?.status) {

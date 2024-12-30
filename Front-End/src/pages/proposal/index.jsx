@@ -212,22 +212,33 @@ const ProposalTable = () => {
 
     if (detailProposal.fulfilled.match(res)) {
       console.log(res);
-      if (res.payload?.generate_status) {
-        await enqueueSnackbar('Memproses data', { variant: 'success' });
-        const detail = res.payload?.data;
-        await GenerateDocx({
-          data: {
-            pendahuluan: detail?.pendahuluan,
-            tinjauan: detail?.tinjauan,
-            pelaksanaan: detail?.pelaksanaan,
-            biaya: detail?.biaya,
-            dapus: detail?.dapus,
-            fileName: `${param.title}-document.docx`
-          }
-        });
-      } else {
-        enqueueSnackbar('Data belum komplet', { variant: 'error' });
-      }
+      const detail = res.payload?.data;
+      await GenerateDocx({
+        data: {
+          pendahuluan: detail?.pendahuluan || {},
+          tinjauan: detail?.tinjauan || {},
+          pelaksanaan: detail?.pelaksanaan || {},
+          biaya: detail?.biaya || {},
+          dapus: detail?.dapus || {},
+          fileName: `${param.title}-document.docx`
+        }
+      });
+      // if (res.payload?.generate_status) {
+      //   await enqueueSnackbar('Memproses data', { variant: 'success' });
+      //   const detail = res.payload?.data;
+      //   await GenerateDocx({
+      //     data: {
+      //       pendahuluan: detail?.pendahuluan,
+      //       tinjauan: detail?.tinjauan,
+      //       pelaksanaan: detail?.pelaksanaan,
+      //       biaya: detail?.biaya,
+      //       dapus: detail?.dapus,
+      //       fileName: `${param.title}-document.docx`
+      //     }
+      //   });
+      // } else {
+      //   enqueueSnackbar('Data belum komplet', { variant: 'error' });
+      // }
     }
   };
 

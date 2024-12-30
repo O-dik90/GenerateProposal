@@ -2,7 +2,7 @@ import axios from 'axios';
 import { enqueueSnackbar } from 'notistack';
 
 const axiosInstance = axios.create({
-  baseURL: `http://localhost:3001/api/v1`,
+  baseURL: `http://ubaicorner.com/api-genpro`,
   timeout: 10000
 });
 

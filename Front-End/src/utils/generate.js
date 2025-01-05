@@ -16,6 +16,7 @@ import {
 import { enqueueSnackbar } from 'notistack';
 import { saveAs } from 'file-saver';
 import { tableBiaya } from './table-biaya';
+import { tableKegiatan } from './table-kegiatan';
 
 const GenerateDocx = ({ data }) => {
   const { pendahuluan, tinjauan, biaya, pelaksanaan, fileName } = data;
@@ -151,6 +152,7 @@ const GenerateDocx = ({ data }) => {
       text: `4.2 Jadwal Kegiatan`,
       heading: HeadingLevel.HEADING_2
     }),
+    tableKegiatan(),
     // ...(Array.isArray(biaya?.json_data.biaya)
     //   ? biaya.json_data.kegiatan.flatMap((item) => [
     //       new Paragraph({

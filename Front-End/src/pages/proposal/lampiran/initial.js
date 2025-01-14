@@ -120,6 +120,7 @@ export const DETAIL_BUDGET_INIT = {
   no: 0,
   category: '',
   output_type: '',
+  budget_source: '',
   volume: '',
   unit_price: '',
   total_price: '',

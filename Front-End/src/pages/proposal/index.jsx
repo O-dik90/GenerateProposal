@@ -56,7 +56,6 @@ const ProposalTable = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    console.log(pkm);
     const loadMasterData = async () => {
       if (pkm.length <= 0) {
         await dispatch(masterPkm({ source_name: 'PKM' }));

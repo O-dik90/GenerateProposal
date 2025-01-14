@@ -17,10 +17,10 @@ const Anggaran = () => {
     });
 
   const budget = [
-    { key: 'materials', label: 'Bahan' },
-    { key: 'services', label: 'Sewa' },
-    { key: 'transports', label: 'Transportasi' },
-    { key: 'others', label: 'lain - lain' }
+    { key: 'materials', label: 'Bahan Material', limit: '60' },
+    { key: 'services', label: 'Sewa dan Jasa', limit: '15' },
+    { key: 'transports', label: 'Transportasi', limit: '30' },
+    { key: 'others', label: 'lain - lain', limit: '15' }
   ];
 
   const reset = useCallback((key) => {
@@ -71,7 +71,7 @@ const Anggaran = () => {
 
   return (
     <>
-      {budget.map(({ key, label }, index) => {
+      {budget.map(({ key, label, limit }, index) => {
         const budgetData = data[key] || [];
         const budgetStatus = object[key]?.status;
         const budgetFieldsData = budgetFields[key];
@@ -79,7 +79,10 @@ const Anggaran = () => {
         return (
           <Grid item xs={12} key={`${key}-${index}`} sx={{ marginBottom: 15 }}>
             <Typography variant="h5" gutterBottom>
-              Detail {label}
+              {`Detail ${label}`}
+            </Typography>
+            <Typography variant="h6" gutterBottom>
+              {`Pengeluaran Maksimal ${limit}%`}
             </Typography>
             <Stack direction="column" spacing={5}>
               <GenForm

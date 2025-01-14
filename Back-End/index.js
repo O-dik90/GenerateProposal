@@ -19,8 +19,8 @@ app.get('/', (req, res) => {
   res.status(200).json({ message: 'Welcome to REST API Genpro' });
 });
 
-app.use('/api/v1', proposalRoutes);
-app.use('/api/v1', masterData);
+app.use('/api-genpro', proposalRoutes);
+app.use('/api-genpro', masterData);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server is running on port ${process.env.PORT}`);

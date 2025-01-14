@@ -179,6 +179,7 @@ export const lampiranColumns = {
 export const budgetColumns = (handleEdit, handleDelete, status) => [
   { name: 'No', field: 'no', width: '4rem', align: 'center' },
   { name: 'Jenis Pengeluaran', field: 'output_type' },
+  { name: 'Sumber Dana', field: 'budget_source' },
   { name: 'Jumlah', field: 'volume', width: '5rem' },
   { name: 'Harga Satuan (Rp)', field: 'unit_price', width: '10rem' },
   { name: 'Total Harga (Rp)', field: 'total_price', width: '10rem' },

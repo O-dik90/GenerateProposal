@@ -25,7 +25,7 @@ const Tinjauan = () => {
     [errors, setErrors] = useState({});
 
   const Fields = [
-    { name: 'title', label: 'Judul', type: 'text', size: 12 },
+    { name: 'title', label: 'Judul Sub Bab', type: 'text', size: 12 },
     { name: 'description', label: 'Deskripsi', type: 'textarea', size: 12, rows: 10 }
   ];
   const validate = () => {
@@ -134,7 +134,7 @@ const Tinjauan = () => {
             key="grid-tinjauan"
             columns={[
               { name: 'No', field: 'no', width: '4rem' },
-              { name: 'Judul', field: 'title' }
+              { name: 'Judul Sub Bab', field: 'title' }
             ]}
             rows={data}
             expand={true}

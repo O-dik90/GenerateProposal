@@ -1,4 +1,4 @@
-import { Table, TableRow, TableCell, Paragraph, TextRun, AlignmentType, VerticalAlign, WidthType } from 'docx';
+import { AlignmentType, Paragraph, Table, TableCell, TableRow, TextRun, VerticalAlign, WidthType } from 'docx';
 
 export const tableBiaya = () => {
   const headers = [
@@ -19,7 +19,7 @@ export const tableBiaya = () => {
     },
     {
       no: '2',
-      jenis: 'Sewa dan jasa',
+      jenis: 'Sewa dan Jasa',
       sumber: [
         { type: 'Belmawa', besaran: 'Rp1.130.300,00' },
         { type: 'Perguruan Tinggi', besaran: 'Rp139.700,00' }

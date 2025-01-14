@@ -1,8 +1,10 @@
 import axios from 'axios';
 import { enqueueSnackbar } from 'notistack';
 
+const LOCAL = import.meta.env.VITE_APP_API_LOCAL;
+
 const axiosInstance = axios.create({
-  baseURL: `http://ubaicorner.com/api-genpro`,
+  baseURL: LOCAL,
   timeout: 10000
 });
 

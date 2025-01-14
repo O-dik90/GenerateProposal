@@ -253,7 +253,19 @@ export const budgetFields = {
       type: 'text',
       placeholder: '',
       validation: Yup.string().required('Wajib diisi'),
-      width: 6
+      width: 4
+    },
+    {
+      name: 'budget_source',
+      label: 'Sumber Dana',
+      type: 'select',
+      options: [
+        { value: 'belmawa', label: 'Belmawa' },
+        { value: 'perguruan', label: 'Perguruan Tinggi' }
+      ],
+      placeholder: '',
+      validation: Yup.string().required('Wajib diisi'),
+      width: 2
     },
     {
       name: 'volume',
@@ -287,7 +299,19 @@ export const budgetFields = {
       type: 'text',
       placeholder: '',
       validation: Yup.string().required('Wajib diisi'),
-      width: 6
+      width: 4
+    },
+    {
+      name: 'budget_source',
+      label: 'Sumber Dana',
+      type: 'select',
+      options: [
+        { value: 'belmawa', label: 'Belmawa' },
+        { value: 'perguruan', label: 'Perguruan Tinggi' }
+      ],
+      placeholder: '',
+      validation: Yup.string().required('Wajib diisi'),
+      width: 2
     },
     {
       name: 'volume',
@@ -321,7 +345,19 @@ export const budgetFields = {
       type: 'text',
       placeholder: '',
       validation: Yup.string().required('Wajib diisi'),
-      width: 6
+      width: 4
+    },
+    {
+      name: 'budget_source',
+      label: 'Sumber Dana',
+      type: 'select',
+      options: [
+        { value: 'belmawa', label: 'Belmawa' },
+        { value: 'perguruan', label: 'Perguruan Tinggi' }
+      ],
+      placeholder: '',
+      validation: Yup.string().required('Wajib diisi'),
+      width: 2
     },
     {
       name: 'volume',
@@ -355,7 +391,19 @@ export const budgetFields = {
       type: 'text',
       placeholder: '',
       validation: Yup.string().required('Wajib diisi'),
-      width: 6
+      width: 4
+    },
+    {
+      name: 'budget_source',
+      label: 'Sumber Dana',
+      type: 'select',
+      options: [
+        { value: 'belmawa', label: 'Belmawa' },
+        { value: 'perguruan', label: 'Perguruan Tinggi' }
+      ],
+      placeholder: '',
+      validation: Yup.string().required('Wajib diisi'),
+      width: 2
     },
     {
       name: 'volume',

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
 import GenForm from 'components/general-form';
-import { STRUCTURE_INIT } from './initial';
+import { STRUCTURE_INIT } from './initial-data';
 import { Stack } from '@mui/material';
 import { TableForm } from 'components/table-form';
 import { structureColumns } from './initial-column';

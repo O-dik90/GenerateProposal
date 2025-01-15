@@ -1,15 +1,15 @@
 import { Box, Tab, Tabs } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 
-import Dapus from './dapus';
-import Kegiatan from './kegiatan';
+import Dapus from './daftar-pustaka';
+import Kegiatan from './bab-kegiatan';
 import Lampiran from './lampiran';
 import MainCard from 'components/MainCard';
-import Pelaksanaan from './pelaksanaan';
-import Pendahuluan from './pendahuluan';
+import Pelaksanaan from './bab-pelaksanaan';
+import Pendahuluan from './bab-pendahuluan/pendahuluan';
 import TabContext from '@mui/lab/TabContext';
 import TabPanel from '@mui/lab/TabPanel';
-import Tinjauan from './tinjauan';
+import Tinjauan from './bab-tinjauan-pustaka';
 import { getListBabProposal } from 'store/slices/proposal';
 import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';

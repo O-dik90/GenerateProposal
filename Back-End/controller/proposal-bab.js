@@ -1,5 +1,5 @@
 require('date-fns/locale');
-require('date-fns/locale');
+
 const ProposalBab = require('../models/proposal-bab');
 const Proposals = require('../models/proposals');
 
@@ -14,21 +14,22 @@ const getListProposalBab = async (req, res) => {
         data: [],
       });
     }
+
     return res.json({
       message: 'success',
       proposals_id: proposals_id,
       pendahuluan: {
         latar_belakang: data[0].json_data,
-        rumusan_masalah: data[1].json_data,
-        luaran: data[2].json_data,
-        tujuan: data[3].json_data,
-        manfaat: data[4].json_data,
+        rumusan_masalah: JSON.parse(data[1].json_data),
+        luaran: JSON.parse(data[2].json_data),
+        tujuan: JSON.parse(data[3].json_data),
+        manfaat: JSON.parse(data[4].json_data),
       },
-      tinjauan: data.slice(5, 6)[0],
-      pelaksanaan: data.slice(6, 7)[0],
-      biaya: data.slice(7, 8)[0],
-      dapus: data.slice(8, 9)[0],
-      lampiran: data.slice(-1)[0],
+      tinjauan: JSON.parse(data.slice(5, 6)[0]?.json_data || null),
+      pelaksanaan: JSON.parse(data.slice(6, 7)[0]?.json_data || null),
+      biaya: JSON.parse(data.slice(7, 8)[0]?.json_data || null),
+      dapus: JSON.parse(data.slice(8, 9)[0]?.json_data || null),
+      lampiran: JSON.parse(data.slice(-1)[0]?.json_data || null),
     });
   } catch (error) {
     res.status(500).json({
@@ -84,7 +85,10 @@ const updateBabPendahuluan = async (req, res) => {
       if (req.body.hasOwnProperty(item.key_title)) {
         return {
           ...item,
-          data: JSON.stringify(req.body[item.key_title]),
+          data:
+            item.key_title === 'latar_belakang'
+              ? req.body[item.key_title]
+              : JSON.stringify(req.body[item.key_title]),
         };
       }
       return item;

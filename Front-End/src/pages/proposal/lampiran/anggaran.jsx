@@ -1,4 +1,4 @@
-import { BUDGET_INIT, DETAIL_BUDGET_INIT } from './initial';
+import { BUDGET_INIT, DETAIL_BUDGET_INIT } from './initial-data';
 import { Grid, Stack, Typography } from '@mui/material';
 import React, { useCallback, useState } from 'react';
 

@@ -1,11 +1,11 @@
 import axios from 'axios';
 import { enqueueSnackbar } from 'notistack';
 
-// const LOCAL = import.meta.env.VITE_APP_API_LOCAL;
-const SERVER = import.meta.env.VITE_APP_API_SERVER;
+const LOCAL = import.meta.env.VITE_APP_API_LOCAL;
+//const SERVER = import.meta.env.VITE_APP_API_SERVER;
 
 const axiosInstance = axios.create({
-  baseURL: SERVER,
+  baseURL: LOCAL,
   timeout: 10000
 });
 

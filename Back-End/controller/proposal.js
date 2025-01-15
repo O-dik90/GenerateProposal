@@ -41,6 +41,7 @@ const getProposal = async (req, res) => {
     if (result.length === 0 || resDetail.length === 0) {
       throw new Error('data or detail not found');
     }
+    console.log(resDetail);
     return res.json({
       message: 'success',
       generate_status: resGen.length > 0 ? false : true,
@@ -49,15 +50,16 @@ const getProposal = async (req, res) => {
         detail: {
           pendahuluan: {
             latar_belakang: resDetail[0].json_data,
-            rumusan_masalah: resDetail[1].json_data,
-            luaran: resDetail[2].json_data,
-            tujuan: resDetail[3].json_data,
-            manfaat: resDetail[4].json_data,
+            rumusan_masalah: JSON.parse(resDetail[1]?.json_data),
+            luaran: JSON.parse(resDetail[2].json_data),
+            tujuan: JSON.parse(resDetail[3].json_data),
+            manfaat: JSON.parse(resDetail[4].json_data),
           },
-          tinjauan: resDetail.slice(5, 6)[0],
-          pelaksanaan: resDetail.slice(6, 7)[0],
-          biaya: resDetail.slice(7, 8)[0],
-          dapus: resDetail.slice(-1)[0],
+          tinjauan: JSON.parse(resDetail.slice(5, 6)[0].json_data || null),
+          pelaksanaan: JSON.parse(resDetail.slice(6, 7)[0].json_data || null),
+          biaya: JSON.parse(resDetail.slice(7, 8)[0].json_data || null),
+          dapus: JSON.parse(data.slice(8, 9)[0]?.json_data || null),
+          lampiran: JSON.parse(data.slice(-1)[0]?.json_data || null),
         },
       },
     });

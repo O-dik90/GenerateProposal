@@ -1,4 +1,4 @@
-import { ACT_INIT, AWARD_INIT, COMMUNITY_INIT, COURSE_INIT, DEFAULT_ID_INIT, EDUCATION_INIT, ID_INIT, RESEARCH_INIT } from './initial';
+import { ACT_INIT, AWARD_INIT, COMMUNITY_INIT, COURSE_INIT, DEFAULT_ID_INIT, EDUCATION_INIT, ID_INIT, RESEARCH_INIT } from './initial-data';
 import { Button, Divider, Grid, MenuItem, Select, Stack, Typography } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
 import { masterGender, masterLampiranRole } from 'store/slices/master-data';

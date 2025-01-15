@@ -49,11 +49,18 @@ const updateProposal = (id, data) => {
 
 const initProposal = (id) => {
   const data = [
-    [`${id}`, 'BAB 1 PENDAHULUAN', 'Latar Belakang', '', 1, null],
-    [`${id}`, 'BAB 1 PENDAHULUAN', 'Rumusan Masalah', '', 1, null],
-    [`${id}`, 'BAB 1 PENDAHULUAN', 'Luaran', '', 1, null],
-    [`${id}`, 'BAB 1 PENDAHULUAN', 'Tujuan', '', 1, null],
-    [`${id}`, 'BAB 1 PENDAHULUAN', 'Manfaat', '', 1, null],
+    [`${id}`, 'BAB 1 PENDAHULUAN', 'Latar Belakang', 'latar_belakang', 1, null],
+    [
+      `${id}`,
+      'BAB 1 PENDAHULUAN',
+      'Rumusan Masalah',
+      'rumusan_masalah',
+      1,
+      null,
+    ],
+    [`${id}`, 'BAB 1 PENDAHULUAN', 'Luaran', 'luaran', 1, null],
+    [`${id}`, 'BAB 1 PENDAHULUAN', 'Tujuan', 'tujuan', 1, null],
+    [`${id}`, 'BAB 1 PENDAHULUAN', 'Manfaat', 'manfaat', 1, null],
     [`${id}`, 'BAB 2 TINJAUAN PUSTAKA', '', '', 1, null],
     [`${id}`, 'BAB 3 TAHAP PELAKSANAAN', '', '', 1, null],
     [`${id}`, 'BAB 4 BIAYA DAN JADWAL KEGIATAN', '', '', 1, null],

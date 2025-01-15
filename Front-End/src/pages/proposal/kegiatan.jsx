@@ -2,13 +2,15 @@ import * as Yup from 'yup';
 
 import { DeleteFilled, EditFilled } from '@ant-design/icons';
 import { Grid, IconButton, Typography } from '@mui/material';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 
 import Button from '@mui/material/Button';
 import GenForm from 'components/general-form';
 import Stack from '@mui/material/Stack';
 import { TableForm } from 'components/table-form';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { useSnackbar } from 'notistack';
+import { updateBab } from 'store/slices/proposal';
 export const dataKegiatan = [
   {
     no: 1,
@@ -222,6 +224,9 @@ const FieldsData = {
 };
 
 const Kegiatan = () => {
+  const { biaya } = useSelector((state) => state.app.proposal),
+    dispatch = useDispatch(),
+    { enqueueSnackbar } = useSnackbar();
   const [object, setObject] = useState({
     biaya: BIAYA_INIT,
     kegiatan: KEGIATAN_INIT
@@ -273,14 +278,37 @@ const Kegiatan = () => {
     [object, reset]
   );
 
-  // useEffect(() => {
-  //   if (biaya) {
-  //     setData({
-  //       biaya: biaya?.json_data?.biaya || [],
-  //       kegiatan: biaya?.json_data?.kegiatan || []
-  //     });
-  //   }
-  // }, [biaya]);
+  const handleKegiataan = {
+    save: async () => {
+      const newData = {
+        id: biaya?.id,
+        proposals_id: biaya?.proposals_id,
+        bab_title: biaya?.bab_title,
+        json_data: data
+      };
+
+      try {
+        const res = await dispatch(updateBab(newData));
+        if (updateBab.fulfilled.match(res)) {
+          enqueueSnackbar('Berhasil menyimpan', { variant: 'success' });
+        } else if (updateBab.rejected.match(res)) {
+          enqueueSnackbar('Gagal menyimpan', { variant: 'error' });
+        }
+      } catch (error) {
+        enqueueSnackbar('Terjadi error', { variant: 'error' });
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (biaya) {
+      console.log(biaya);
+      // setData({
+      //   biaya: biaya?.json_data?.biaya || [],
+      //   kegiatan: biaya?.json_data?.kegiatan || []
+      // });
+    }
+  }, [biaya]);
 
   return (
     <>
@@ -331,7 +359,7 @@ const Kegiatan = () => {
       </Grid>
 
       <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 4 }}>
-        <Button variant="contained" color="success" onClick={() => {}}>
+        <Button variant="contained" color="success" onClick={handleKegiataan.save}>
           Simpan Kegiatan
         </Button>
       </Stack>

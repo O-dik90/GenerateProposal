@@ -11,7 +11,7 @@ import { updateDapus } from 'store/slices/proposal';
 import { useSnackbar } from 'notistack';
 
 const Dapus = () => {
-  const { dapus } = useSelector((state) => state.app.proposal);
+  const { dapus, metadata: rawData } = useSelector((state) => state.app.proposal);
   const { style, reference } = useSelector((state) => state.app.masterData.dapus);
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
@@ -291,9 +291,9 @@ const Dapus = () => {
 
       try {
         const dataPustaka = {
-          id: dapus.id,
-          proposals_id: dapus.proposals_id,
-          bab_title: dapus.bab_title,
+          id: rawData[8].id,
+          proposals_id: rawData[8].proposals_id,
+          bab_title: rawData[8].bab_title,
           json_data: data
         };
         const res = await dispatch(updateDapus(dataPustaka));
@@ -315,8 +315,8 @@ const Dapus = () => {
     loadMasterData();
   }, [dispatch, reference, style]);
   useEffect(() => {
-    if (dapus && dapus?.json_data) {
-      setData(dapus.json_data);
+    if (dapus) {
+      setData(dapus);
     }
   }, [dapus]);
 

@@ -38,29 +38,34 @@ const getProposal = async (req, res) => {
     const [resDetail] = await ProposalBab.getListProposalBab(proposals_id);
     const [resGen] = await Proposals.genStatusProposal(proposals_id);
 
+    const generateStatus = resGen.length > 0 ? false : true;
+
     if (result.length === 0 || resDetail.length === 0) {
       throw new Error('data or detail not found');
     }
-    console.log(resDetail);
+    console.log('get header', result);
+    console.log('get detail', JSON.stringify(resDetail));
+    console.log('generate', generateStatus);
     return res.json({
       message: 'success',
-      generate_status: resGen.length > 0 ? false : true,
+      generate_status: generateStatus,
       data: {
         ...result[0],
         detail: {
           pendahuluan: {
             latar_belakang: resDetail[0].json_data,
             rumusan_masalah: JSON.parse(resDetail[1]?.json_data),
-            luaran: JSON.parse(resDetail[2].json_data),
-            tujuan: JSON.parse(resDetail[3].json_data),
-            manfaat: JSON.parse(resDetail[4].json_data),
+            luaran: JSON.parse(resDetail[2]?.json_data),
+            tujuan: JSON.parse(resDetail[3]?.json_data),
+            manfaat: JSON.parse(resDetail[4]?.json_data),
           },
-          tinjauan: JSON.parse(resDetail.slice(5, 6)[0].json_data || null),
-          pelaksanaan: JSON.parse(resDetail.slice(6, 7)[0].json_data || null),
-          biaya: JSON.parse(resDetail.slice(7, 8)[0].json_data || null),
-          dapus: JSON.parse(data.slice(8, 9)[0]?.json_data || null),
-          lampiran: JSON.parse(data.slice(-1)[0]?.json_data || null),
+          tinjauan: JSON.parse(resDetail.slice(5, 6)[0]?.json_data || null),
+          pelaksanaan: JSON.parse(resDetail.slice(6, 7)[0]?.json_data || null),
+          biaya: JSON.parse(resDetail.slice(7, 8)[0]?.json_data || null),
+          dapus: JSON.parse(resDetail.slice(8, 9)[0]?.json_data || null),
+          lampiran: JSON.parse(resDetail.slice(-1)[0]?.json_data || null),
         },
+        metadata: JSON.stringify(resDetail),
       },
     });
   } catch (error) {

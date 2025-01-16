@@ -65,7 +65,7 @@ const FormField = ({
           variant={'outlined'}
           size={size}
           multiline
-          rows={row || 4}
+          rows={row}
           InputLabelProps={InputLabelProps}
         />
       </Stack>

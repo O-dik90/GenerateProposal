@@ -11,7 +11,7 @@ import { updateBab } from 'store/slices/proposal';
 import { useSnackbar } from 'notistack';
 
 const Kegiatan = () => {
-  const { biaya } = useSelector((state) => state.app.proposal),
+  const { biaya, metadata: rawData } = useSelector((state) => state.app.proposal),
     dispatch = useDispatch(),
     { enqueueSnackbar } = useSnackbar();
   const [object, setObject] = useState({
@@ -55,22 +55,22 @@ const Kegiatan = () => {
         }));
         reset(key);
       } else {
-        const newItem = { ...values, no: (object[key]?.length || 0) + 1 };
+        const newItem = { ...values, no: (data[key]?.length || 0) + 1 };
         setData((prevData) => ({
           ...prevData,
           [key]: [...(prevData[key] || []), newItem]
         }));
       }
     },
-    [object, reset]
+    [data, object, reset]
   );
 
   const handleKegiataan = {
     save: async () => {
       const newData = {
-        id: biaya?.id,
-        proposals_id: biaya?.proposals_id,
-        bab_title: biaya?.bab_title,
+        id: rawData[7]?.id,
+        proposals_id: rawData[7]?.proposals_id,
+        bab_title: rawData[7]?.bab_title,
         json_data: data
       };
 
@@ -90,10 +90,10 @@ const Kegiatan = () => {
   useEffect(() => {
     if (biaya) {
       console.log(biaya);
-      // setData({
-      //   biaya: biaya?.json_data?.biaya || [],
-      //   kegiatan: biaya?.json_data?.kegiatan || []
-      // });
+      setData({
+        biaya: biaya?.biaya || [],
+        kegiatan: biaya?.kegiatan || []
+      });
     }
   }, [biaya]);
 

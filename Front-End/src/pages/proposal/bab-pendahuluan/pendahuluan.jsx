@@ -13,7 +13,7 @@ const Pendahuluan = () => {
   const { id } = useParams(),
     { enqueueSnackbar } = useSnackbar(),
     dispatch = useDispatch();
-  const { latar_belakang, rumusan_masalah } = useSelector((state) => state.app.proposal?.pendahuluan);
+  const { pendahuluan } = useSelector((state) => state.app.proposal);
   const [rumusan, setRumusan] = useState({
       no: 1,
       data: '',
@@ -44,31 +44,17 @@ const Pendahuluan = () => {
 
   // Populate data from Redux state
   useEffect(() => {
-    // console.log(pendahuluan);
-    // if (pendahuluan.latar_belakang !== null || pendahuluan.latar_belakang !== null) {
-    //   const dataPendahuluan = JSON.parse(pendahuluan);
-    //   console.log(dataPendahuluan);
-
-    //   setData({
-    //     proposals_id: Number(id),
-    //     latar_belakang: dataPendahuluan?.latar_belakang || '',
-    //     rumusan_masalah: dataPendahuluan?.rumusan_masalah || [],
-    //     tujuan: dataPendahuluan?.tujuan || [],
-    //     luaran: dataPendahuluan?.luaran || [],
-    //     manfaat: dataPendahuluan?.manfaat || []
-    //   });
-    // }
-    if (latar_belakang !== null || rumusan_masalah !== null) {
+    if (pendahuluan.latar_belakang !== null || pendahuluan.latar_belakang !== null) {
       setData({
         proposals_id: Number(id),
-        latar_belakang: latar_belakang || '',
-        rumusan_masalah: rumusan_masalah || [],
-        tujuan: [],
-        luaran: [],
-        manfaat: []
+        latar_belakang: pendahuluan?.latar_belakang || '',
+        rumusan_masalah: pendahuluan?.rumusan_masalah || [],
+        tujuan: pendahuluan?.tujuan || [],
+        luaran: pendahuluan?.luaran || [],
+        manfaat: pendahuluan?.manfaat || []
       });
     }
-  }, [id, latar_belakang, rumusan_masalah]);
+  }, [id, pendahuluan]);
 
   // Handler for adding a new item to a specific array
   const handleRumusan = {

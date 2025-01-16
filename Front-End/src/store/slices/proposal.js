@@ -98,6 +98,7 @@ export const updateBab = createAsyncThunk('proposal/update-bab', async (params, 
 
 const initialState = {
   data: [],
+  metadata: {},
   pendahuluan: {},
   pelaksanaan: {},
   biaya: {},
@@ -171,6 +172,7 @@ const proposalSlice = createSlice({
       })
       .addCase(getListBabProposal.fulfilled, (state, action) => {
         state.loading = false;
+        state.metadata = JSON.parse(action.payload.metadata);
         state.pendahuluan = action.payload.pendahuluan;
         state.pelaksanaan = action.payload.pelaksanaan;
         state.biaya = action.payload.biaya;

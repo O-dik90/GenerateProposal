@@ -19,17 +19,18 @@ const getListProposalBab = async (req, res) => {
       message: 'success',
       proposals_id: proposals_id,
       pendahuluan: {
-        latar_belakang: data[0].json_data,
-        rumusan_masalah: JSON.parse(data[1].json_data),
-        luaran: JSON.parse(data[2].json_data),
-        tujuan: JSON.parse(data[3].json_data),
-        manfaat: JSON.parse(data[4].json_data),
+        latar_belakang: data[0].json_data ?? '',
+        rumusan_masalah: JSON.parse(data[1].json_data ?? null),
+        luaran: JSON.parse(data[2].json_data ?? null),
+        tujuan: JSON.parse(data[3].json_data ?? null),
+        manfaat: JSON.parse(data[4].json_data ?? null),
       },
       tinjauan: JSON.parse(data.slice(5, 6)[0]?.json_data || null),
       pelaksanaan: JSON.parse(data.slice(6, 7)[0]?.json_data || null),
       biaya: JSON.parse(data.slice(7, 8)[0]?.json_data || null),
       dapus: JSON.parse(data.slice(8, 9)[0]?.json_data || null),
       lampiran: JSON.parse(data.slice(-1)[0]?.json_data || null),
+      metadata: JSON.stringify(data),
     });
   } catch (error) {
     res.status(500).json({

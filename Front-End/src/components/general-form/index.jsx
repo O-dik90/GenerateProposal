@@ -47,7 +47,7 @@ const GenForm = ({ formFields = [], buttonDisable = false, onSubmit, titleButton
         return (
           <Form noValidate>
             <Grid container spacing={2}>
-              {formFields.map(({ name, label, type, options, withoutLabel = false, placeholder, width }) => (
+              {formFields.map(({ name, label, type, options, withoutLabel = false, placeholder, width, row = 5 }) => (
                 <Grid item xs={12} sm={width || 12} key={name}>
                   <FormField
                     name={name}
@@ -59,6 +59,7 @@ const GenForm = ({ formFields = [], buttonDisable = false, onSubmit, titleButton
                     error={errors[name]}
                     touched={touched[name]}
                     placeholder={placeholder}
+                    row={row}
                     withoutLabel={withoutLabel}
                     options={options}
                     InputLabelProps={{ shrink: type === 'date' ? true : undefined }}

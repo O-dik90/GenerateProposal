@@ -2,13 +2,13 @@ import { Box, Grid, Tab, Typography } from '@mui/material';
 import React, { useState } from 'react';
 
 import { Anggaran } from './anggaran';
+import { FilePendukung } from './file-pendukung';
 import { Identitas } from './identitas';
 import { StrukturOrganisasi } from './struktur-organisasi';
+import { SuratPernyataan } from './surat-pernyataan';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import { SuratPernyataan } from './surat-pernyataan';
-import { FilePendukung } from './file-pendukung';
 
 const Lampiran = () => {
   const [value, setValue] = useState('L1');
@@ -28,7 +28,7 @@ const Lampiran = () => {
   return (
     <>
       <Typography variant="h4" gutterBottom>
-        Lampiran
+        LAMPIRAN
       </Typography>
 
       <Grid container spacing={1}>

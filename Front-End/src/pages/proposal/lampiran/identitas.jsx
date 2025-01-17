@@ -276,13 +276,13 @@ const Identitas = () => {
                 );
               })}
           </Stack>
-          <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 4 }}>
-            <Button variant="contained" color="success" onClick={handleDetailActions.save}>
-              Simpan Detail
-            </Button>
-          </Stack>
         </Grid>
       )}
+      <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 4 }}>
+        <Button variant="contained" color="success" onClick={handleDetailActions.save}>
+          Simpan Detail
+        </Button>
+      </Stack>
     </Stack>
   );
 };

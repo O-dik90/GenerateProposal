@@ -1,5 +1,5 @@
 import { BUDGET_INIT, DETAIL_BUDGET_INIT } from './initial-data';
-import { Grid, Stack, Typography } from '@mui/material';
+import { Button, Grid, Stack, Typography } from '@mui/material';
 import React, { useCallback, useState } from 'react';
 
 import GenForm from 'components/general-form';
@@ -102,6 +102,11 @@ const Anggaran = () => {
           </Grid>
         );
       })}
+      <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 4 }}>
+        <Button variant="contained" color="success" onClick={''}>
+          Simpan Detail
+        </Button>
+      </Stack>
     </>
   );
 };

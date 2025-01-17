@@ -93,7 +93,7 @@ const Tinjauan = () => {
   return (
     <>
       <Typography variant="h4" gutterBottom>
-        BAB 2. Tinjauan Pustaka
+        BAB 2. TINJAUAN PUSTAKA
       </Typography>
 
       <Grid container spacing={1}>

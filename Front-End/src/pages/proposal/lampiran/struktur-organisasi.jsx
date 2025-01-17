@@ -1,8 +1,8 @@
+import { Button, Stack } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
 
 import GenForm from 'components/general-form';
 import { STRUCTURE_INIT } from './initial-data';
-import { Stack } from '@mui/material';
 import { TableForm } from 'components/table-form';
 import { structureColumns } from './initial-column';
 import { structureFields } from './initial-form';
@@ -84,6 +84,11 @@ const StrukturOrganisasi = () => {
           rows={data || []}
           expand={false}
         />
+      </Stack>
+      <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 4 }}>
+        <Button variant="contained" color="success" onClick={''}>
+          Simpan Detail
+        </Button>
       </Stack>
     </>
   );

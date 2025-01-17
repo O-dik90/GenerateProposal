@@ -90,7 +90,7 @@ const Pelaksanaan = () => {
   return (
     <>
       <Typography variant="h4" gutterBottom>
-        BAB 3. Tahap Pelaksanaan
+        BAB 3. TAHAP PELAKSANAAN
       </Typography>
 
       <Grid container spacing={1}>

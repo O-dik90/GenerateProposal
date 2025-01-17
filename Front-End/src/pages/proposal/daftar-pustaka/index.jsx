@@ -213,7 +213,7 @@ const Dapus = () => {
         setErrors(validationErrors);
         return;
       }
-      const dateArray = object.date_parts.split('-').map((value) => Number(value));
+      const dateArray = object.date_parts?.split('-').map((value) => Number(value));
       const updatedData = data.map((item) => {
         if (item.no === object.no) {
           let updatedItem = {
@@ -309,14 +309,21 @@ const Dapus = () => {
   useEffect(() => {
     const loadMasterData = async () => {
       if (reference?.length <= 0) await dispatch(masterDapusRef({ category: 'ref' }));
+    };
+
+    loadMasterData();
+  }, [dispatch, reference]);
+
+  useEffect(() => {
+    const loadMasterData = async () => {
       if (style?.length <= 0) await dispatch(masterDapusStyle({ category: 'style' }));
     };
 
     loadMasterData();
-  }, [dispatch, reference, style]);
+  }, [dispatch, style]);
   useEffect(() => {
     if (dapus) {
-      setData(dapus);
+      setData(dapus ?? []);
     }
   }, [dapus]);
 
@@ -448,14 +455,13 @@ const Dapus = () => {
           { name: 'Judul', field: 'title' },
           { name: 'Daftar Pustaka', field: 'citation' }
         ]}
-        rows={data}
+        rows={data || []}
         action
         onEdit={handlePustaka.edit}
         onUpdate={handlePustaka.update}
         onDelete={handlePustaka.delete}
-        detail={handlePustaka.detail}
         actionEdit={object.status}
-        expand
+        expand={false}
       />
       <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 4 }}>
         <Button variant="contained" color="success" onClick={handlePustaka.save}>

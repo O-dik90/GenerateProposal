@@ -154,11 +154,17 @@ const Identitas = () => {
 
   useEffect(() => {
     const loadMasterData = async () => {
-      if (!role.length) await dispatch(masterLampiranRole({ source_name: 'ROLE_IDENTITAS' }));
       if (!gender.length) await dispatch(masterGender({ source_name: 'GENDER' }));
     };
     loadMasterData();
-  }, [dispatch, gender, role]);
+  }, [dispatch, gender]);
+
+  useEffect(() => {
+    const loadMasterData = async () => {
+      if (!role.length) await dispatch(masterLampiranRole({ source_name: 'ROLE_IDENTITAS' }));
+    };
+    loadMasterData();
+  }, [dispatch, role]);
 
   useEffect(() => {
     if (open === false) {

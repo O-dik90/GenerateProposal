@@ -33,7 +33,6 @@ export const INITIAL = {
   category: '',
   type: '',
   year: '',
-  creation_date: '',
   last_update: '',
   edit_status: false
 };
@@ -57,19 +56,25 @@ const ProposalTable = () => {
 
   useEffect(() => {
     const loadMasterData = async () => {
-      if (pkm.length <= 0) {
-        await dispatch(masterPkm({ source_name: 'PKM' }));
-      }
-      if (lomba.length <= 0) {
-        await dispatch(masterLomba({ source_name: 'LOMBA' }));
-      }
-      if (tahunLomba.length <= 0) {
-        await dispatch(masterTahunLomba({ source_name: 'TAHUN_LOMBA' }));
-      }
+      if (pkm.length <= 0) await dispatch(masterPkm({ source_name: 'PKM' }));
     };
 
     loadMasterData();
-  }, [dispatch, pkm, lomba, tahunLomba]);
+  }, [dispatch, pkm]);
+  useEffect(() => {
+    const loadMasterData = async () => {
+      if (lomba.length <= 0) await dispatch(masterLomba({ source_name: 'LOMBA' }));
+    };
+
+    loadMasterData();
+  }, [dispatch, lomba]);
+  useEffect(() => {
+    const loadMasterData = async () => {
+      if (tahunLomba.length <= 0) await dispatch(masterTahunLomba({ source_name: 'TAHUN_LOMBA' }));
+    };
+
+    loadMasterData();
+  }, [dispatch, tahunLomba]);
 
   const columns = [
     {
@@ -148,8 +153,7 @@ const ProposalTable = () => {
     }
   ];
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     try {
       if (btnAction === 'Buat') {
         const res = await dispatch(createProposal(object));
@@ -162,12 +166,12 @@ const ProposalTable = () => {
           enqueueSnackbar('Berhasil Menyimpan!', { variant: 'success' });
         }
       }
+      setOpen(false);
+      setBtnAction('Buat');
+      setObject(INITIAL);
     } catch (error) {
       enqueueSnackbar('Gagal!', { variant: 'error' });
     }
-    setOpen(false);
-    setBtnAction('Buat');
-    setObject(INITIAL);
   };
 
   const handleChange = (e) => {
@@ -287,8 +291,8 @@ const ProposalTable = () => {
                 <MenuItem disabled value="">
                   <em>Pilih Lomba</em>
                 </MenuItem>
-                {lomba?.map((item) => (
-                  <MenuItem key={item.id} value={item.code}>
+                {lomba.map((item) => (
+                  <MenuItem key={`${item.code}-${item.id}`} value={`${item.code}`}>
                     {item.value}
                   </MenuItem>
                 ))}
@@ -298,7 +302,7 @@ const ProposalTable = () => {
                   <em>Pilih Tahun</em>
                 </MenuItem>
                 {tahunLomba.map((item) => (
-                  <MenuItem key={item.id} value={item.code}>
+                  <MenuItem key={`${item.code}-${item.id}`} value={`${item.code}`}>
                     {item.value}
                   </MenuItem>
                 ))}
@@ -309,8 +313,8 @@ const ProposalTable = () => {
                 <MenuItem disabled value="">
                   <em>Pilih PKM</em>
                 </MenuItem>
-                {pkm?.map((item) => (
-                  <MenuItem key={item.id} value={item.code}>
+                {pkm.map((item) => (
+                  <MenuItem key={`${item.code}-${item.id}`} value={`${item.code}`}>
                     {item.value}
                   </MenuItem>
                 ))}
@@ -351,12 +355,7 @@ const ProposalTable = () => {
           </Box>
           <DialogActions>
             <Button onClick={handleClose}>Cancel</Button>
-            <Button
-              type="button"
-              variant="contained"
-              disabled={!object.type || !object.year || !object.category || !object.title || !object.description}
-              onClick={(e) => handleSubmit(e)}
-            >
+            <Button type="button" variant="contained" disabled={!object.type || !object.category} onClick={handleSubmit}>
               {btnAction}
             </Button>
           </DialogActions>

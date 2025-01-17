@@ -139,28 +139,12 @@ const GenerateDocx = ({ data }) => {
       text: `4.1 Biaya`,
       heading: HeadingLevel.HEADING_2
     }),
-    // ...(Array.isArray(biaya?.json_data.biaya)
-    //   ? biaya.json_data.biaya.flatMap((item) => [
-    //       new Paragraph({
-    //         text: item.description || '',
-    //         style: 'wellSpaced'
-    //       })
-    //     ])
-    //   : []),
     tableBiaya(),
     new Paragraph({
       text: `4.2 Jadwal Kegiatan`,
       heading: HeadingLevel.HEADING_2
     }),
     tableKegiatan(),
-    // ...(Array.isArray(biaya?.json_data.biaya)
-    //   ? biaya.json_data.kegiatan.flatMap((item) => [
-    //       new Paragraph({
-    //         text: item.description || '',
-    //         style: 'wellSpaced'
-    //       })
-    //     ])
-    //   : []),
     new Paragraph({
       text: 'DAFTAR PUSTAKA',
       heading: HeadingLevel.HEADING_1,

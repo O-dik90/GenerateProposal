@@ -172,7 +172,7 @@ const proposalSlice = createSlice({
       })
       .addCase(getListBabProposal.fulfilled, (state, action) => {
         state.loading = false;
-        state.metadata = JSON.parse(action.payload.metadata);
+        state.metadata = action.payload.metadata ? JSON.parse(action.payload.metadata) : {};
         state.pendahuluan = action.payload.pendahuluan;
         state.pelaksanaan = action.payload.pelaksanaan;
         state.biaya = action.payload.biaya;
@@ -181,6 +181,10 @@ const proposalSlice = createSlice({
         state.lampiran = action.payload.lampiran;
         state.message = action.payload.message;
         state.error = null;
+      })
+      .addCase(getListBabProposal.rejected, (state, action) => {
+        state.loading = true;
+        state.error = action.error.message;
       })
       // Update Pendahuluan
       .addCase(updateBabPendahuluan.pending, (state) => {
@@ -193,7 +197,8 @@ const proposalSlice = createSlice({
       })
       // Update Dapus
       .addCase(updateDapus.pending, (state) => {
-        state.loading = true;
+        state.loading = false;
+        state.error = null;
       })
       .addCase(updateDapus.fulfilled, (state, action) => {
         state.loading = false;

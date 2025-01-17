@@ -43,9 +43,7 @@ const getProposal = async (req, res) => {
     if (result.length === 0 || resDetail.length === 0) {
       throw new Error('data or detail not found');
     }
-    console.log('get header', result);
-    console.log('get detail', JSON.stringify(resDetail));
-    console.log('generate', generateStatus);
+
     return res.json({
       message: 'success',
       generate_status: generateStatus,

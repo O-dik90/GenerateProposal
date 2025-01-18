@@ -1,4 +1,4 @@
-import { ACT_INIT, AWARD_INIT, COMMUNITY_INIT, COURSE_INIT, DEFAULT_ID_INIT, EDUCATION_INIT, ID_INIT, RESEARCH_INIT } from './initial-data';
+import { ACT_INIT, AWARD_INIT, COMMUNITY_INIT, COURSE_INIT, EDUCATION_INIT, ID_INIT, RESEARCH_INIT } from './initial-data';
 import { Button, Divider, Grid, MenuItem, Select, Stack, Typography } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
 import { masterGender, masterLampiranRole } from 'store/slices/master-data';
@@ -8,15 +8,18 @@ import GenForm from 'components/general-form';
 import { TableForm } from 'components/table-form';
 import { initialFields } from './initial-form';
 import { lampiranColumns } from './initial-column';
+import { updateBab } from 'store/slices/proposal';
+import { useSnackbar } from 'notistack';
 
 const Identitas = () => {
   const dispatch = useDispatch();
+  const { enqueueSnackbar } = useSnackbar();
   const { gender } = useSelector((state) => state.app.masterData);
   const { role } = useSelector((state) => state.app.masterData.lampiran);
-  const { lampiran } = useSelector((state) => state.app.proposal);
+  const { lampiran, metadata: rawData } = useSelector((state) => state.app.proposal);
 
   const [object, setObject] = useState(ID_INIT);
-  const [data, setData] = useState(DEFAULT_ID_INIT);
+  const [data, setData] = useState([]);
   const [open, setOpen] = useState(false);
   const [detail, setDetail] = useState({
     act: object.act || [],
@@ -61,15 +64,34 @@ const Identitas = () => {
 
   const handlePersonal = {
     edit: (param) => setObject({ ...param, status: true }),
-    delete: (param) => setData((prev) => prev.filter((item) => item.no !== param.no).map((item, index) => ({ ...item, no: index + 1 }))),
-    save: () => {
+    reset: () => {
+      setOpen(false);
+      setObject(ID_INIT);
+    },
+    delete: (param) => setData((prev) => prev.filter((item) => item.no !== param.no)?.map((item, index) => ({ ...item, no: index + 1 }))),
+    save: async () => {
+      const jsonData = JSON.parse(rawData[9]?.json_data);
       const payload = {
-        id: lampiran?.id,
-        proposals_id: lampiran?.proposals_id,
-        bab_title: lampiran?.bab_title,
-        json_data: data
+        id: rawData[9]?.id,
+        proposals_id: rawData[9]?.proposals_id,
+        bab_title: rawData[9]?.bab_title,
+        json_data: {
+          ...jsonData,
+          identitas: data
+        }
       };
-      console.log('payload', payload); // Replace with API call
+      console.log('payload', payload);
+
+      try {
+        const res = await dispatch(updateBab(payload));
+        if (updateBab.fulfilled.match(res)) {
+          enqueueSnackbar('Berhasil menyimpan', { variant: 'success' });
+        } else {
+          enqueueSnackbar('Gagal menyimpan', { variant: 'error' });
+        }
+      } catch {
+        enqueueSnackbar('Terjadi error', { variant: 'error' });
+      }
     },
     detail: (param) => {
       setObject({ ...param, status: true });
@@ -94,44 +116,17 @@ const Identitas = () => {
       }
       setObject(ID_INIT);
     },
-    [data, object]
+    [data.length, object.no, object?.status]
   );
 
   const handleDetailActions = {
     edit: (key) => (param) => setDetailObject((prev) => ({ ...prev, [key]: { ...param, status: true } })),
+    reset: (key) => () => resetDetailObject(key),
     delete: (key) => (item) => {
       setDetail((prev) => ({
         ...prev,
         [key]: prev[key].filter((row) => row.no !== item.no).map((row, index) => ({ ...row, no: index + 1 }))
       }));
-    },
-    save: () => {
-      setObject((prev) => ({
-        ...prev,
-        act: detail.act.map((item) => ({ ...item, status: false })),
-        award: detail.award.map((item) => ({ ...item, status: false })),
-        education: detail.education.map((item) => ({ ...item, status: false })),
-        course: detail.course.map((item) => ({ ...item, status: false })),
-        research: detail.research.map((item) => ({ ...item, status: false })),
-        community_service: detail.community_service.map((item) => ({ ...item, status: false }))
-      }));
-
-      setData((prevData) =>
-        prevData.map((item) =>
-          item.no === object.no
-            ? {
-                ...item,
-                act: detail.act,
-                award: detail.award,
-                education: detail.education,
-                course: detail.course,
-                research: detail.research,
-                community_service: detail.community_service
-              }
-            : item
-        )
-      );
-      setOpen((prev) => !prev);
     }
   };
   const handleFormDetail = useCallback(
@@ -141,6 +136,7 @@ const Identitas = () => {
           ...prev,
           [key]: prev[key]?.map((item) => (item.no === detailObject[key]?.no ? { ...item, ...values, status: false } : item))
         }));
+
         resetDetailObject(key);
       } else {
         setDetail((prev) => ({
@@ -151,7 +147,6 @@ const Identitas = () => {
     },
     [detail, detailObject, resetDetailObject]
   );
-
   useEffect(() => {
     const loadMasterData = async () => {
       if (!gender.length) await dispatch(masterGender({ source_name: 'GENDER' }));
@@ -167,10 +162,38 @@ const Identitas = () => {
   }, [dispatch, role]);
 
   useEffect(() => {
-    if (open === false) {
-      setObject(ID_INIT);
+    setObject((prev) => ({
+      ...prev,
+      act: detail.act.map((item) => ({ ...item, status: false })),
+      award: detail.award.map((item) => ({ ...item, status: false })),
+      education: detail.education.map((item) => ({ ...item, status: false })),
+      course: detail.course.map((item) => ({ ...item, status: false })),
+      research: detail.research.map((item) => ({ ...item, status: false })),
+      community_service: detail.community_service.map((item) => ({ ...item, status: false }))
+    }));
+
+    setData((prevData) =>
+      prevData.map((item) =>
+        item.no === object.no
+          ? {
+              ...item,
+              act: detail.act,
+              award: detail.award,
+              education: detail.education,
+              course: detail.course,
+              research: detail.research,
+              community_service: detail.community_service
+            }
+          : item
+      )
+    );
+  }, [detail.act, detail.award, detail.community_service, detail.course, detail.education, detail.research, object.no]);
+
+  useEffect(() => {
+    if (lampiran && lampiran.identitas) {
+      setData(lampiran.identitas);
     }
-  }, [open]);
+  }, [lampiran]);
 
   return (
     <Stack direction="column" spacing={3}>
@@ -206,7 +229,13 @@ const Identitas = () => {
         )}
         <Stack direction="column" sx={{ marginTop: 5 }}>
           <TableForm
-            columns={lampiranColumns.personal(handlePersonal.edit, handlePersonal.delete, handlePersonal.detail, object.status)}
+            columns={lampiranColumns.personal(
+              handlePersonal.edit,
+              handlePersonal.delete,
+              handlePersonal.reset,
+              handlePersonal.detail,
+              object.status
+            )}
             rows={data || []}
             expand={false}
           />
@@ -236,7 +265,12 @@ const Identitas = () => {
                         initialValuesUpdate={detailObject[key]}
                       />
                       <TableForm
-                        columns={lampiranColumns[key](handleDetailActions.edit(key), handleDetailActions.delete(key), object[key]?.status)}
+                        columns={lampiranColumns[key](
+                          handleDetailActions.edit(key),
+                          handleDetailActions.delete(key),
+                          handleDetailActions.reset(key),
+                          object[key]?.status
+                        )}
                         rows={detailData}
                         expand={false}
                         detail=""
@@ -266,7 +300,12 @@ const Identitas = () => {
                         initialValuesUpdate={detailObject[key]}
                       />
                       <TableForm
-                        columns={lampiranColumns[key](handleDetailActions.edit(key), handleDetailActions.delete(key), object[key]?.status)}
+                        columns={lampiranColumns[key](
+                          handleDetailActions.edit(key),
+                          handleDetailActions.delete(key),
+                          handleDetailActions.reset(key),
+                          object[key]?.status
+                        )}
                         rows={detailData}
                         expand={false}
                         detail=""
@@ -279,7 +318,7 @@ const Identitas = () => {
         </Grid>
       )}
       <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 4 }}>
-        <Button variant="contained" color="success" onClick={handleDetailActions.save}>
+        <Button variant="contained" color="success" onClick={handlePersonal.save}>
           Simpan Detail
         </Button>
       </Stack>

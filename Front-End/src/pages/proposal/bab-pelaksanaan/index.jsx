@@ -42,6 +42,9 @@ const Pelaksanaan = () => {
     edit: (key) => (item) => {
       setFormObject((prev) => ({ ...prev, [key]: { ...item, status: true } }));
     },
+    reset: (key) => () => {
+      resetFormObject(key);
+    },
     delete: (key) => (item) => {
       setData((prevData) => {
         const updatedData = (prevData[key] || []).filter((row) => row.no !== item.no).map((row, index) => ({ ...row, no: index + 1 })); // Reindex rows
@@ -107,7 +110,12 @@ const Pelaksanaan = () => {
               initialValuesUpdate={formObject['pelaksanaan']}
             />
             <TableForm
-              columns={Columns.pelaksanaan(handlePelaksanan.edit('pelaksanaan'), handlePelaksanan.delete('pelaksanaan'), false)}
+              columns={Columns.pelaksanaan(
+                handlePelaksanan.edit('pelaksanaan'),
+                handlePelaksanan.delete('pelaksanaan'),
+                handlePelaksanan.reset('pelaksanaan'),
+                formObject['pelaksanaan'].status
+              )}
               rows={data.pelaksanaan || []}
               expand
               detail={handlePelaksanan.detail}

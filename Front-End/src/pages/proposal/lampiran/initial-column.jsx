@@ -1,9 +1,9 @@
-import { DeleteFilled, EditFilled, UnorderedListOutlined } from '@ant-design/icons';
+import { DeleteFilled, EditFilled, RedoOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import { IconButton, Stack } from '@mui/material';
 
 // ** Regional Identitas
 export const lampiranColumns = {
-  personal: (handleEdit, handleDelete, handleDetail, status) => [
+  personal: (handleEdit, handleDelete, handleReset, handleDetail, status) => [
     { name: 'No', field: 'no', width: '4rem', align: 'center' },
     { name: 'Nama', field: 'name', width: '30rem' },
     { name: 'Jabatan', field: 'role_person' },
@@ -23,9 +23,15 @@ export const lampiranColumns = {
             <IconButton aria-label="detail" size="small" color="info" onClick={() => handleDetail(row)}>
               <UnorderedListOutlined />
             </IconButton>
-            <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)} disabled={status}>
-              <EditFilled />
-            </IconButton>
+            {!status ? (
+              <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)}>
+                <EditFilled />
+              </IconButton>
+            ) : (
+              <IconButton aria-label="reset" size="small" color="primary" onClick={() => handleReset()}>
+                <RedoOutlined />
+              </IconButton>
+            )}
             <IconButton aria-label="delete" size="small" color="error" onClick={() => handleDelete(row)} disabled={status}>
               <DeleteFilled />
             </IconButton>
@@ -34,7 +40,7 @@ export const lampiranColumns = {
       }
     }
   ],
-  act: (handleEdit, handleDelete, status) => [
+  act: (handleEdit, handleDelete, handleReset, status) => [
     { name: 'No', field: 'no', width: '4rem', align: 'center' },
     { name: 'Jenis Kegiatan', field: 'act_name' },
     { name: 'Status dalam Kegiatan', field: 'act_role' },
@@ -47,9 +53,15 @@ export const lampiranColumns = {
       cell: (value, row) => {
         return (
           <Stack direction="row" spacing={1}>
-            <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)} disabled={status}>
-              <EditFilled />
-            </IconButton>
+            {!status ? (
+              <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)}>
+                <EditFilled />
+              </IconButton>
+            ) : (
+              <IconButton aria-label="reset" size="small" color="primary" onClick={() => handleReset()}>
+                <RedoOutlined />
+              </IconButton>
+            )}
             <IconButton aria-label="delete" size="small" color="error" onClick={() => handleDelete(row)} disabled={status}>
               <DeleteFilled />
             </IconButton>
@@ -58,7 +70,7 @@ export const lampiranColumns = {
       }
     }
   ],
-  award: (handleEdit, handleDelete, status) => [
+  award: (handleEdit, handleDelete, handleReset, status) => [
     { name: 'No', field: 'no', width: '4rem', align: 'center' },
     { name: 'Jenis Penghargaan', field: 'award_name' },
     { name: 'Pihak Pemberi Penghargaan', field: 'award_giver', width: '20rem' },
@@ -70,9 +82,15 @@ export const lampiranColumns = {
       cell: (value, row) => {
         return (
           <Stack direction="row" spacing={1}>
-            <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)} disabled={status}>
-              <EditFilled />
-            </IconButton>
+            {!status ? (
+              <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)}>
+                <EditFilled />
+              </IconButton>
+            ) : (
+              <IconButton aria-label="reset" size="small" color="primary" onClick={() => handleReset()}>
+                <RedoOutlined />
+              </IconButton>
+            )}
             <IconButton aria-label="delete" size="small" color="error" onClick={() => handleDelete(row)} disabled={status}>
               <DeleteFilled />
             </IconButton>
@@ -81,7 +99,7 @@ export const lampiranColumns = {
       }
     }
   ],
-  education: (handleEdit, handleDelete, status) => [
+  education: (handleEdit, handleDelete, handleReset, status) => [
     { name: 'No', field: 'no', width: '4rem', align: 'center' },
     { name: 'Jenjang', field: 'degree' },
     { name: 'Asal Universitas', field: 'institution' },
@@ -94,9 +112,15 @@ export const lampiranColumns = {
       cell: (value, row) => {
         return (
           <Stack direction="row" spacing={1}>
-            <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)} disabled={status}>
-              <EditFilled />
-            </IconButton>
+            {!status ? (
+              <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)}>
+                <EditFilled />
+              </IconButton>
+            ) : (
+              <IconButton aria-label="reset" size="small" color="primary" onClick={() => handleReset()}>
+                <RedoOutlined />
+              </IconButton>
+            )}
             <IconButton aria-label="delete" size="small" color="error" onClick={() => handleDelete(row)} disabled={status}>
               <DeleteFilled />
             </IconButton>
@@ -105,7 +129,7 @@ export const lampiranColumns = {
       }
     }
   ],
-  course: (handleEdit, handleDelete, status) => [
+  course: (handleEdit, handleDelete, handleReset, status) => [
     { name: 'No', field: 'no', width: '4rem', align: 'center' },
     { name: 'Mata Kuliah', field: 'course_name' },
     { name: 'Wajib/Pilihan', field: 'course_type' },
@@ -117,9 +141,15 @@ export const lampiranColumns = {
       cell: (value, row) => {
         return (
           <Stack direction="row" spacing={1}>
-            <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)} disabled={status}>
-              <EditFilled />
-            </IconButton>
+            {!status ? (
+              <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)}>
+                <EditFilled />
+              </IconButton>
+            ) : (
+              <IconButton aria-label="reset" size="small" color="primary" onClick={() => handleReset()}>
+                <RedoOutlined />
+              </IconButton>
+            )}
             <IconButton aria-label="delete" size="small" color="error" onClick={() => handleDelete(row)} disabled={status}>
               <DeleteFilled />
             </IconButton>
@@ -128,7 +158,7 @@ export const lampiranColumns = {
       }
     }
   ],
-  research: (handleEdit, handleDelete, status) => [
+  research: (handleEdit, handleDelete, handleReset, status) => [
     { name: 'No', field: 'no', width: '4rem', align: 'center' },
     { name: 'Judul Penelitian', field: 'research_title' },
     { name: 'Tahun', field: 'research_year', width: '10rem' },
@@ -139,9 +169,15 @@ export const lampiranColumns = {
       cell: (value, row) => {
         return (
           <Stack direction="row" spacing={1}>
-            <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)} disabled={status}>
-              <EditFilled />
-            </IconButton>
+            {!status ? (
+              <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)}>
+                <EditFilled />
+              </IconButton>
+            ) : (
+              <IconButton aria-label="reset" size="small" color="primary" onClick={() => handleReset()}>
+                <RedoOutlined />
+              </IconButton>
+            )}
             <IconButton aria-label="delete" size="small" color="error" onClick={() => handleDelete(row)} disabled={status}>
               <DeleteFilled />
             </IconButton>
@@ -150,7 +186,7 @@ export const lampiranColumns = {
       }
     }
   ],
-  community_service: (handleEdit, handleDelete, status) => [
+  community_service: (handleEdit, handleDelete, handleReset, status) => [
     { name: 'No', field: 'no', width: '4rem', align: 'center' },
     { name: 'Nama Kegiatan', field: 'community_title' },
     { name: 'Sumber', field: 'community_source' },
@@ -162,9 +198,15 @@ export const lampiranColumns = {
       cell: (value, row) => {
         return (
           <Stack direction="row" spacing={1}>
-            <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)} disabled={status}>
-              <EditFilled />
-            </IconButton>
+            {!status ? (
+              <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)}>
+                <EditFilled />
+              </IconButton>
+            ) : (
+              <IconButton aria-label="reset" size="small" color="primary" onClick={() => handleReset()}>
+                <RedoOutlined />
+              </IconButton>
+            )}
             <IconButton aria-label="delete" size="small" color="error" onClick={() => handleDelete(row)} disabled={status}>
               <DeleteFilled />
             </IconButton>
@@ -176,7 +218,7 @@ export const lampiranColumns = {
 };
 
 // ** Regional Anggaran
-export const budgetColumns = (handleEdit, handleDelete, status) => [
+export const budgetColumns = (handleEdit, handleDelete, handleReset, status) => [
   { name: 'No', field: 'no', width: '4rem', align: 'center' },
   { name: 'Jenis Pengeluaran', field: 'output_type' },
   { name: 'Sumber Dana', field: 'budget_source' },
@@ -190,9 +232,15 @@ export const budgetColumns = (handleEdit, handleDelete, status) => [
     cell: (value, row) => {
       return (
         <Stack direction="row" spacing={1}>
-          <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)} disabled={status}>
-            <EditFilled />
-          </IconButton>
+          {!status ? (
+            <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)}>
+              <EditFilled />
+            </IconButton>
+          ) : (
+            <IconButton aria-label="reset" size="small" color="primary" onClick={() => handleReset()}>
+              <RedoOutlined />
+            </IconButton>
+          )}
           <IconButton aria-label="delete" size="small" color="error" onClick={() => handleDelete(row)} disabled={status}>
             <DeleteFilled />
           </IconButton>
@@ -202,7 +250,7 @@ export const budgetColumns = (handleEdit, handleDelete, status) => [
   }
 ];
 // ** Regional Susunan Tim
-export const structureColumns = (handleEdit, handleDelete, status) => [
+export const structureColumns = (handleEdit, handleDelete, handleReset, status) => [
   { name: 'No', field: 'no', width: '4rem', align: 'center' },
   { name: 'Nama Lengkap', field: 'name' },
   { name: 'Program Studi', field: 'program' },
@@ -217,9 +265,15 @@ export const structureColumns = (handleEdit, handleDelete, status) => [
     cell: (value, row) => {
       return (
         <Stack direction="row" spacing={1}>
-          <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)} disabled={status}>
-            <EditFilled />
-          </IconButton>
+          {!status ? (
+            <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)}>
+              <EditFilled />
+            </IconButton>
+          ) : (
+            <IconButton aria-label="reset" size="small" color="primary" onClick={() => handleReset()}>
+              <RedoOutlined />
+            </IconButton>
+          )}
           <IconButton aria-label="delete" size="small" color="error" onClick={() => handleDelete(row)} disabled={status}>
             <DeleteFilled />
           </IconButton>

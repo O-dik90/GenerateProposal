@@ -15,7 +15,7 @@ export const ID_INIT = {
   education: [],
   course: [],
   research: [],
-  comunity_service: []
+  community_service: []
 };
 export const ACT_INIT = {
   no: 0,

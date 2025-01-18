@@ -9,7 +9,7 @@ import router from 'routes';
 import store from 'store';
 
 export default function App() {
-  console.log(import.meta.env);
+  console.log('MODE', import.meta.env.MODE);
   return (
     <Provider store={store}>
       <LocalizationProvider dateAdapter={AdapterDayjs}>

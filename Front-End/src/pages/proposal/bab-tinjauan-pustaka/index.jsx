@@ -43,6 +43,9 @@ const Tinjauan = () => {
     edit: (key) => (item) => {
       setFormObject((prev) => ({ ...prev, [key]: { ...item, status: true } }));
     },
+    reset: (key) => () => {
+      resetFormObject(key);
+    },
     delete: (key) => (item) => {
       setData((prevData) => {
         const updatedData = (prevData[key] || []).filter((row) => row.no !== item.no).map((row, index) => ({ ...row, no: index + 1 })); // Reindex rows
@@ -111,7 +114,12 @@ const Tinjauan = () => {
               initialValuesUpdate={formObject['tinjauan']}
             />
             <TableForm
-              columns={Columns.tinjauan(handleTinjauan.edit('tinjauan'), handleTinjauan.delete('tinjauan'), false)}
+              columns={Columns.tinjauan(
+                handleTinjauan.edit('tinjauan'),
+                handleTinjauan.delete('tinjauan'),
+                handleTinjauan.reset('tinjauan'),
+                formObject['tinjauan'].status
+              )}
               rows={data.tinjauan || []}
               expand
               detail={handleTinjauan.detail}

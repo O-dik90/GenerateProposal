@@ -1,11 +1,14 @@
 import { BUDGET_INIT, DETAIL_BUDGET_INIT } from './initial-data';
 import { Button, Grid, Stack, Typography } from '@mui/material';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import GenForm from 'components/general-form';
 import { TableForm } from 'components/table-form';
 import { budgetColumns } from './initial-column';
 import { budgetFields } from './initial-form';
+import { updateBab } from 'store/slices/proposal';
+import { useSnackbar } from 'notistack';
 
 const Anggaran = () => {
   const [data, setData] = useState(BUDGET_INIT),
@@ -14,7 +17,10 @@ const Anggaran = () => {
       services: DETAIL_BUDGET_INIT,
       transports: DETAIL_BUDGET_INIT,
       others: DETAIL_BUDGET_INIT
-    });
+    }),
+    dispatch = useDispatch(),
+    { enqueueSnackbar } = useSnackbar(),
+    { lampiran, metadata: rawData } = useSelector((state) => state.app.proposal);
 
   const budget = [
     { key: 'materials', label: 'Bahan Material', limit: '60' },
@@ -47,6 +53,30 @@ const Anggaran = () => {
         ...prev,
         [key]: prev[key].filter((row) => row.no !== item.no).map((row, index) => ({ ...row, no: index + 1 }))
       }));
+    },
+    save: async () => {
+      const jsonData = JSON.parse(rawData[9]?.json_data);
+      const payload = {
+        id: rawData[9]?.id,
+        proposals_id: rawData[9]?.proposals_id,
+        bab_title: rawData[9]?.bab_title,
+        json_data: {
+          ...jsonData,
+          anggaran: data
+        }
+      };
+      //console.log('payload', payload);
+
+      try {
+        const result = await dispatch(updateBab(payload));
+        if (updateBab.fulfilled.match(result)) {
+          enqueueSnackbar('Berhasil menyimpan', { variant: 'success' });
+        } else {
+          enqueueSnackbar('Gagal menyimpan', { variant: 'error' });
+        }
+      } catch (error) {
+        enqueueSnackbar('Terjadi kesalahan', { variant: 'error' });
+      }
     }
   };
 
@@ -68,6 +98,12 @@ const Anggaran = () => {
     },
     [object, reset]
   );
+
+  useEffect(() => {
+    if (lampiran && lampiran.anggaran) {
+      setData(lampiran.anggaran);
+    }
+  }, [lampiran]);
 
   return (
     <>
@@ -103,7 +139,7 @@ const Anggaran = () => {
         );
       })}
       <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 4 }}>
-        <Button variant="contained" color="success" onClick={''}>
+        <Button variant="contained" color="success" onClick={handleBudget.save}>
           Simpan Detail
         </Button>
       </Stack>

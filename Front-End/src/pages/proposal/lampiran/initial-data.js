@@ -108,12 +108,22 @@ export const DEFAULT_ID_INIT = [
 ];
 
 // ** Regional Anggaran
+export const COST_BUDGET_INIT = {
+  belmawa: 0,
+  perguruan: 0
+};
 export const BUDGET_INIT = {
-  total_price: '',
+  total_price: 0,
   materials: [],
   services: [],
   transports: [],
-  others: []
+  others: [],
+  cost: {
+    materials: COST_BUDGET_INIT,
+    services: COST_BUDGET_INIT,
+    transports: COST_BUDGET_INIT,
+    others: COST_BUDGET_INIT
+  }
 };
 
 export const DETAIL_BUDGET_INIT = {
@@ -121,9 +131,9 @@ export const DETAIL_BUDGET_INIT = {
   category: '',
   output_type: '',
   budget_source: '',
-  volume: '',
+  volume: 0,
   unit_price: '',
-  total_price: '',
+  total_price: 0,
   status: false
 };
 

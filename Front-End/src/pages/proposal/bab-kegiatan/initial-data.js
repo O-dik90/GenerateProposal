@@ -101,6 +101,7 @@ export const dataBiaya = [
   {
     no: 1,
     title: 'Bahan Material',
+    ref: 'materials',
     sumber: [
       { type: 'belmawa', amount: '4.505.714,00' },
       { type: 'perguruan', amount: '556.886,00' }
@@ -110,6 +111,7 @@ export const dataBiaya = [
   {
     no: 2,
     title: 'Sewa dan Jasa',
+    ref: 'services',
     sumber: [
       { type: 'belmawa', amount: '1.130.300,00' },
       { type: 'perguruan', amount: '139.700,00' }
@@ -119,6 +121,7 @@ export const dataBiaya = [
   {
     no: 3,
     title: 'Transportasi lokal',
+    ref: 'transports',
     sumber: [
       { type: 'belmawa', amount: '1.335.000,00' },
       { type: 'perguruan', amount: '165.000,00' }
@@ -128,19 +131,11 @@ export const dataBiaya = [
   {
     no: 4,
     title: 'Lain - lain',
+    ref: 'others',
     sumber: [
       { type: 'belmawa', amount: '1.068.000,00' },
       { type: 'perguruan', amount: '132.000,00' }
     ],
     sub_total: '1.200.000,00'
-  },
-  {
-    no: 5,
-    title: 'Rekap Sumber Dana',
-    sub_total: '9.032.600,00',
-    sumber: [
-      { type: 'belmawa', amount: '8.039.014,00' },
-      { type: 'perguruan', amount: '993.586,00' }
-    ]
   }
 ];

@@ -221,7 +221,13 @@ export const lampiranColumns = {
 export const budgetColumns = (handleEdit, handleDelete, handleReset, status) => [
   { name: 'No', field: 'no', width: '4rem', align: 'center' },
   { name: 'Jenis Pengeluaran', field: 'output_type' },
-  { name: 'Sumber Dana', field: 'budget_source' },
+  {
+    name: 'Sumber Dana',
+    field: 'budget_source',
+    cell: (value) => {
+      return <>{value === 'belmawa' ? 'Belmawa' : 'Perguruan Tinggi'}</>;
+    }
+  },
   { name: 'Jumlah', field: 'volume', width: '5rem' },
   { name: 'Harga Satuan (Rp)', field: 'unit_price', width: '10rem' },
   { name: 'Total Harga (Rp)', field: 'total_price', width: '10rem' },

@@ -12,6 +12,7 @@ import { useSnackbar } from 'notistack';
 
 const Kegiatan = () => {
   const { biaya, metadata: rawData } = useSelector((state) => state.app.proposal),
+    { cost } = useSelector((state) => state.app.proposal.lampiran?.anggaran),
     dispatch = useDispatch(),
     { enqueueSnackbar } = useSnackbar();
   const [object, setObject] = useState({
@@ -19,7 +20,7 @@ const Kegiatan = () => {
     kegiatan: KEGIATAN_INIT
   });
   const [data, setData] = useState({
-    biaya: dataBiaya || [],
+    biaya: [],
     kegiatan: []
   });
 
@@ -52,7 +53,7 @@ const Kegiatan = () => {
         id: rawData[7]?.id,
         proposals_id: rawData[7]?.proposals_id,
         bab_title: rawData[7]?.bab_title,
-        json_data: data
+        json_data: data.kegiatan
       };
 
       try {
@@ -89,13 +90,38 @@ const Kegiatan = () => {
 
   useEffect(() => {
     if (biaya) {
-      console.log(biaya);
+      //console.log(biaya);
       setData({
-        biaya: biaya?.biaya || [],
+        biaya: [],
         kegiatan: biaya?.kegiatan || []
       });
     }
   }, [biaya]);
+
+  useEffect(() => {
+    const updatedData = dataBiaya.map((item) => {
+      const ref = item.ref;
+      if (cost[ref]) {
+        return {
+          ...item,
+          sub_total: cost[ref]['belmawa'] + cost[ref]['perguruan'],
+          sumber: item.sumber.map((sumberItem) => {
+            return {
+              ...sumberItem,
+              amount: cost[ref][sumberItem.type]
+            };
+          })
+        };
+      }
+
+      return item;
+    });
+
+    setData((prevData) => ({
+      ...prevData,
+      biaya: updatedData
+    }));
+  }, [cost]);
 
   return (
     <>

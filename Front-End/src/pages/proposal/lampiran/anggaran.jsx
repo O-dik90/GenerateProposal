@@ -29,6 +29,28 @@ const Anggaran = () => {
     { key: 'others', label: 'lain - lain', limit: '15' }
   ];
 
+  const calculateTotalCosts = () => {
+    const calculateCostByCategory = (categoryData, budgetSource) =>
+      (categoryData || []).reduce((total, item) => (item.budget_source === budgetSource ? total + item.total_price : total), 0);
+
+    setData((prevData) => {
+      const calculateCategoryCost = (category) => ({
+        belmawa: calculateCostByCategory(prevData[category], 'belmawa'),
+        perguruan: calculateCostByCategory(prevData[category], 'perguruan')
+      });
+
+      return {
+        ...prevData,
+        cost: {
+          materials: calculateCategoryCost('materials'),
+          services: calculateCategoryCost('services'),
+          transports: calculateCategoryCost('transports'),
+          others: calculateCategoryCost('others')
+        }
+      };
+    });
+  };
+
   const reset = useCallback((key) => {
     setObject((prev) => ({ ...prev, [key]: initialStateForKey(key) }));
   }, []);
@@ -48,11 +70,15 @@ const Anggaran = () => {
     edit: (key) => (param) => {
       setObject((prev) => ({ ...prev, [key]: { ...param, status: true } }));
     },
+    reset: (key) => () => {
+      reset(key);
+    },
     delete: (key) => (item) => {
       setData((prev) => ({
         ...prev,
         [key]: prev[key].filter((row) => row.no !== item.no).map((row, index) => ({ ...row, no: index + 1 }))
       }));
+      calculateTotalCosts();
     },
     save: async () => {
       const jsonData = JSON.parse(rawData[9]?.json_data);
@@ -65,7 +91,7 @@ const Anggaran = () => {
           anggaran: data
         }
       };
-      //console.log('payload', payload);
+      console.log('payload', payload);
 
       try {
         const result = await dispatch(updateBab(payload));
@@ -82,21 +108,38 @@ const Anggaran = () => {
 
   const handleForm = useCallback(
     (values, key) => {
+      const calculateTotalPrice = (unitPrice, volume) => Number(unitPrice) * volume;
+
       if (object[key]?.status) {
         setData((prevData) => ({
           ...prevData,
-          [key]: prevData[key]?.map((item) => (item.no === object[key]?.no ? { ...item, ...values, status: false } : item))
+          [key]: prevData[key]?.map((item) =>
+            item.no === object[key]?.no
+              ? {
+                  ...item,
+                  ...values,
+                  total_price: calculateTotalPrice(values.unit_price, values.volume),
+                  status: false
+                }
+              : item
+          )
         }));
         reset(key);
       } else {
-        const newItem = { ...values, no: (object[key]?.length || 0) + 1 };
+        const newItem = {
+          ...values,
+          no: (data[key]?.length || 0) + 1,
+          total_price: calculateTotalPrice(values.unit_price, values.volume),
+          status: false
+        };
         setData((prevData) => ({
           ...prevData,
           [key]: [...(prevData[key] || []), newItem]
         }));
       }
+      calculateTotalCosts();
     },
-    [object, reset]
+    [data, object, reset]
   );
 
   useEffect(() => {
@@ -105,12 +148,17 @@ const Anggaran = () => {
     }
   }, [lampiran]);
 
+  useEffect(() => {
+    console.log(data);
+  }, [data]);
+
   return (
     <>
       {budget.map(({ key, label, limit }, index) => {
         const budgetData = data[key] || [];
         const budgetStatus = object[key]?.status;
         const budgetFieldsData = budgetFields[key];
+        const { belmawa = 0, perguruan = 0 } = data.cost[key] || {};
 
         return (
           <Grid item xs={12} key={`${key}-${index}`} sx={{ marginBottom: 15 }}>
@@ -129,11 +177,19 @@ const Anggaran = () => {
                 initialValuesUpdate={object[key]}
               />
               <TableForm
-                columns={budgetColumns(handleBudget.edit(key), handleBudget.delete(key), object[key]?.status)}
+                columns={budgetColumns(handleBudget.edit(key), handleBudget.delete(key), handleBudget.reset(key), object[key]?.status)}
                 rows={budgetData}
                 expand={false}
                 detail=""
               />
+            </Stack>
+            <Stack direction="column" spacing={1} sx={{ mt: 4 }}>
+              <Typography variant="h6" gutterBottom>
+                {`Sub Total Belmawa Rp. ${belmawa}`}
+              </Typography>
+              <Typography variant="h6" gutterBottom>
+                {`Sub Total Perguruan Tinggi Rp. ${perguruan}`}
+              </Typography>
             </Stack>
           </Grid>
         );

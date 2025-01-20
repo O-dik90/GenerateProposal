@@ -1,7 +1,8 @@
-import { MenuItem, Stack, TextField } from '@mui/material';
+import { InputAdornment, MenuItem, Stack, TextField } from '@mui/material';
 
 import PropTypes from 'prop-types';
 import React from 'react';
+import { formatCurrency } from 'utils/format-currency';
 
 const FormField = ({
   name,
@@ -17,8 +18,43 @@ const FormField = ({
   placeholder,
   withoutLabel,
   options = [],
-  size
+  size,
+  currency = false,
+  currencySymbol = 'Rp'
 }) => {
+  const handleCurrencyInputChange = (e) => {
+    let rawValue = e.target.value.replace(/[^\d]/g, '');
+    onChange({ target: { name, value: rawValue } });
+  };
+  if (currency) {
+    return (
+      <Stack spacing={1}>
+        <TextField
+          id={name}
+          name={name}
+          label={label}
+          type="text"
+          value={formatCurrency(value)}
+          onChange={handleCurrencyInputChange}
+          onBlur={onBlur}
+          fullWidth
+          error={Boolean(touched && error)}
+          helperText={touched && error}
+          variant={withoutLabel ? 'standard' : 'outlined'}
+          placeholder={placeholder}
+          size={size}
+          InputLabelProps={InputLabelProps}
+          InputProps={{
+            startAdornment: <InputAdornment position="start">{currencySymbol}</InputAdornment>,
+            inputMode: 'numeric',
+            pattern: '[0-9]*'
+          }}
+        />
+      </Stack>
+    );
+  }
+
+  // Select type handling
   if (type === 'select') {
     return (
       <Stack spacing={1}>
@@ -48,6 +84,8 @@ const FormField = ({
       </Stack>
     );
   }
+
+  // Textarea type handling
   if (type === 'textarea') {
     return (
       <Stack spacing={1}>
@@ -72,6 +110,7 @@ const FormField = ({
     );
   }
 
+  // Default text field handling
   return (
     <Stack spacing={1}>
       <TextField
@@ -97,7 +136,7 @@ const FormField = ({
 FormField.propTypes = {
   name: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
-  type: PropTypes.oneOf(['text', 'email', 'password', 'number', 'select', 'textarea', 'date']).isRequired,
+  type: PropTypes.oneOf(['text', 'email', 'password', 'number', 'select', 'textarea', 'date', 'currency']).isRequired,
   value: PropTypes.any.isRequired,
   onChange: PropTypes.func.isRequired,
   onBlur: PropTypes.func.isRequired,
@@ -115,7 +154,11 @@ FormField.propTypes = {
       label: PropTypes.string.isRequired,
       disabled: PropTypes.bool
     })
-  )
+  ),
+  currency: PropTypes.bool,
+  currencySymbol: PropTypes.string,
+  decimalPrecision: PropTypes.number,
+  locale: PropTypes.string
 };
 
 export default FormField;

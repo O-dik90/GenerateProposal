@@ -33,11 +33,11 @@ export const Columns = {
         return (
           <Stack direction="row" spacing={1}>
             {!status ? (
-              <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)}>
+              <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)} disabled={status}>
                 <EditFilled />
               </IconButton>
             ) : (
-              <IconButton aria-label="reset" size="small" color="primary" onClick={() => handleReset()}>
+              <IconButton aria-label="reset" size="small" color="primary" onClick={() => handleReset()} disabled={row && status}>
                 <RedoOutlined />
               </IconButton>
             )}

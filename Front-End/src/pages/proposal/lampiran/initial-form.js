@@ -16,7 +16,7 @@ export const initialFields = {
       label: 'Alamat Email',
       type: 'email',
       placeholder: '',
-      validation: Yup.string().required('Wajib diisi'),
+      validation: Yup.string().email('penulisan email harus benar').required('Wajib diisi'),
       width: 4
     },
     {
@@ -270,26 +270,19 @@ export const budgetFields = {
     {
       name: 'volume',
       label: 'Volume',
-      type: 'text',
+      type: 'number',
       placeholder: '',
-      validation: Yup.string().required('Wajib diisi'),
-      width: 2
+      validation: Yup.number().min(0).required('Wajib diisi'),
+      width: 3
     },
     {
       name: 'unit_price',
       label: 'Harga Satuan (Rp)',
-      type: 'text',
-      placeholder: '',
-      validation: Yup.string().required('Wajib diisi'),
-      width: 2
-    },
-    {
-      name: 'total_price',
-      label: 'Total Harga (Rp)',
-      type: 'text',
-      placeholder: '',
-      validation: Yup.string().required('Wajib diisi'),
-      width: 2
+      type: 'currency',
+      initialValue: '',
+      validation: Yup.number().required('Harga wajib diisi'),
+      currencySymbol: 'Rp',
+      width: 3
     }
   ],
   services: [
@@ -316,26 +309,19 @@ export const budgetFields = {
     {
       name: 'volume',
       label: 'Volume',
-      type: 'text',
+      type: 'number',
       placeholder: '',
       validation: Yup.string().required('Wajib diisi'),
-      width: 2
+      width: 3
     },
     {
       name: 'unit_price',
       label: 'Harga Satuan (Rp)',
-      type: 'text',
-      placeholder: '',
-      validation: Yup.string().required('Wajib diisi'),
-      width: 2
-    },
-    {
-      name: 'total_price',
-      label: 'Total Harga (Rp)',
-      type: 'text',
-      placeholder: '',
-      validation: Yup.string().required('Wajib diisi'),
-      width: 2
+      type: 'currency',
+      initialValue: '',
+      validation: Yup.number().required('Harga wajib diisi'),
+      currencySymbol: 'Rp',
+      width: 3
     }
   ],
   transports: [
@@ -362,26 +348,19 @@ export const budgetFields = {
     {
       name: 'volume',
       label: 'Volume',
-      type: 'text',
+      type: 'number',
       placeholder: '',
       validation: Yup.string().required('Wajib diisi'),
-      width: 2
+      width: 3
     },
     {
       name: 'unit_price',
       label: 'Harga Satuan (Rp)',
-      type: 'text',
-      placeholder: '',
-      validation: Yup.string().required('Wajib diisi'),
-      width: 2
-    },
-    {
-      name: 'total_price',
-      label: 'Total Harga (Rp)',
-      type: 'text',
-      placeholder: '',
-      validation: Yup.string().required('Wajib diisi'),
-      width: 2
+      type: 'currency',
+      initialValue: '',
+      validation: Yup.number().required('Harga wajib diisi'),
+      currencySymbol: 'Rp',
+      width: 3
     }
   ],
   others: [
@@ -408,26 +387,19 @@ export const budgetFields = {
     {
       name: 'volume',
       label: 'Volume',
-      type: 'text',
+      type: 'number',
       placeholder: '',
       validation: Yup.string().required('Wajib diisi'),
-      width: 2
+      width: 3
     },
     {
       name: 'unit_price',
       label: 'Harga Satuan (Rp)',
-      type: 'text',
-      placeholder: '',
-      validation: Yup.string().required('Wajib diisi'),
-      width: 2
-    },
-    {
-      name: 'total_price',
-      label: 'Total Harga (Rp)',
-      type: 'text',
-      placeholder: '',
-      validation: Yup.string().required('Wajib diisi'),
-      width: 2
+      type: 'currency',
+      initialValue: '',
+      validation: Yup.number().required('Harga wajib diisi'),
+      currencySymbol: 'Rp',
+      width: 3
     }
   ]
 };

@@ -12,7 +12,7 @@ import { useSnackbar } from 'notistack';
 
 const Kegiatan = () => {
   const { biaya, metadata: rawData } = useSelector((state) => state.app.proposal),
-    { cost } = useSelector((state) => state.app.proposal.lampiran?.anggaran),
+    { lampiran } = useSelector((state) => state.app.proposal),
     dispatch = useDispatch(),
     { enqueueSnackbar } = useSnackbar();
   const [object, setObject] = useState({
@@ -99,29 +99,32 @@ const Kegiatan = () => {
   }, [biaya]);
 
   useEffect(() => {
-    const updatedData = dataBiaya.map((item) => {
-      const ref = item.ref;
-      if (cost[ref]) {
-        return {
-          ...item,
-          sub_total: cost[ref]['belmawa'] + cost[ref]['perguruan'],
-          sumber: item.sumber.map((sumberItem) => {
-            return {
-              ...sumberItem,
-              amount: cost[ref][sumberItem.type]
-            };
-          })
-        };
-      }
+    if (lampiran) {
+      const cost = lampiran?.anggaran?.cost;
+      const updatedData = dataBiaya.map((item) => {
+        const ref = item.ref;
+        if (cost[ref]) {
+          return {
+            ...item,
+            sub_total: cost[ref]['belmawa'] + cost[ref]['perguruan'],
+            sumber: item.sumber.map((sumberItem) => {
+              return {
+                ...sumberItem,
+                amount: cost[ref][sumberItem.type]
+              };
+            })
+          };
+        }
 
-      return item;
-    });
+        return item;
+      });
 
-    setData((prevData) => ({
-      ...prevData,
-      biaya: updatedData
-    }));
-  }, [cost]);
+      setData((prevData) => ({
+        ...prevData,
+        biaya: updatedData
+      }));
+    }
+  }, [lampiran]);
 
   return (
     <>

@@ -15,7 +15,12 @@ const {
 } = require('../controller/proposal-bab');
 
 const { updateDapus, genCitations } = require('../controller/dapus');
-const { addFiles } = require('../controller/lampiran');
+const {
+  addFiles,
+  getFiles,
+  deleteFile,
+  updateFile,
+} = require('../controller/lampiran');
 
 const router = express.Router();
 
@@ -38,6 +43,9 @@ router.put('/update-dapus', updateDapus);
 router.post('/gen-citations', genCitations);
 
 //routes/file-uploads
-router.post('/upload-file/:proposals_id', addFiles);
+router.post('/upload-file', addFiles);
+router.get('/get-files/:proposals_id', getFiles);
+router.delete('/delete-file/:id', deleteFile);
+router.put('/update-file', updateFile);
 
 module.exports = router;

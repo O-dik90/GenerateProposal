@@ -6,6 +6,8 @@ const proposalRoutes = require('./routes/proposal-route');
 const masterData = require('./routes/master-data');
 const middlewareLogRequest = require('./middlewares/logs');
 const helmet = require('helmet');
+const fileUpload = require('express-fileupload');
+const path = require('path');
 
 const app = express();
 
@@ -14,8 +16,18 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 app.use(helmet());
+app.use(
+  fileUpload({
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
+    useTempFiles: true, // Use temp files to handle large uploads efficiently
+    tempFileDir: '/tmp/',
+  })
+);
 
-app.get('/', (req, res) => {
+// Serve static files (uploaded images)
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+app.get('/api-genpro', (req, res) => {
   res.status(200).json({ message: 'Welcome to REST API Genpro' });
 });
 

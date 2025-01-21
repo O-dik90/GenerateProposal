@@ -15,6 +15,7 @@ const {
 } = require('../controller/proposal-bab');
 
 const { updateDapus, genCitations } = require('../controller/dapus');
+const { addFiles } = require('../controller/lampiran');
 
 const router = express.Router();
 
@@ -35,5 +36,8 @@ router.put('/update-bab', updateBab);
 //routes/dapus
 router.put('/update-dapus', updateDapus);
 router.post('/gen-citations', genCitations);
+
+//routes/file-uploads
+router.post('/upload-file/:proposals_id', addFiles);
 
 module.exports = router;

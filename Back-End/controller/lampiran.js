@@ -28,7 +28,7 @@ const validateFile = (file) => {
 
 const moveFile = (file, uploadPath) => {
   return new Promise((resolve, reject) => {
-    file.mv(`./public/${uploadPath}`, (err) => {
+    file.mv(uploadPath, (err) => {
       if (err) {
         return reject('Failed to move the file: ' + err.message);
       }
@@ -56,7 +56,7 @@ const addFiles = async (req, res) => {
       return res.status(400).json({ message: 'Proposal ID is required' });
     }
 
-    const baseUploadPath = path.join(__dirname, './public');
+    const baseUploadPath = path.join(__dirname, '../public');
     const uploadFolder = path.join(baseUploadPath, proposals_id.toString());
 
     // Create folder if it doesn't exist
@@ -76,15 +76,14 @@ const addFiles = async (req, res) => {
       }
 
       const fileName = `${file.md5}_${proposals_id}_${file.name}`;
-      const uploadPath = `${proposals_id}/${fileName}`;
-      const url = `${req.protocol}://${req.get('host')}/public/${uploadPath}`;
+      const uploadPath = `public/${proposals_id}/${fileName}`;
 
       try {
         // Move file to the designated folder
         await moveFile(file, uploadPath);
 
         // Save file information to the database
-        await addImage([proposals_id, title, fileName, url]);
+        await addImage([proposals_id, title, fileName, uploadPath]);
       } catch (err) {
         return res.status(500).json({ message: 'Error saving file: ' + err });
       }

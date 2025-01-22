@@ -28,7 +28,7 @@ const validateFile = (file) => {
 
 const moveFile = (file, uploadPath) => {
   return new Promise((resolve, reject) => {
-    file.mv(uploadPath, (err) => {
+    file.mv(`./public/${uploadPath}`, (err) => {
       if (err) {
         return reject('Failed to move the file: ' + err.message);
       }
@@ -41,11 +41,11 @@ const moveFile = (file, uploadPath) => {
 const addFiles = async (req, res) => {
   try {
     if (!req.files || Object.keys(req.files).length === 0) {
-      return res.status(400).send('No files were uploaded.');
+      return res.status(400).json({ message: 'No files were uploaded.' });
     }
 
     if (!req.body.data) {
-      return res.status(400).send('Data is required');
+      return res.status(400).json({ message: 'Data is required' });
     }
 
     const { data } = req.body;
@@ -53,10 +53,10 @@ const addFiles = async (req, res) => {
     const title = JSON.parse(data)?.title;
 
     if (!proposals_id) {
-      return res.status(400).send('Proposal ID is required');
+      return res.status(400).json({ message: 'Proposal ID is required' });
     }
 
-    const baseUploadPath = path.join(__dirname, '../uploads');
+    const baseUploadPath = path.join(__dirname, './public');
     const uploadFolder = path.join(baseUploadPath, proposals_id.toString());
 
     // Create folder if it doesn't exist
@@ -72,18 +72,19 @@ const addFiles = async (req, res) => {
     for (const file of files) {
       const validationError = validateFile(file);
       if (validationError) {
-        return res.status(400).send(validationError);
+        return res.status(400).json({ message: validationError });
       }
 
       const fileName = `${file.md5}_${proposals_id}_${file.name}`;
-      const uploadPath = `uploads/${proposals_id}/${fileName}`;
+      const uploadPath = `${proposals_id}/${fileName}`;
+      const url = `${req.protocol}://${req.get('host')}/public/${uploadPath}`;
 
       try {
         // Move file to the designated folder
         await moveFile(file, uploadPath);
 
         // Save file information to the database
-        await addImage([proposals_id, title, fileName, uploadPath]);
+        await addImage([proposals_id, title, fileName, url]);
       } catch (err) {
         return res.status(500).json({ message: 'Error saving file: ' + err });
       }
@@ -125,24 +126,24 @@ const updateFile = async (req, res) => {
     const file = req.files?.images;
 
     if (!file) {
-      return res.status(400).send('No file uploaded.');
+      return res.status(400).json({ message: 'No file uploaded.' });
     }
     if (!data) {
-      return res.status(400).send('Data is required');
+      return res.status(400).json({ message: 'Data is required' });
     }
 
     // Validate file
     const validationError = validateFile(file);
     if (validationError) {
-      return res.status(400).send(validationError);
+      return res.status(400).json(validationError);
     }
 
     const proposals_id = JSON.parse(data)?.proposals_id;
     const image_id = JSON.parse(data)?.image_id;
     const fileName = `${file.md5}_${proposals_id}_${file.name}`;
-    const baseUploadPath = path.join(__dirname, '../uploads');
+    const baseUploadPath = path.join(__dirname, '../public');
     const uploadFolder = path.join(baseUploadPath, proposals_id.toString());
-    const uploadPath = `uploads/${proposals_id}/${fileName}`;
+    const uploadPath = `public/${proposals_id}/${fileName}`;
 
     // Create folder if it doesn't exist
     if (!fs.existsSync(uploadFolder)) {
@@ -171,7 +172,7 @@ const deleteFile = async (req, res) => {
   try {
     const { id } = req.params;
     if (!id) {
-      return res.status(400).send('File ID is required');
+      return res.status(400).json({ message: 'File ID is required' });
     }
 
     const [data] = await deleteImage(id);

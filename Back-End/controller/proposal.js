@@ -1,6 +1,7 @@
 require('date-fns/locale');
 const Proposals = require('../models/proposals');
 const ProposalBab = require('../models/proposal-bab');
+const Lampiran = require('../models/lampiran');
 const getListProposals = async (req, res) => {
   try {
     const id = req.params.user_id;
@@ -37,6 +38,7 @@ const getProposal = async (req, res) => {
     const [result] = await Proposals.getProposalId(proposals_id);
     const [resDetail] = await ProposalBab.getListProposalBab(proposals_id);
     const [resGen] = await Proposals.genStatusProposal(proposals_id);
+    const [fileDoc] = await Lampiran.getListImage(proposals_id);
 
     const generateStatus = resGen.length > 0 ? false : true;
 
@@ -62,6 +64,7 @@ const getProposal = async (req, res) => {
           biaya: JSON.parse(resDetail.slice(7, 8)[0]?.json_data || null),
           dapus: JSON.parse(resDetail.slice(8, 9)[0]?.json_data || null),
           lampiran: JSON.parse(resDetail.slice(-1)[0]?.json_data || null),
+          document: fileDoc[0],
         },
         metadata: JSON.stringify(resDetail),
       },

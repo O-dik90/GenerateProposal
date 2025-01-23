@@ -2,11 +2,13 @@ require('date-fns/locale');
 
 const ProposalBab = require('../models/proposal-bab');
 const Proposals = require('../models/proposals');
+const Lampiran = require('../models/lampiran');
 
 const getListProposalBab = async (req, res) => {
   try {
     const { proposals_id } = req.params;
     const [data] = await ProposalBab.getListProposalBab(proposals_id);
+    const fileDoc = await Lampiran.getListImage(proposals_id);
 
     if (data.length === 0) {
       return res.json({
@@ -30,6 +32,7 @@ const getListProposalBab = async (req, res) => {
       biaya: JSON.parse(data.slice(7, 8)[0]?.json_data || null),
       dapus: JSON.parse(data.slice(8, 9)[0]?.json_data || null),
       lampiran: JSON.parse(data.slice(-1)[0]?.json_data || null),
+      document: fileDoc[0],
       metadata: JSON.stringify(data),
     });
   } catch (error) {

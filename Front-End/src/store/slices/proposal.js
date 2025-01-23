@@ -96,6 +96,33 @@ export const updateBab = createAsyncThunk('proposal/update-bab', async (params, 
   }
 });
 
+export const getListLampiran = createAsyncThunk('proposal/get-statement', async (params) => {
+  const response = await axiosInstance.get(`/get-files/${params?.proposals_id}`);
+  return response.data;
+});
+
+export const uploadFileLampiran = createAsyncThunk('proposal/upload-file', async (params, { rejectWithValue }) => {
+  try {
+    const res = await axiosInstance.post(`/upload-file`, params, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    return res.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || 'An error occurred');
+  }
+});
+
+export const deleteFileLampiran = createAsyncThunk('proposal/delete-file', async (params, { rejectWithValue }) => {
+  try {
+    const res = await axiosInstance.delete(`/delete-file/${params.id}`);
+    return res.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || 'An error occurred');
+  }
+});
+
 const initialState = {
   data: [],
   metadata: {},
@@ -105,6 +132,7 @@ const initialState = {
   tinjauan: {},
   dapus: {},
   lampiran: {},
+  document: [],
   loading: false,
   message: null,
   error: null
@@ -212,6 +240,16 @@ const proposalSlice = createSlice({
       .addCase(updateBab.fulfilled, (state, action) => {
         state.loading = false;
         state.message = action.payload.message;
+        state.error = null;
+      })
+      // Get List Lampiran
+      .addCase(getListLampiran.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getListLampiran.fulfilled, (state, action) => {
+        state.loading = false;
+        state.message = action.payload.message;
+        state.document = action.payload.data;
         state.error = null;
       });
   }

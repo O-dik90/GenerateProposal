@@ -50,7 +50,7 @@ const addFiles = async (req, res) => {
 
     const { data } = req.body;
     const proposals_id = JSON.parse(data)?.proposals_id;
-    const title = JSON.parse(data)?.title;
+    const type = JSON.parse(data)?.type;
 
     if (!proposals_id) {
       return res.status(400).json({ message: 'Proposal ID is required' });
@@ -74,8 +74,8 @@ const addFiles = async (req, res) => {
       if (validationError) {
         return res.status(400).json({ message: validationError });
       }
-
-      const fileName = `${file.md5}_${proposals_id}_${file.name}`;
+      const ext = path.extname(file.name);
+      const fileName = `${file.md5}_${proposals_id}_${ext}`;
       const uploadPath = `public/${proposals_id}/${fileName}`;
 
       try {
@@ -83,16 +83,18 @@ const addFiles = async (req, res) => {
         await moveFile(file, uploadPath);
 
         // Save file information to the database
-        await addImage([proposals_id, title, fileName, uploadPath]);
+        await addImage([proposals_id, type, fileName, uploadPath]);
       } catch (err) {
         return res.status(500).json({ message: 'Error saving file: ' + err });
       }
     }
 
-    res.status(200).json({ message: 'Files uploaded successfully.' });
+    return res.status(200).json({ message: 'Files uploaded successfully.' });
   } catch (err) {
     console.error('Error uploading files:', err);
-    res.status(500).json({ message: 'Error uploading files: ' + err.message });
+    return res
+      .status(500)
+      .json({ message: 'Error uploading files: ' + err.message });
   }
 };
 
@@ -104,15 +106,18 @@ const getFiles = async (req, res) => {
     const [data] = await getListImage(id, title ?? null);
 
     if (!data || data.length === 0) {
-      return res.status(404).json({
+      return res.status(200).json({
         message: 'Data not found',
         data: [],
       });
     }
 
-    res.status(200).json(data);
+    return res.status(200).json({
+      message: 'success',
+      data: data,
+    });
   } catch (err) {
-    res
+    return res
       .status(500)
       .json({ message: 'Error retrieving images: ' + err.message });
   }
@@ -139,7 +144,8 @@ const updateFile = async (req, res) => {
 
     const proposals_id = JSON.parse(data)?.proposals_id;
     const image_id = JSON.parse(data)?.image_id;
-    const fileName = `${file.md5}_${proposals_id}_${file.name}`;
+    const ext = path.extname(file.name);
+    const fileName = `${file.md5}_${proposals_id}_${ext}`;
     const baseUploadPath = path.join(__dirname, '../public');
     const uploadFolder = path.join(baseUploadPath, proposals_id.toString());
     const uploadPath = `public/${proposals_id}/${fileName}`;
@@ -159,10 +165,12 @@ const updateFile = async (req, res) => {
       return res.status(404).json({ message: 'File not found for update.' });
     }
 
-    res.status(200).json({ message: 'File updated successfully.' });
+    return res.status(200).json({ message: 'File updated successfully.' });
   } catch (err) {
     console.error('Error updating file:', err);
-    res.status(500).json({ message: 'Error updating file: ' + err.message });
+    return res
+      .status(500)
+      .json({ message: 'Error updating file: ' + err.message });
   }
 };
 
@@ -178,10 +186,12 @@ const deleteFile = async (req, res) => {
     if (data.affectedRows === 0) {
       throw new Error('Proposal not found');
     }
-    res.status(200).json({ message: 'File deleted successfully.' });
+    return res.status(200).json({ message: 'File deleted successfully.' });
   } catch (err) {
     console.error('Error deleting file:', err);
-    res.status(500).json({ message: 'Error deleting file: ' + err.message });
+    return res
+      .status(500)
+      .json({ message: 'Error deleting file: ' + err.message });
   }
 };
 

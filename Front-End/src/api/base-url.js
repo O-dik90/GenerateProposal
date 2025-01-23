@@ -1,10 +1,10 @@
 import axios from 'axios';
 import { enqueueSnackbar } from 'notistack';
 
-const API_URL = import.meta.env.VITE_API_BASE_URL;
+export const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const axiosInstance = axios.create({
-  baseURL: API_URL,
+  baseURL: API_URL + '/api-genpro',
   timeout: 10000
 });
 

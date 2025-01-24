@@ -83,7 +83,7 @@ const addFiles = async (req, res) => {
         await moveFile(file, uploadPath);
 
         // Save file information to the database
-        await addImage([proposals_id, type, fileName, uploadPath]);
+        await addImage([proposals_id, type, file.name, fileName, uploadPath]);
       } catch (err) {
         return res.status(500).json({ message: 'Error saving file: ' + err });
       }
@@ -100,10 +100,13 @@ const addFiles = async (req, res) => {
 
 // Get Files
 const getFiles = async (req, res) => {
+  const { proposals_id: id } = req.params;
+  const { type } = req.body;
   try {
-    const { proposals_id: id } = req.params;
-    const { title } = req.body;
-    const [data] = await getListImage(id, title ?? null);
+    if (!type) {
+      return res.status(400).json({ message: 'Params is required' });
+    }
+    const [data] = await getListImage(id, type ?? null);
 
     if (!data || data.length === 0) {
       return res.status(200).json({
@@ -159,7 +162,12 @@ const updateFile = async (req, res) => {
     await moveFile(file, uploadPath);
 
     // Update file in the database
-    const result = await updateImage([fileName, uploadPath, image_id]);
+    const result = await updateImage([
+      file.name,
+      fileName,
+      uploadPath,
+      image_id,
+    ]);
 
     if (!result) {
       return res.status(404).json({ message: 'File not found for update.' });

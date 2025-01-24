@@ -1,87 +1,192 @@
-import React, { useState } from 'react';
-// import axios from 'axios';
+import { Box, Button, Stack, Typography } from '@mui/material';
+import React, { useEffect, useMemo, useState } from 'react';
+import { deleteFileLampiran, getListLampiran, updateFileLampiran, uploadFileLampiran } from 'store/slices/proposal';
+
+import { ATTACHMENT_INIT } from './initial-data';
+import { CloudUploadOutlined } from '@ant-design/icons';
+import { TableForm } from 'components/table-form';
+import { attachmentColumns } from './initial-column';
+import { useDispatch } from 'react-redux';
+import { useParams } from 'react-router';
+import { useSnackbar } from 'notistack';
+
+const state = {
+  key: 'attachment',
+  type: 'ATTACHMENT',
+  allowExtension: ['image/jpeg', 'image/png', 'image/jpg']
+};
 
 const FilePendukung = () => {
-  const [files, setFiles] = useState([]);
-  const [error, setError] = useState('');
+  const [data, setData] = useState([]);
+  const [object, setObject] = useState({
+    attachment: ATTACHMENT_INIT
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const { enqueueSnackbar } = useSnackbar();
+  const dispatch = useDispatch();
+  const param = useParams();
 
-  const handleFileChange = (e) => {
-    const selectedFiles = Array.from(e.target.files);
-    const validFiles = selectedFiles.filter((file) => ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type));
+  const fileTypeError = useMemo(
+    () => object.attachment.selectedFile && !state.allowExtension.includes(object.attachment.ext),
+    [object.attachment]
+  );
 
-    if (validFiles.length !== selectedFiles.length) {
-      setError('Some files were not JPEG, JPG, or PNG and were skipped.');
-    } else {
-      setError('');
+  const handleFileChange = (key) => (event) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setObject((prev) => ({
+        ...prev,
+        [key]: { ...prev[key], selectedFile: file, filename: file.name, ext: file.type }
+      }));
     }
-
-    // Add the valid files to the state
-    setFiles((prevFiles) => [...prevFiles, ...validFiles]);
   };
 
-  const handleRemoveFile = (index) => {
-    setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+  const handleFile = {
+    edit: (key) => (item) => {
+      setObject((prev) => ({
+        ...prev,
+        [key]: { ...prev[key], filename: item.description, status: true, image_id: item.id, proposals_id: item.proposals_id }
+      }));
+    },
+    delete: () => async (item) => {
+      if (!item?.id) {
+        enqueueSnackbar('No file to delete.', { variant: 'warning' });
+        return;
+      }
+
+      setIsLoading(true);
+      try {
+        const res = await dispatch(deleteFileLampiran({ id: item.id, proposals_id: item.proposals_id }));
+        if (deleteFileLampiran.fulfilled.match(res)) {
+          enqueueSnackbar('File deleted successfully.', { variant: 'success' });
+          refreshData();
+        } else {
+          enqueueSnackbar(res.payload?.message || 'Failed to delete file.', { variant: 'error' });
+        }
+      } catch (error) {
+        enqueueSnackbar('An error occurred during file deletion.', { variant: 'error' });
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    reset: (key) => () => {
+      setObject((prev) => ({
+        ...prev,
+        [key]: ATTACHMENT_INIT
+      }));
+    }
   };
 
-  const handleUpload = async () => {
-    if (files.length === 0) {
-      setError('No files to upload.');
+  const handleUploadFile = async () => {
+    if (!object.attachment.selectedFile || fileTypeError) {
+      enqueueSnackbar('Invalid file. Please upload a JPEG or PNG file.', { variant: 'warning' });
       return;
     }
 
-    setError('');
+    const uploadData = new FormData();
+    uploadData.append('images', object.attachment.selectedFile);
+    uploadData.append('data', JSON.stringify({ type: state.type, proposals_id: param.id }));
 
-    const formData = new FormData();
-    files.forEach((file) => formData.append('files', file));
-
+    setIsLoading(true);
     try {
-      // const response = await axios.post('https://your-api-endpoint/upload', formData, {
-      //   headers: {
-      //     'Content-Type': 'multipart/form-data'
-      //   }
-      // });
-      alert('Files uploaded successfully!');
-      console.log(response.data);
-    } catch (err) {
-      setError('Failed to upload files. Please try again.');
-      console.error(err);
+      const res = await dispatch(uploadFileLampiran(uploadData));
+      if (uploadFileLampiran.fulfilled.match(res)) {
+        enqueueSnackbar('File uploaded successfully.', { variant: 'success' });
+        refreshData();
+      } else {
+        enqueueSnackbar(res.payload?.message || 'Failed to upload file.', { variant: 'error' });
+      }
+    } catch (error) {
+      enqueueSnackbar('An error occurred during file upload.', { variant: 'error' });
+    } finally {
+      setIsLoading(false);
+    }
+
+    setObject((prev) => ({
+      ...prev,
+      attachment: ATTACHMENT_INIT
+    }));
+  };
+
+  const handleUpdateFile = async () => {
+    if (!object.attachment.selectedFile || fileTypeError) {
+      enqueueSnackbar('Invalid file. Please upload a JPEG or PNG file.', { variant: 'warning' });
+      return;
+    }
+
+    const uploadData = new FormData();
+    uploadData.append('images', object.attachment.selectedFile);
+    uploadData.append('data', JSON.stringify({ type: state.type, proposals_id: param.id, image_id: object.attachment.image_id }));
+
+    setIsLoading(true);
+    try {
+      const res = await dispatch(updateFileLampiran(uploadData));
+      if (updateFileLampiran.fulfilled.match(res)) {
+        enqueueSnackbar('File updated successfully.', { variant: 'success' });
+        refreshData();
+      } else {
+        enqueueSnackbar(res.payload?.message || 'Failed to update file.', { variant: 'error' });
+      }
+    } catch (error) {
+      enqueueSnackbar('An error occurred during file update.', { variant: 'error' });
+    } finally {
+      setIsLoading(false);
+    }
+    setObject((prev) => ({
+      ...prev,
+      attachment: ATTACHMENT_INIT
+    }));
+  };
+
+  const refreshData = async () => {
+    const res = await dispatch(getListLampiran({ proposals_id: param.id, type: state.type }));
+    console.log(res);
+    if (getListLampiran.fulfilled.match(res)) {
+      const formattedData = res.payload.data.map((item, index) => ({
+        ...item,
+        no: index + 1
+      }));
+      setData(formattedData);
+    } else {
+      enqueueSnackbar(res.payload?.message || 'Failed to fetch data.', { variant: 'error' });
     }
   };
 
+  useEffect(() => {
+    refreshData();
+  }, [dispatch]);
+
   return (
-    <div style={{ textAlign: 'center', margin: '20px' }}>
-      <h2>Multi-File Upload with Preview</h2>
-      <input type="file" accept="image/jpeg,image/png,image/jpg" multiple onChange={handleFileChange} />
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-
-      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', marginTop: '20px' }}>
-        {files.map((file, index) => (
-          <div
-            key={index}
-            style={{
-              margin: '10px',
-              textAlign: 'center',
-              border: '1px solid #ddd',
-              borderRadius: '5px',
-              padding: '10px',
-              width: '150px'
-            }}
-          >
-            <img
-              src={URL.createObjectURL(file)}
-              alt={`Preview ${index}`}
-              style={{ maxWidth: '100%', maxHeight: '100px', marginBottom: '10px' }}
-            />
-            <p style={{ fontSize: '12px' }}>{file.name}</p>
-            <button onClick={() => handleRemoveFile(index)}>Remove</button>
-          </div>
-        ))}
-      </div>
-
-      <button onClick={handleUpload} style={{ marginTop: '20px', padding: '10px 20px', background: 'blue', color: 'white' }}>
-        Upload Files
-      </button>
-    </div>
+    <Box>
+      <Typography variant="h6" gutterBottom>
+        Silahkan upload file lampiran
+      </Typography>
+      <Stack direction="row" spacing={2} alignItems="center">
+        <Button variant="outlined" component="label" size="small" startIcon={<CloudUploadOutlined />} disabled={isLoading}>
+          Choose File
+          <input accept={state.allowExtension.join(',')} type="file" hidden onChange={handleFileChange(state.key)} />
+        </Button>
+        <Typography variant="body1" sx={{ fontWeight: 500, color: 'primary.main' }}>
+          {object[state.key].filename || 'No file selected'}
+        </Typography>
+      </Stack>
+      <Stack direction="row" spacing={2} my={2}>
+        {!object[state.key].status ? (
+          <Button variant="contained" color="primary" onClick={handleUploadFile} disabled={isLoading}>
+            Tambah Data
+          </Button>
+        ) : (
+          <Button variant="contained" color="secondary" onClick={handleUpdateFile} disabled={isLoading}>
+            Update Data
+          </Button>
+        )}
+      </Stack>
+      <TableForm
+        columns={attachmentColumns(handleFile.edit(state.key), handleFile.delete(), handleFile.reset(state.key), object[state.key].status)}
+        rows={data}
+        expand={false}
+      />
+    </Box>
   );
 };
 

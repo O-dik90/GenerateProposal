@@ -147,3 +147,24 @@ export const STRUCTURE_INIT = {
   time_allocation: '',
   task_description: ''
 };
+
+// ** Regional File Lampiran
+export const ATTACHMENT_INIT = {
+  no: 0,
+  status: false,
+  selectedFile: null,
+  filename: '',
+  ext: null,
+  image_id: 0,
+  proposals_id: 0
+};
+
+export const STATEMENT_INIT = {
+  no: 0,
+  status: false,
+  selectedFile: null,
+  filename: '',
+  ext: null,
+  image_id: 0,
+  proposals_id: 0
+};

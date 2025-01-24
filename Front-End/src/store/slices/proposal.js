@@ -96,9 +96,13 @@ export const updateBab = createAsyncThunk('proposal/update-bab', async (params, 
   }
 });
 
-export const getListLampiran = createAsyncThunk('proposal/get-statement', async (params) => {
-  const response = await axiosInstance.get(`/get-files/${params?.proposals_id}`);
-  return response.data;
+export const getListLampiran = createAsyncThunk('proposal/get-statement', async (params, { rejectWithValue }) => {
+  try {
+    const response = await axiosInstance.post(`/get-files/${params?.proposals_id}`, params);
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.message || 'An error occurred');
+  }
 });
 
 export const uploadFileLampiran = createAsyncThunk('proposal/upload-file', async (params, { rejectWithValue }) => {
@@ -114,9 +118,26 @@ export const uploadFileLampiran = createAsyncThunk('proposal/upload-file', async
   }
 });
 
-export const deleteFileLampiran = createAsyncThunk('proposal/delete-file', async (params, { rejectWithValue }) => {
+export const deleteFileLampiran = createAsyncThunk('proposal/delete-file', async (params, { dispatch, rejectWithValue }) => {
   try {
     const res = await axiosInstance.delete(`/delete-file/${params.id}`);
+
+    if (res.status === 200) {
+      await dispatch(getListBabProposal(params?.proposals_id));
+    }
+    return res.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || 'An error occurred');
+  }
+});
+
+export const updateFileLampiran = createAsyncThunk('proposal/update-file', async (params, { dispatch, rejectWithValue }) => {
+  try {
+    const res = await axiosInstance.put(`/update-file`, params);
+    if (res.status === 200) {
+      await dispatch(getListBabProposal(params?.proposals_id));
+    }
+
     return res.data;
   } catch (error) {
     return rejectWithValue(error.response?.data || 'An error occurred');
@@ -245,6 +266,8 @@ const proposalSlice = createSlice({
       // Get List Lampiran
       .addCase(getListLampiran.pending, (state) => {
         state.loading = true;
+        state.error = null;
+        state.document = [];
       })
       .addCase(getListLampiran.fulfilled, (state, action) => {
         state.loading = false;

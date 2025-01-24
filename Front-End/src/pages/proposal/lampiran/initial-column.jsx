@@ -288,3 +288,59 @@ export const structureColumns = (handleEdit, handleDelete, handleReset, status) 
     }
   }
 ];
+
+// ** Regional File Lampiran Pendukung
+export const attachmentColumns = (handleEdit, handleDelete, handleReset, status) => [
+  { name: 'No', field: 'no', width: '4rem', align: 'center' },
+  { name: 'Nama File', field: 'description' },
+  {
+    name: 'Aksi',
+    field: 'action',
+    width: '5rem',
+    cell: (value, row) => {
+      return (
+        <Stack direction="row" spacing={1}>
+          {!status ? (
+            <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)}>
+              <EditFilled />
+            </IconButton>
+          ) : (
+            <IconButton aria-label="reset" size="small" color="primary" onClick={() => handleReset()}>
+              <RedoOutlined />
+            </IconButton>
+          )}
+          <IconButton aria-label="delete" size="small" color="error" onClick={() => handleDelete(row)} disabled={status}>
+            <DeleteFilled />
+          </IconButton>
+        </Stack>
+      );
+    }
+  }
+];
+export const statementColumns = (handleEdit, handleDelete, handleReset, status) => [
+  { name: 'No', field: 'no', width: '4rem', align: 'center' },
+  { name: 'Surat Pernyataan', field: 'description' },
+  {
+    name: 'Aksi',
+    field: 'action',
+    width: '5rem',
+    cell: (value, row) => {
+      return (
+        <Stack direction="row" spacing={1}>
+          {!status ? (
+            <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)}>
+              <EditFilled />
+            </IconButton>
+          ) : (
+            <IconButton aria-label="reset" size="small" color="primary" onClick={() => handleReset()}>
+              <RedoOutlined />
+            </IconButton>
+          )}
+          <IconButton aria-label="delete" size="small" color="error" onClick={() => handleDelete(row)} disabled={status}>
+            <DeleteFilled />
+          </IconButton>
+        </Stack>
+      );
+    }
+  }
+];

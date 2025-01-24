@@ -44,7 +44,7 @@ router.post('/gen-citations', genCitations);
 
 //routes/file-uploads
 router.post('/upload-file', addFiles);
-router.get('/get-files/:proposals_id', getFiles);
+router.post('/get-files/:proposals_id', getFiles);
 router.delete('/delete-file/:id', deleteFile);
 router.put('/update-file', updateFile);
 

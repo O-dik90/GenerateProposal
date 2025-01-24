@@ -110,6 +110,28 @@ const FormField = ({
     );
   }
 
+  // File upload handling
+  if (type === 'file') {
+    return (
+      <Stack spacing={1}>
+        <TextField
+          id={name}
+          name={name}
+          label={label}
+          type="file"
+          onChange={onChange}
+          onBlur={onBlur}
+          fullWidth
+          error={Boolean(touched && error)}
+          helperText={touched && error}
+          variant={'outlined'}
+          size={size}
+          InputLabelProps={InputLabelProps}
+        />
+      </Stack>
+    );
+  }
+
   // Default text field handling
   return (
     <Stack spacing={1}>
@@ -136,7 +158,7 @@ const FormField = ({
 FormField.propTypes = {
   name: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
-  type: PropTypes.oneOf(['text', 'email', 'password', 'number', 'select', 'textarea', 'date', 'currency']).isRequired,
+  type: PropTypes.oneOf(['text', 'email', 'password', 'number', 'select', 'textarea', 'date', 'currency', 'file']).isRequired,
   value: PropTypes.any.isRequired,
   onChange: PropTypes.func.isRequired,
   onBlur: PropTypes.func.isRequired,

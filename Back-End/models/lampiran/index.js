@@ -13,15 +13,15 @@ const getListImage = (id, condition) => {
 
 const addImage = (data) => {
   const query = `
-  INSERT INTO proposal_lampiran (proposals_id, type, filename, url, upload_date)
-  VALUES (?, ?, ?, ?, NOW())
+  INSERT INTO proposal_lampiran (proposals_id, type, description, filename, url, upload_date)
+  VALUES (?, ?,?, ?, ?, NOW())
   `;
   return dbPool.execute(query, data);
 };
 
 const updateImage = (data) => {
   const query = `
-  UPDATE proposal_lampiran SET filename = ?, url = ? WHERE id = ?
+  UPDATE proposal_lampiran SET description = ?, filename = ?, url = ? WHERE id = ?
   `;
   return dbPool.execute(query, data);
 };

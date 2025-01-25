@@ -153,6 +153,9 @@ const ProposalTable = () => {
     }
   ];
 
+  useEffect(() => {
+    console.log(object);
+  }, [object]);
   const handleSubmit = async () => {
     try {
       if (btnAction === 'Buat') {
@@ -184,6 +187,7 @@ const ProposalTable = () => {
 
   const handleEdit = (id) => {
     const editData = data.find((item) => item.id === id);
+    console.log(editData);
     setObject((prevObject) => ({
       ...prevObject,
       ...editData,
@@ -292,8 +296,8 @@ const ProposalTable = () => {
                   <em>Pilih Lomba</em>
                 </MenuItem>
                 {lomba.map((item) => (
-                  <MenuItem key={`${item.code}-${item.id}`} value={`${item.code}`}>
-                    {item.value}
+                  <MenuItem key={`${item.code}-${item.id}`} value={item.name_id}>
+                    {item.name_desc}
                   </MenuItem>
                 ))}
               </Select>
@@ -302,8 +306,8 @@ const ProposalTable = () => {
                   <em>Pilih Tahun</em>
                 </MenuItem>
                 {tahunLomba.map((item) => (
-                  <MenuItem key={`${item.code}-${item.id}`} value={`${item.code}`}>
-                    {item.value}
+                  <MenuItem key={`${item.code}-${item.id}`} value={item.name_id}>
+                    {item.name_desc}
                   </MenuItem>
                 ))}
               </Select>
@@ -314,8 +318,8 @@ const ProposalTable = () => {
                   <em>Pilih PKM</em>
                 </MenuItem>
                 {pkm.map((item) => (
-                  <MenuItem key={`${item.code}-${item.id}`} value={`${item.code}`}>
-                    {item.value}
+                  <MenuItem key={`${item.code}-${item.id}`} value={item.name_id}>
+                    {item.name_desc}
                   </MenuItem>
                 ))}
               </Select>

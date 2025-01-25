@@ -23,7 +23,7 @@ app.use(
 );
 
 // Serve static files (uploaded images)
-app.use('/public', express.static(path.join(__dirname, 'public')));
+app.use('/public', express.static(path.resolve(__dirname, 'public')));
 
 app.get('/api-genpro', (req, res) => {
   res.status(200).json({ message: 'Welcome to REST API Genpro' });

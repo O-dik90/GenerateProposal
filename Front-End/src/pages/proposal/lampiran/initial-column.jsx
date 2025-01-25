@@ -1,5 +1,7 @@
-import { DeleteFilled, EditFilled, RedoOutlined, UnorderedListOutlined } from '@ant-design/icons';
+import { DeleteFilled, EditFilled, RedoOutlined, SelectOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import { IconButton, Stack } from '@mui/material';
+
+import { API_URL } from 'api/base-url';
 
 // ** Regional Identitas
 export const lampiranColumns = {
@@ -292,7 +294,25 @@ export const structureColumns = (handleEdit, handleDelete, handleReset, status) 
 // ** Regional File Lampiran Pendukung
 export const attachmentColumns = (handleEdit, handleDelete, handleReset, status) => [
   { name: 'No', field: 'no', width: '4rem', align: 'center' },
-  { name: 'Nama File', field: 'description' },
+  {
+    name: 'Nama File',
+    field: 'description',
+    cell: (value, row) => {
+      const mode = import.meta.env.MODE;
+      let url = '';
+      if (mode !== 'development') {
+        url = API_URL + '/api-genpro/' + row.url;
+      } else {
+        url = API_URL + '/' + row.url;
+      }
+
+      return (
+        <a href={`${url}`} target="_blank" rel="noreferrer">
+          <SelectOutlined style={{ marginRight: 1, fontSize: '10px' }} /> {value}
+        </a>
+      );
+    }
+  },
   {
     name: 'Aksi',
     field: 'action',
@@ -319,7 +339,24 @@ export const attachmentColumns = (handleEdit, handleDelete, handleReset, status)
 ];
 export const statementColumns = (handleEdit, handleDelete, handleReset, status) => [
   { name: 'No', field: 'no', width: '4rem', align: 'center' },
-  { name: 'Surat Pernyataan', field: 'description' },
+  {
+    name: 'Surat Pernyataan',
+    field: 'description',
+    cell: (value, row) => {
+      const mode = import.meta.env.MODE;
+      let url = '';
+      if (mode !== 'development') {
+        url = API_URL + '/api-genpro/' + row.url;
+      } else {
+        url = API_URL + '/' + row.url;
+      }
+      return (
+        <a href={`${url}`} target="_blank" rel="noreferrer">
+          <SelectOutlined style={{ marginRight: 1, fontSize: '10px' }} /> {value}
+        </a>
+      );
+    }
+  },
   {
     name: 'Aksi',
     field: 'action',

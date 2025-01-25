@@ -18,7 +18,7 @@ const ProposalDetail = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
 
-  const [value, setValue] = useState('6');
+  const [value, setValue] = useState('1');
 
   useEffect(() => {
     const fetchData = async () => {

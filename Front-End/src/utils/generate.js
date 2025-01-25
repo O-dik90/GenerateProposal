@@ -19,8 +19,8 @@ import { tableBiaya } from './table-biaya';
 import { tableKegiatan } from './table-kegiatan';
 
 const GenerateDocx = ({ data }) => {
-  const { pendahuluan, tinjauan, biaya, pelaksanaan, fileName } = data;
-  console.log(pendahuluan, tinjauan, biaya, pelaksanaan, fileName);
+  const { pendahuluan, tinjauan, biaya, pelaksanaan, lampiran } = data.detail;
+  console.log('testing data', data);
 
   // Helper to create paragraphs from an array
   const createParagraphsFromArray = (items, style = 'wellSpaced') =>
@@ -139,12 +139,12 @@ const GenerateDocx = ({ data }) => {
       text: `4.1 Biaya`,
       heading: HeadingLevel.HEADING_2
     }),
-    tableBiaya(),
+    tableBiaya(lampiran?.anggaran),
     new Paragraph({
       text: `4.2 Jadwal Kegiatan`,
       heading: HeadingLevel.HEADING_2
     }),
-    tableKegiatan(),
+    tableKegiatan(biaya),
     new Paragraph({
       text: 'DAFTAR PUSTAKA',
       heading: HeadingLevel.HEADING_1,
@@ -261,7 +261,7 @@ const GenerateDocx = ({ data }) => {
   // Generate and save the document
   Packer.toBlob(doc)
     .then((blob) => {
-      saveAs(blob, fileName || 'document.docx');
+      saveAs(blob, data.title || 'document.docx');
       enqueueSnackbar('Berhasil memproses dokumen!', { variant: 'success' });
     })
     .catch((error) => {

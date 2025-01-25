@@ -1,38 +1,46 @@
-import { Document, Media, Packer, Paragraph } from 'docx';
+import { Document, ImageRun, Packer, Paragraph } from 'docx';
 
 import React from 'react';
 import { saveAs } from 'file-saver';
 
 const ExportToDocx = () => {
   const exportDocx = async () => {
-    // Create a new Word document
-    const doc = new Document();
+    const blob = await fetch('https://ubaicorner.com/api-genpro/public/15/fd04508c63e2234643233c1aea1d2593_15_.png')
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP error! status: ${r.status}`);
+        return r.blob();
+      })
+      .catch((error) => {
+        console.error('Failed to fetch image:', error);
+      });
+    if (!blob) return;
 
-    // Add a paragraph with some text
-    const paragraph = new Paragraph('Hello, this is an exported Word document with an image!');
-
-    // Image URL
-    const imageUrl = 'https://raw.githubusercontent.com/dolanmiu/docx/ccd655ef8be3828f2c4b1feb3517a905f98409d9/demo/images/cat.jpg'; // Replace with your image URL
-    const imageResponse = await fetch(imageUrl);
-    const imageBlob = await imageResponse.blob();
-    const imageBuffer = await imageBlob.arrayBuffer();
-
-    // Add the image to the document
-    const image = Media.addImage(doc, imageBuffer);
-
-    // Add the image and paragraph to the document's section
-    doc.addSection({
-      children: [
-        paragraph,
-        new Paragraph({
-          children: [image]
-        })
+    const doc = new Document({
+      sections: [
+        {
+          children: [
+            new Paragraph('Hello World'),
+            new Paragraph({
+              children: [
+                new ImageRun({
+                  data: blob,
+                  transformation: {
+                    width: 100,
+                    height: 100
+                  }
+                })
+              ]
+            })
+          ]
+        }
       ]
     });
 
-    // Generate and save the document as a .docx file
-    const blob = await Packer.toBlob(doc);
-    saveAs(blob, 'example_with_image.docx');
+    Packer.toBlob(doc).then((blob) => {
+      console.log(blob);
+      saveAs(blob, 'example.docx');
+      console.log('Document created successfully');
+    });
   };
 
   return (

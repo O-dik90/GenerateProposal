@@ -1,46 +1,71 @@
 import { AlignmentType, Paragraph, Table, TableCell, TableRow, TextRun, VerticalAlign, WidthType } from 'docx';
 
-export const tableBiaya = () => {
+export const rows = [
+  {
+    no: '1',
+    jenis: 'Bahan habis pakai',
+    ref: 'materials',
+    sumber: [
+      { type: 'belmawa', besaran: 'Rp4.505.714,00' },
+      { type: 'perguruan', besaran: 'Rp556.886,00' }
+    ]
+  },
+  {
+    no: '2',
+    jenis: 'Sewa dan Jasa',
+    ref: 'services',
+    sumber: [
+      { type: 'belmawa', besaran: 'Rp1.130.300,00' },
+      { type: 'perguruan', besaran: 'Rp139.700,00' }
+    ]
+  },
+  {
+    no: '3',
+    jenis: 'Transportasi lokal',
+    ref: 'transports',
+    sumber: [
+      { type: 'belmawa', besaran: 'Rp1.335.000,00' },
+      { type: 'perguruan', besaran: 'Rp165.000,00' }
+    ]
+  },
+  {
+    no: '4',
+    jenis: 'Lain - lain',
+    ref: 'others',
+    sumber: [
+      { type: 'belmawa', besaran: 'Rp1.068.000,00' },
+      { type: 'perguruan', besaran: 'Rp132.000,00' }
+    ]
+  }
+];
+
+export const tableBiaya = (data) => {
+  console.log('biaya', data);
+
+  const updatedData = rows.map((item) => {
+    const ref = item.ref;
+    if (data.cost[ref]) {
+      return {
+        ...item,
+        sub_total: data.cost[ref]['belmawa'] + data.cost[ref]['perguruan'],
+        sumber: item.sumber.map((sumberItem) => {
+          return {
+            ...sumberItem,
+            besaran: data.cost[ref][sumberItem.type].toString()
+          };
+        })
+      };
+    }
+    return item;
+  });
+  console.log('rawData', rows);
+  console.log('updatedData', updatedData);
+
   const headers = [
     { text: 'No', width: 10 },
     { text: 'Jenis Pengeluaran', width: 40 },
     { text: 'Sumber Dana', width: 25 },
     { text: 'Besaran Dana (Rp)', width: 25 }
-  ];
-
-  const rows = [
-    {
-      no: '1',
-      jenis: 'Bahan habis pakai',
-      sumber: [
-        { type: 'Belmawa', besaran: 'Rp4.505.714,00' },
-        { type: 'Perguruan Tinggi', besaran: 'Rp556.886,00' }
-      ]
-    },
-    {
-      no: '2',
-      jenis: 'Sewa dan Jasa',
-      sumber: [
-        { type: 'Belmawa', besaran: 'Rp1.130.300,00' },
-        { type: 'Perguruan Tinggi', besaran: 'Rp139.700,00' }
-      ]
-    },
-    {
-      no: '3',
-      jenis: 'Transportasi lokal',
-      sumber: [
-        { type: 'Belmawa', besaran: 'Rp1.335.000,00' },
-        { type: 'Perguruan Tinggi', besaran: 'Rp165.000,00' }
-      ]
-    },
-    {
-      no: '4',
-      jenis: 'Lain - lain',
-      sumber: [
-        { type: 'Belmawa', besaran: 'Rp1.068.000,00' },
-        { type: 'Perguruan Tinggi', besaran: 'Rp132.000,00' }
-      ]
-    }
   ];
 
   const finals = {
@@ -66,7 +91,7 @@ export const tableBiaya = () => {
         createCell(row.no, { rowSpan: row.sumber.length, align: AlignmentType.CENTER }),
         createCell(row.jenis, { rowSpan: row.sumber.length, align: AlignmentType.LEFT }),
         createCell(row.sumber[0]?.type),
-        createCell(row.sumber[0]?.besaran, { align: AlignmentType.RIGHT })
+        createCell(row.sumber[0]?.besaran.toString(), { align: AlignmentType.RIGHT })
       ]
     });
 
@@ -94,14 +119,14 @@ export const tableBiaya = () => {
       children: [
         createCell(finals.jenis, { rowSpan: finals.sumber.length, colSpan: 2, bold: true, align: AlignmentType.CENTER }),
         createCell(finals.sumber[0]?.type),
-        createCell(finals.sumber[0]?.besaran, { align: AlignmentType.RIGHT })
+        createCell(finals.sumber[0]?.besaran.toString(), { align: AlignmentType.RIGHT })
       ]
     });
 
     const sumberRows = finals.sumber.slice(1).map(
       (sumber) =>
         new TableRow({
-          children: [createCell(sumber.type), createCell(sumber.besaran, { align: AlignmentType.RIGHT })]
+          children: [createCell(sumber.type), createCell(sumber.besaran.toString(), { align: AlignmentType.RIGHT })]
         })
     );
 
@@ -131,7 +156,7 @@ export const tableBiaya = () => {
 
   // Return the full table
   return new Table({
-    rows: [createHeaderRow(), ...rows.flatMap(createDataRows), createSummaryRow(), ...createFinalDataRows()],
+    rows: [createHeaderRow(), ...updatedData.flatMap(createDataRows), createSummaryRow(), ...createFinalDataRows()],
     width: {
       size: 100,
       type: WidthType.PERCENTAGE

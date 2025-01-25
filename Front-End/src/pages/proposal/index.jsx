@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 
 import { DataGrid } from '@mui/x-data-grid';
+// import ExportToDocx from 'utils/table-gambar';
 import GenerateDocx from 'utils/generate';
 import MainCard from 'components/MainCard';
 import { detailProposal } from 'store/slices/proposal';
@@ -218,34 +219,15 @@ const ProposalTable = () => {
     const res = await dispatch(detailProposal(param?.id));
 
     if (detailProposal.fulfilled.match(res)) {
-      console.log(res);
-      const detail = res.payload?.data;
-      await GenerateDocx({
-        data: {
-          pendahuluan: detail?.pendahuluan || {},
-          tinjauan: detail?.tinjauan || {},
-          pelaksanaan: detail?.pelaksanaan || {},
-          biaya: detail?.biaya || {},
-          dapus: detail?.dapus || {},
-          fileName: `${param.title}-document.docx`
-        }
-      });
-      // if (res.payload?.generate_status) {
-      //   await enqueueSnackbar('Memproses data', { variant: 'success' });
-      //   const detail = res.payload?.data;
-      //   await GenerateDocx({
-      //     data: {
-      //       pendahuluan: detail?.pendahuluan,
-      //       tinjauan: detail?.tinjauan,
-      //       pelaksanaan: detail?.pelaksanaan,
-      //       biaya: detail?.biaya,
-      //       dapus: detail?.dapus,
-      //       fileName: `${param.title}-document.docx`
-      //     }
-      //   });
-      // } else {
-      //   enqueueSnackbar('Data belum komplet', { variant: 'error' });
-      // }
+      if (res.payload?.generate_status) {
+        await enqueueSnackbar('Memproses data', { variant: 'success' });
+        const detail = res.payload?.data;
+        await GenerateDocx({
+          data: detail
+        });
+      } else {
+        enqueueSnackbar('Data belum komplet', { variant: 'error' });
+      }
     }
   };
 
@@ -277,6 +259,7 @@ const ProposalTable = () => {
             disableRowSelectionOnClick
           />
         </Box>
+        {/* <ExportToDocx /> */}
       </MainCard>
       <Dialog
         open={open}

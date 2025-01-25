@@ -10,9 +10,11 @@ const path = require('path');
 
 const app = express();
 
+// Enable CORS for all routes
+app.use('*', cors());
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cors());
 app.use(helmet());
 app.use(
   fileUpload({

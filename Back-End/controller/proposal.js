@@ -53,7 +53,7 @@ const getProposal = async (req, res) => {
         ...result[0],
         detail: {
           pendahuluan: {
-            latar_belakang: resDetail[0].json_data,
+            latar_belakang: JSON.parse(resDetail[0].json_data),
             rumusan_masalah: JSON.parse(resDetail[1]?.json_data),
             luaran: JSON.parse(resDetail[2]?.json_data),
             tujuan: JSON.parse(resDetail[3]?.json_data),

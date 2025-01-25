@@ -40,8 +40,8 @@ export default defineConfig(({ mode }) => {
       sourcemap: !isProduction,
       minify: isProduction ? 'esbuild' : false
     },
-    esbuild: {
-      drop: isProduction ? ['console', 'debugger'] : [] // Remove console/debugger in production
-    }
+    // esbuild: {
+    //   drop: isProduction ? ['console', 'debugger'] : [] // Remove console/debugger in production
+    // }
   };
 });

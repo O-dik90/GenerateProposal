@@ -327,6 +327,10 @@ const Dapus = () => {
     }
   }, [dapus]);
 
+  useEffect(() => {
+    console.log(object);
+  }, [object]);
+
   return (
     <>
       <Typography variant="h4" gutterBottom>
@@ -337,7 +341,7 @@ const Dapus = () => {
           <Stack direction="row" spacing={2}>
             <Select
               displayEmpty
-              readOnly={object.status}
+              readOnly={false}
               value={object.type || ''}
               onChange={handlePustaka.ontype}
               inputProps={{ 'aria-label': 'Without label' }}
@@ -347,7 +351,7 @@ const Dapus = () => {
                 <em>Referensi</em>
               </MenuItem>
               {reference.map((o) => (
-                <MenuItem key={o.code} value={o.value}>
+                <MenuItem key={o.name_id} value={o.name_desc}>
                   {o.name}
                 </MenuItem>
               ))}
@@ -365,7 +369,7 @@ const Dapus = () => {
                 <em>Gaya Penulisan</em>
               </MenuItem>
               {style.map((o) => (
-                <MenuItem key={o.code} value={o.value}>
+                <MenuItem key={o.name_id} value={o.name_desc}>
                   {o.name}
                 </MenuItem>
               ))}

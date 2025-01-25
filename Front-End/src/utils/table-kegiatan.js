@@ -1,74 +1,75 @@
 import { AlignmentType, Paragraph, ShadingType, Table, TableCell, TableRow, VerticalAlign, WidthType } from 'docx';
 
-export const data = [
-  {
-    activity: 'Studi Literatur',
-    schedule: [[1], [], [], []],
-    person: 'Syarifa'
-  },
-  {
-    activity: 'Perancangan Desain Sistem, Aplikasi, dan Rangkaian',
-    schedule: [[2], [], [], []],
-    person: 'Syarifa'
-  },
-  {
-    activity: 'Survei alat dan bahan',
-    schedule: [[3], [], [], []],
-    person: 'Emerya Putri'
-  },
-  {
-    activity: 'Survei jasa manufaktur casing',
-    schedule: [[4], [], [], []],
-    person: 'Syarifa'
-  },
-  {
-    activity: 'Realisasi Pembuatan',
-    schedule: [[], [1, 2, 3, 4], [1, 2], []],
-    person: 'Zalma Zahara'
-  },
-  {
-    activity: 'Pembuatan Rangkaian Sistem',
-    schedule: [[], [2, 3, 4], [1, 2, 3], []],
-    person: 'Hansel'
-  },
-  {
-    activity: 'Pemrograman alat',
-    schedule: [[], [3, 4], [1, 2, 3, 4], []],
-    person: 'Fajar'
-  },
-  {
-    activity: 'Manufaktur rangkaian dan casing',
-    schedule: [[], [3, 4], [1, 2, 3, 4], []],
-    person: 'Hansel'
-  },
-  {
-    activity: 'Integrasi alat',
-    schedule: [[], [4], [1, 2, 3, 4], []],
-    person: 'Syarifa'
-  },
-  {
-    activity: 'Survei pengguna',
-    schedule: [[], [], [4], [1, 2]],
-    person: 'Emerya Putri'
-  },
-  {
-    activity: 'Evaluasi kinerja alat',
-    schedule: [[], [], [], [1, 2]],
-    person: 'Syarifa'
-  },
-  {
-    activity: 'Publikasi, laporan Akhir',
-    schedule: [[], [], [], [3, 4]],
-    person: 'Syarifa'
-  },
-  {
-    activity: 'Konsultasi dosen pembimbing',
-    schedule: [[], [], [], [1, 2, 3, 4]],
-    person: 'Prof. Ir. Endra Joelianto, Ph.D.'
-  }
-];
+// export const data = [
+//   {
+//     activity: 'Studi Literatur',
+//     schedule: [[1], [], [], []],
+//     person: 'Syarifa'
+//   },
+//   {
+//     activity: 'Perancangan Desain Sistem, Aplikasi, dan Rangkaian',
+//     schedule: [[2], [], [], []],
+//     person: 'Syarifa'
+//   },
+//   {
+//     activity: 'Survei alat dan bahan',
+//     schedule: [[3], [], [], []],
+//     person: 'Emerya Putri'
+//   },
+//   {
+//     activity: 'Survei jasa manufaktur casing',
+//     schedule: [[4], [], [], []],
+//     person: 'Syarifa'
+//   },
+//   {
+//     activity: 'Realisasi Pembuatan',
+//     schedule: [[], [1, 2, 3, 4], [1, 2], []],
+//     person: 'Zalma Zahara'
+//   },
+//   {
+//     activity: 'Pembuatan Rangkaian Sistem',
+//     schedule: [[], [2, 3, 4], [1, 2, 3], []],
+//     person: 'Hansel'
+//   },
+//   {
+//     activity: 'Pemrograman alat',
+//     schedule: [[], [3, 4], [1, 2, 3, 4], []],
+//     person: 'Fajar'
+//   },
+//   {
+//     activity: 'Manufaktur rangkaian dan casing',
+//     schedule: [[], [3, 4], [1, 2, 3, 4], []],
+//     person: 'Hansel'
+//   },
+//   {
+//     activity: 'Integrasi alat',
+//     schedule: [[], [4], [1, 2, 3, 4], []],
+//     person: 'Syarifa'
+//   },
+//   {
+//     activity: 'Survei pengguna',
+//     schedule: [[], [], [4], [1, 2]],
+//     person: 'Emerya Putri'
+//   },
+//   {
+//     activity: 'Evaluasi kinerja alat',
+//     schedule: [[], [], [], [1, 2]],
+//     person: 'Syarifa'
+//   },
+//   {
+//     activity: 'Publikasi, laporan Akhir',
+//     schedule: [[], [], [], [3, 4]],
+//     person: 'Syarifa'
+//   },
+//   {
+//     activity: 'Konsultasi dosen pembimbing',
+//     schedule: [[], [], [], [1, 2, 3, 4]],
+//     person: 'Prof. Ir. Endra Joelianto, Ph.D.'
+//   }
+// ];
 
-export const tableKegiatan = () => {
+export const tableKegiatan = (data) => {
+  console.log('kegiatan', data);
   const rows = [
     new TableRow({
       children: [
@@ -141,7 +142,7 @@ export const tableKegiatan = () => {
                 { length: 4 },
                 (_, j) =>
                   new TableCell({
-                    children: [new Paragraph(item.schedule?.[i]?.includes(j + 1) ? '✓' : '')],
+                    children: [new Paragraph(item.target?.[i]?.includes(j + 1) ? '✓' : '')],
                     shading: { type: ShadingType.CLEAR, fill: item.schedule?.[i]?.includes(j + 1) ? 'A9A9A9' : 'FFFFFF' }
                   })
               )

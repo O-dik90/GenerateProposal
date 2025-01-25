@@ -21,7 +21,7 @@ const getListProposalBab = async (req, res) => {
       message: 'success',
       proposals_id: proposals_id,
       pendahuluan: {
-        latar_belakang: data[0].json_data ?? '',
+        latar_belakang: JSON.parse(resDetail[0].json_data) ?? '',
         rumusan_masalah: JSON.parse(data[1].json_data ?? null),
         luaran: JSON.parse(data[2].json_data ?? null),
         tujuan: JSON.parse(data[3].json_data ?? null),

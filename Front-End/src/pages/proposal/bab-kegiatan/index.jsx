@@ -11,37 +11,37 @@ import { updateBab } from 'store/slices/proposal';
 import { useSnackbar } from 'notistack';
 
 const Kegiatan = () => {
-  const { biaya, metadata: rawData } = useSelector((state) => state.app.proposal),
-    { lampiran } = useSelector((state) => state.app.proposal),
-    dispatch = useDispatch(),
-    { enqueueSnackbar } = useSnackbar();
+  const dispatch = useDispatch();
+  const { enqueueSnackbar } = useSnackbar();
+
+  const { biaya: kegiatanData, metadata: rawData, lampiran } = useSelector((state) => state.app.proposal);
+
   const [object, setObject] = useState({
     biaya: BIAYA_INIT,
     kegiatan: KEGIATAN_INIT
   });
+
   const [data, setData] = useState({
     biaya: [],
     kegiatan: []
   });
 
-  const reset = useCallback((key) => {
+  // Helper to reset form state
+  const resetFormState = useCallback((key) => {
     setObject((prev) => ({ ...prev, [key]: initialStateForKey(key) }));
   }, []);
 
   const initialStateForKey = (key) => {
-    switch (key) {
-      case 'kegiatan':
-      default:
-        return KEGIATAN_INIT;
-    }
+    if (key === 'kegiatan') return KEGIATAN_INIT;
+    return {};
   };
+
+  // Handle Kegiatan actions (edit, reset, delete, save)
   const handleKegiatan = {
-    edit: (key) => (param) => {
-      setObject((prev) => ({ ...prev, [key]: { ...param, status: true } }));
+    edit: (key) => (item) => {
+      setObject((prev) => ({ ...prev, [key]: { ...item, status: true } }));
     },
-    reset: (key) => () => {
-      reset(key);
-    },
+    reset: (key) => () => resetFormState(key),
     delete: (key) => (item) => {
       setData((prev) => ({
         ...prev,
@@ -60,71 +60,77 @@ const Kegiatan = () => {
         const res = await dispatch(updateBab(newData));
         if (updateBab.fulfilled.match(res)) {
           enqueueSnackbar('Berhasil menyimpan', { variant: 'success' });
-        } else if (updateBab.rejected.match(res)) {
+        } else {
           enqueueSnackbar('Gagal menyimpan', { variant: 'error' });
         }
-      } catch (error) {
-        enqueueSnackbar('Terjadi error', { variant: 'error' });
+      } catch {
+        enqueueSnackbar('Terjadi error saat menyimpan', { variant: 'error' });
       }
     }
   };
 
-  const handleForm = useCallback(
+  // Handle form submission for both biaya and kegiatan
+  const handleFormSubmit = useCallback(
     (values, key) => {
       if (object[key]?.status) {
-        setData((prevData) => ({
-          ...prevData,
-          [key]: prevData[key]?.map((item) => (item.no === object[key]?.no ? { ...item, ...values, status: false } : item))
+        setData((prev) => ({
+          ...prev,
+          [key]: prev[key].map((item) => (item.no === object[key]?.no ? { ...item, ...values, status: false } : item))
         }));
-        reset(key);
+        resetFormState(key);
       } else {
         const newItem = { ...values, no: (data[key]?.length || 0) + 1 };
-        setData((prevData) => ({
-          ...prevData,
-          [key]: [...(prevData[key] || []), newItem]
+        setData((prev) => ({
+          ...prev,
+          [key]: [...prev[key], newItem]
         }));
       }
     },
-    [data, object, reset]
+    [data, object, resetFormState]
   );
 
+  // Populate data on component mount or when biaya changes
   useEffect(() => {
-    if (biaya.length > 0) {
-      console.log(biaya);
-      setData({
-        biaya: [],
-        kegiatan: biaya || []
-      });
-    }
-  }, [biaya]);
+    if (Array.isArray(kegiatanData) && lampiran?.anggaran?.cost) {
+      const cost = lampiran.anggaran.cost;
 
-  useEffect(() => {
-    if (lampiran) {
-      const cost = lampiran?.anggaran?.cost;
-      const updatedData = dataBiaya.map((item) => {
+      const updatedBiaya = dataBiaya.reduce((acc, item) => {
         const ref = item.ref;
         if (cost[ref]) {
-          return {
+          acc.push({
             ...item,
-            sub_total: cost[ref]['belmawa'] + cost[ref]['perguruan'],
-            sumber: item.sumber.map((sumberItem) => {
-              return {
-                ...sumberItem,
-                amount: cost[ref][sumberItem.type]
-              };
-            })
+            sub_total: cost[ref].belmawa + cost[ref].perguruan,
+            sumber: item.sumber.map((sumberItem) => ({
+              ...sumberItem,
+              amount: cost[ref][sumberItem.type]
+            }))
+          });
+        } else {
+          acc.push(item);
+        }
+        return acc;
+      }, []);
+
+      setData((prev) => {
+        const isBiayaChanged = JSON.stringify(prev.biaya) !== JSON.stringify(updatedBiaya);
+        const isKegiatanChanged = JSON.stringify(prev.kegiatan) !== JSON.stringify(kegiatanData);
+
+        if (isBiayaChanged || isKegiatanChanged) {
+          return {
+            ...prev,
+            kegiatan: kegiatanData,
+            biaya: updatedBiaya
           };
         }
-
-        return item;
+        return prev;
       });
-
-      setData((prevData) => ({
-        ...prevData,
-        biaya: updatedData
+    } else {
+      setData((prev) => ({
+        ...prev,
+        kegiatan: []
       }));
     }
-  }, [lampiran]);
+  }, [kegiatanData, lampiran]);
 
   return (
     <>
@@ -132,6 +138,7 @@ const Kegiatan = () => {
         BAB 4. BIAYA DAN JADWAL KEGIATAN
       </Typography>
 
+      {/* Section 4.1 Anggaran Biaya */}
       <Grid item xs={12} sx={{ marginTop: 2 }}>
         <Typography variant="h5" gutterBottom>
           4.1 Anggaran Biaya
@@ -139,15 +146,15 @@ const Kegiatan = () => {
         <Typography variant="h6" gutterBottom>
           Kalkulasi anggaran biaya akan ditampilkan setelah meng-upload data lampiran untuk anggaran kegiatan.
         </Typography>
-
         <TableForm
           columns={Columns.Biaya(handleKegiatan.edit('biaya'), handleKegiatan.delete('biaya'), false)}
-          rows={data?.biaya || []}
+          rows={data.biaya}
           expand={false}
           detail=""
         />
       </Grid>
 
+      {/* Section 4.2 Jadwal Kegiatan */}
       <Grid item xs={12} sx={{ marginTop: 2 }}>
         <Typography variant="h5" gutterBottom>
           4.2 Jadwal Kegiatan
@@ -155,16 +162,14 @@ const Kegiatan = () => {
         <Typography variant="h6" gutterBottom>
           Tuliskan jadwal kegiatan yang akan digunakan dalam penelitian.
         </Typography>
-
         <Stack direction="column" spacing={5}>
           <GenForm
             formFields={FieldsData['kegiatan']}
             buttonDisable={false}
-            onSubmit={(values) => handleForm(values, 'kegiatan')}
-            titleButton={object['kegiatan'].status ? `Update Data ` : `Tambah Data `}
+            onSubmit={(values) => handleFormSubmit(values, 'kegiatan')}
+            titleButton={object['kegiatan'].status ? `Update Data` : `Tambah Data`}
             initialValuesUpdate={object['kegiatan']}
           />
-
           <TableForm
             columns={Columns.Kegiatan(
               handleKegiatan.edit('kegiatan'),
@@ -172,13 +177,14 @@ const Kegiatan = () => {
               handleKegiatan.reset('kegiatan'),
               object['kegiatan'].status
             )}
-            rows={data?.kegiatan || []}
+            rows={data.kegiatan}
             expand={false}
             detail=""
           />
         </Stack>
       </Grid>
 
+      {/* Save Button */}
       <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 4 }}>
         <Button variant="contained" color="success" onClick={handleKegiatan.save}>
           Simpan Kegiatan

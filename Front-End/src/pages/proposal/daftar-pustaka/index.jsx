@@ -341,7 +341,7 @@ const Dapus = () => {
           <Stack direction="row" spacing={2}>
             <Select
               displayEmpty
-              readOnly={false}
+              readOnly={object.status}
               value={object.type || ''}
               onChange={handlePustaka.ontype}
               inputProps={{ 'aria-label': 'Without label' }}

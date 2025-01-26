@@ -213,7 +213,7 @@ const Identitas = () => {
         </MenuItem>
         {role.map((item) => (
           <MenuItem key={item.id} value={item.name_id}>
-            {item.name_desc}
+            {item.name_id}
           </MenuItem>
         ))}
       </Select>

@@ -7,7 +7,7 @@ const getListProposals = async (req, res) => {
     const id = req.params.user_id;
 
     const [data] = await Proposals.getAllProposals(id);
-
+    console.log(data);
     if (data.length === 0) {
       return res.json({
         message: 'data not found',
@@ -53,7 +53,7 @@ const getProposal = async (req, res) => {
         ...result[0],
         detail: {
           pendahuluan: {
-            latar_belakang: JSON.parse(resDetail[0].json_data),
+            latar_belakang: resDetail[0].json_data ?? '',
             rumusan_masalah: JSON.parse(resDetail[1]?.json_data),
             luaran: JSON.parse(resDetail[2]?.json_data),
             tujuan: JSON.parse(resDetail[3]?.json_data),
@@ -64,7 +64,7 @@ const getProposal = async (req, res) => {
           biaya: JSON.parse(resDetail.slice(7, 8)[0]?.json_data || null),
           dapus: JSON.parse(resDetail.slice(8, 9)[0]?.json_data || null),
           lampiran: JSON.parse(resDetail.slice(-1)[0]?.json_data || null),
-          document: fileDoc[0],
+          document: fileDoc[0] || null,
         },
         metadata: JSON.stringify(resDetail),
       },

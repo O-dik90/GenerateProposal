@@ -38,9 +38,25 @@ export const rows = [
     ]
   }
 ];
+export const finals = {
+  text: 'Jumlah',
+  total: 'Rp9.042.600,00',
+  jenis: 'Rekap Sumber Dana',
+  sumber: [
+    { type: 'Belmawa', besaran: 'Rp4.505.714,00' },
+    { type: 'Perguruan Tinggi', besaran: 'Rp556.886,00' },
+    { type: 'Jumlah', besaran: 'Rp5.062.600,00' }
+  ]
+};
 
 export const tableBiaya = (data) => {
   console.log('biaya', data);
+  const headers = [
+    { text: 'No', width: 10 },
+    { text: 'Jenis Pengeluaran', width: 40 },
+    { text: 'Sumber Dana', width: 25 },
+    { text: 'Besaran Dana (Rp)', width: 25 }
+  ];
 
   const updatedData = rows.map((item) => {
     const ref = item.ref;
@@ -58,26 +74,52 @@ export const tableBiaya = (data) => {
     }
     return item;
   });
-  console.log('rawData', rows);
-  console.log('updatedData', updatedData);
 
-  const headers = [
-    { text: 'No', width: 10 },
-    { text: 'Jenis Pengeluaran', width: 40 },
-    { text: 'Sumber Dana', width: 25 },
-    { text: 'Besaran Dana (Rp)', width: 25 }
-  ];
-
-  const finals = {
-    text: 'Jumlah',
-    total: 'Rp9.042.600,00',
-    jenis: 'Rekap Sumber Dana',
+  const updateFinals = {
+    ...finals,
+    total:
+      data.cost['materials']['belmawa'] +
+      data.cost['services']['belmawa'] +
+      data.cost['transports']['belmawa'] +
+      data.cost['others']['belmawa'] +
+      data.cost['materials']['perguruan'] +
+      data.cost['services']['perguruan'] +
+      data.cost['transports']['perguruan'] +
+      data.cost['others']['perguruan'],
     sumber: [
-      { type: 'Belmawa', besaran: 'Rp4.505.714,00' },
-      { type: 'Perguruan Tinggi', besaran: 'Rp556.886,00' },
-      { type: 'Jumlah', besaran: 'Rp5.062.600,00' }
+      {
+        type: 'belmawa',
+        besaran:
+          data.cost['materials']['belmawa'] +
+          data.cost['services']['belmawa'] +
+          data.cost['transports']['belmawa'] +
+          data.cost['others']['belmawa']
+      },
+      {
+        type: 'perguruan',
+        besaran:
+          data.cost['materials']['perguruan'] +
+          data.cost['services']['perguruan'] +
+          data.cost['transports']['perguruan'] +
+          data.cost['others']['perguruan']
+      },
+      {
+        type: 'Jumlah',
+        besaran:
+          data.cost['materials']['belmawa'] +
+          data.cost['services']['belmawa'] +
+          data.cost['transports']['belmawa'] +
+          data.cost['others']['belmawa'] +
+          data.cost['materials']['perguruan'] +
+          data.cost['services']['perguruan'] +
+          data.cost['transports']['perguruan'] +
+          data.cost['others']['perguruan']
+      }
     ]
   };
+
+  console.log('rawData', rows);
+  console.log('updatedData', updatedData);
 
   const createHeaderRow = () => {
     return new TableRow({
@@ -108,8 +150,8 @@ export const tableBiaya = (data) => {
   const createSummaryRow = () => {
     return new TableRow({
       children: [
-        createCell(finals.text, { colSpan: 3, bold: true, align: AlignmentType.CENTER }),
-        createCell(finals.total, { bold: true, align: AlignmentType.RIGHT })
+        createCell(updateFinals.text, { colSpan: 3, bold: true, align: AlignmentType.CENTER }),
+        createCell(updateFinals.total, { bold: true, align: AlignmentType.RIGHT })
       ]
     });
   };
@@ -117,13 +159,13 @@ export const tableBiaya = (data) => {
   const createFinalDataRows = () => {
     const firstRow = new TableRow({
       children: [
-        createCell(finals.jenis, { rowSpan: finals.sumber.length, colSpan: 2, bold: true, align: AlignmentType.CENTER }),
-        createCell(finals.sumber[0]?.type),
-        createCell(finals.sumber[0]?.besaran.toString(), { align: AlignmentType.RIGHT })
+        createCell(updateFinals.jenis, { rowSpan: updateFinals.sumber.length, colSpan: 2, bold: true, align: AlignmentType.CENTER }),
+        createCell(updateFinals.sumber[0]?.type),
+        createCell(updateFinals.sumber[0]?.besaran.toString(), { align: AlignmentType.RIGHT })
       ]
     });
 
-    const sumberRows = finals.sumber.slice(1).map(
+    const sumberRows = updateFinals.sumber.slice(1).map(
       (sumber) =>
         new TableRow({
           children: [createCell(sumber.type), createCell(sumber.besaran.toString(), { align: AlignmentType.RIGHT })]

@@ -8,7 +8,7 @@ const getListProposalBab = async (req, res) => {
   try {
     const { proposals_id } = req.params;
     const [data] = await ProposalBab.getListProposalBab(proposals_id);
-    const fileDoc = await Lampiran.getListImage(proposals_id);
+    const [fileDoc] = await Lampiran.getListImage(proposals_id);
 
     if (data.length === 0) {
       return res.json({
@@ -21,7 +21,7 @@ const getListProposalBab = async (req, res) => {
       message: 'success',
       proposals_id: proposals_id,
       pendahuluan: {
-        latar_belakang: JSON.parse(resDetail[0].json_data) ?? '',
+        latar_belakang: JSON.parse(data[0].json_data) ?? '',
         rumusan_masalah: JSON.parse(data[1].json_data ?? null),
         luaran: JSON.parse(data[2].json_data ?? null),
         tujuan: JSON.parse(data[3].json_data ?? null),
@@ -32,13 +32,13 @@ const getListProposalBab = async (req, res) => {
       biaya: JSON.parse(data.slice(7, 8)[0]?.json_data || null),
       dapus: JSON.parse(data.slice(8, 9)[0]?.json_data || null),
       lampiran: JSON.parse(data.slice(-1)[0]?.json_data || null),
-      document: fileDoc[0],
+      document: fileDoc[0] || null,
       metadata: JSON.stringify(data),
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       message: 'Server Error',
-      serverMessage: error,
+      serverMessage: error.message,
     });
   }
 };
@@ -60,9 +60,9 @@ const getDetailBab = async (req, res) => {
       data: data,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       message: 'Server Error',
-      serverMessage: error,
+      serverMessage: error.message,
     });
   }
 };
@@ -120,9 +120,9 @@ const updateBabPendahuluan = async (req, res) => {
       update: lastUpdate.affectedRows,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       message: 'Server Error',
-      serverMessage: error,
+      serverMessage: error.message,
     });
   }
 };
@@ -165,7 +165,7 @@ const updateBab = async (req, res) => {
       data: detail,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       message: 'Server Error',
       serverMessage: error.message,
     });

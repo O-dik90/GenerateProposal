@@ -89,11 +89,11 @@ const Kegiatan = () => {
   );
 
   useEffect(() => {
-    if (biaya) {
-      //console.log(biaya);
+    if (biaya.length > 0) {
+      console.log(biaya);
       setData({
         biaya: [],
-        kegiatan: biaya?.kegiatan || []
+        kegiatan: biaya || []
       });
     }
   }, [biaya]);

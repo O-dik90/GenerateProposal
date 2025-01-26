@@ -1,12 +1,13 @@
 const dbPool = require('../../config/db');
 
 const getListImage = (id, condition) => {
-  let query = '';
+  let query =
+    'SELECT id, proposals_id, type, description, filename, url, upload_date FROM proposal_lampiran';
   if (condition) {
-    query = `SELECT * FROM proposal_lampiran WHERE proposals_id = ? AND type = ?`;
+    query + `WHERE proposals_id = ? AND type = ?`;
     return dbPool.execute(query, [id, condition]);
   } else {
-    query = `SELECT * FROM proposal_lampiran WHERE proposals_id = ?`;
+    query + `WHERE proposals_id = ?`;
     return dbPool.execute(query, [id]);
   }
 };

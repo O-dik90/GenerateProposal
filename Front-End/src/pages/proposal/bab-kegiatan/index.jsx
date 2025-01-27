@@ -175,7 +175,7 @@ const Kegiatan = () => {
               handleKegiatan.edit('kegiatan'),
               handleKegiatan.delete('kegiatan'),
               handleKegiatan.reset('kegiatan'),
-              object['kegiatan'].status
+              object['kegiatan'].no
             )}
             rows={data.kegiatan}
             expand={false}

@@ -7,7 +7,7 @@ export default defineConfig(({ mode }) => {
   const isProduction = mode === 'production';
   return {
     plugins: [react(), jsconfigPaths()],
-    base: '/genpro/', // Root path for development
+    base: '/', // Root path for development
     define: {
       global: 'window',
       'process.env.NODE_ENV': JSON.stringify(mode) // Explicitly set NODE_ENV
@@ -40,8 +40,8 @@ export default defineConfig(({ mode }) => {
       sourcemap: !isProduction,
       minify: isProduction ? 'esbuild' : false
     },
-    // esbuild: {
-    //   drop: isProduction ? ['console', 'debugger'] : [] // Remove console/debugger in production
-    // }
+    esbuild: {
+      drop: isProduction ? ['console', 'debugger'] : [] // Remove console/debugger in production
+    }
   };
 });

@@ -6,8 +6,8 @@ export const rows = [
     jenis: 'Bahan habis pakai',
     ref: 'materials',
     sumber: [
-      { type: 'belmawa', besaran: 'Rp4.505.714,00' },
-      { type: 'perguruan', besaran: 'Rp556.886,00' }
+      { type: 'belmawa', label: 'Belmawa', besaran: 'Rp4.505.714,00' },
+      { type: 'perguruan', label: 'Perguruan Tinggi', besaran: 'Rp556.886,00' }
     ]
   },
   {
@@ -15,8 +15,8 @@ export const rows = [
     jenis: 'Sewa dan Jasa',
     ref: 'services',
     sumber: [
-      { type: 'belmawa', besaran: 'Rp1.130.300,00' },
-      { type: 'perguruan', besaran: 'Rp139.700,00' }
+      { type: 'belmawa', label: 'Belmawa', besaran: 'Rp1.130.300,00' },
+      { type: 'perguruan', label: 'Perguruan Tinggi', besaran: 'Rp139.700,00' }
     ]
   },
   {
@@ -24,8 +24,8 @@ export const rows = [
     jenis: 'Transportasi lokal',
     ref: 'transports',
     sumber: [
-      { type: 'belmawa', besaran: 'Rp1.335.000,00' },
-      { type: 'perguruan', besaran: 'Rp165.000,00' }
+      { type: 'belmawa', label: 'Belmawa', besaran: 'Rp1.335.000,00' },
+      { type: 'perguruan', label: 'Perguruan Tinggi', besaran: 'Rp165.000,00' }
     ]
   },
   {
@@ -33,8 +33,8 @@ export const rows = [
     jenis: 'Lain - lain',
     ref: 'others',
     sumber: [
-      { type: 'belmawa', besaran: 'Rp1.068.000,00' },
-      { type: 'perguruan', besaran: 'Rp132.000,00' }
+      { type: 'belmawa', label: 'Belmawa', besaran: 'Rp1.068.000,00' },
+      { type: 'perguruan', label: 'Perguruan Tinggi', besaran: 'Rp132.000,00' }
     ]
   }
 ];
@@ -89,6 +89,7 @@ export const tableBiaya = (data) => {
     sumber: [
       {
         type: 'belmawa',
+        label: 'Belmawa',
         besaran:
           data.cost['materials']['belmawa'] +
           data.cost['services']['belmawa'] +
@@ -97,6 +98,7 @@ export const tableBiaya = (data) => {
       },
       {
         type: 'perguruan',
+        label: 'Perguruan Tinggi',
         besaran:
           data.cost['materials']['perguruan'] +
           data.cost['services']['perguruan'] +
@@ -104,7 +106,8 @@ export const tableBiaya = (data) => {
           data.cost['others']['perguruan']
       },
       {
-        type: 'Jumlah',
+        type: 'jumlah',
+        label: 'Jumlah',
         besaran:
           data.cost['materials']['belmawa'] +
           data.cost['services']['belmawa'] +
@@ -132,7 +135,7 @@ export const tableBiaya = (data) => {
       children: [
         createCell(row.no, { rowSpan: row.sumber.length, align: AlignmentType.CENTER }),
         createCell(row.jenis, { rowSpan: row.sumber.length, align: AlignmentType.LEFT }),
-        createCell(row.sumber[0]?.type),
+        createCell(row.sumber[0]?.label),
         createCell(row.sumber[0]?.besaran.toString(), { align: AlignmentType.RIGHT })
       ]
     });
@@ -140,7 +143,7 @@ export const tableBiaya = (data) => {
     const sumberRows = row.sumber.slice(1).map(
       (sumber) =>
         new TableRow({
-          children: [createCell(sumber.type), createCell(sumber.besaran, { align: AlignmentType.RIGHT })]
+          children: [createCell(sumber.label), createCell(sumber.besaran, { align: AlignmentType.RIGHT })]
         })
     );
 
@@ -160,7 +163,7 @@ export const tableBiaya = (data) => {
     const firstRow = new TableRow({
       children: [
         createCell(updateFinals.jenis, { rowSpan: updateFinals.sumber.length, colSpan: 2, bold: true, align: AlignmentType.CENTER }),
-        createCell(updateFinals.sumber[0]?.type),
+        createCell(updateFinals.sumber[0]?.label),
         createCell(updateFinals.sumber[0]?.besaran.toString(), { align: AlignmentType.RIGHT })
       ]
     });
@@ -168,7 +171,7 @@ export const tableBiaya = (data) => {
     const sumberRows = updateFinals.sumber.slice(1).map(
       (sumber) =>
         new TableRow({
-          children: [createCell(sumber.type), createCell(sumber.besaran.toString(), { align: AlignmentType.RIGHT })]
+          children: [createCell(sumber.label), createCell(sumber.besaran.toString(), { align: AlignmentType.RIGHT })]
         })
     );
 

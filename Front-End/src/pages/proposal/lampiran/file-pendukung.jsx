@@ -154,7 +154,8 @@ const FilePendukung = () => {
 
   useEffect(() => {
     refreshData();
-  }, [dispatch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Box>
@@ -182,7 +183,12 @@ const FilePendukung = () => {
         )}
       </Stack>
       <TableForm
-        columns={attachmentColumns(handleFile.edit(state.key), handleFile.delete(), handleFile.reset(state.key), object[state.key].status)}
+        columns={attachmentColumns(
+          handleFile.edit(state.key),
+          handleFile.delete(),
+          handleFile.reset(state.key),
+          object[state.key].image_id
+        )}
         rows={data}
         expand={false}
       />

@@ -234,7 +234,7 @@ const Identitas = () => {
               handlePersonal.delete,
               handlePersonal.reset,
               handlePersonal.detail,
-              object.status
+              object.no
             )}
             rows={data || []}
             expand={false}
@@ -269,7 +269,7 @@ const Identitas = () => {
                           handleDetailActions.edit(key),
                           handleDetailActions.delete(key),
                           handleDetailActions.reset(key),
-                          object[key]?.status
+                          object[key]?.no
                         )}
                         rows={detailData}
                         expand={false}

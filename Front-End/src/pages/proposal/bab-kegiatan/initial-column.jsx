@@ -32,12 +32,12 @@ export const Columns = {
       cell: (value, row) => {
         return (
           <Stack direction="row" spacing={1}>
-            {!status ? (
-              <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)} disabled={status}>
+            {status !== row.no ? (
+              <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)}>
                 <EditFilled />
               </IconButton>
             ) : (
-              <IconButton aria-label="reset" size="small" color="primary" onClick={() => handleReset()} disabled={row && status}>
+              <IconButton aria-label="reset" size="small" color="primary" onClick={() => handleReset()}>
                 <RedoOutlined />
               </IconButton>
             )}

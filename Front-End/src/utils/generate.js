@@ -19,7 +19,7 @@ import { tableBiaya } from './table-biaya';
 import { tableKegiatan } from './table-kegiatan';
 
 const GenerateDocx = ({ data }) => {
-  const { pendahuluan, tinjauan, biaya, pelaksanaan, lampiran } = data.detail;
+  const { pendahuluan, tinjauan, biaya, pelaksanaan, lampiran, dapus } = data.detail;
   console.log('testing data', data);
 
   // Helper to create paragraphs from an array
@@ -44,6 +44,16 @@ const GenerateDocx = ({ data }) => {
           }),
           new Paragraph({
             text: item.description || '',
+            style
+          })
+        ])
+      : [];
+
+  const createDapus = (items, style = 'wellSpaced') =>
+    Array.isArray(items)
+      ? items.flatMap((item) => [
+          new Paragraph({
+            text: item.citation || '',
             style
           })
         ])
@@ -92,46 +102,62 @@ const GenerateDocx = ({ data }) => {
       heading: HeadingLevel.HEADING_2
     }),
     new Paragraph({
-      text: pendahuluan?.latar_belakang || 'Data tidak tersedia',
+      text: pendahuluan?.latar_belakang || '',
       style: 'wellSpaced'
     }),
     new Paragraph({
       text: '1.2. Rumusan Masalah',
       heading: HeadingLevel.HEADING_2
     }),
+    new Paragraph({
+      text: `Berdasarkan latar belakang tersebut, dapat dibuat beberapa rumusan masalah sebagai berikut:`,
+      style: 'wellSpaced'
+    }),
     ...createParagraphsFromArray(pendahuluan?.rumusan_masalah),
     new Paragraph({
       text: '1.3. Tujuan',
       heading: HeadingLevel.HEADING_2
+    }),
+    new Paragraph({
+      text: `Adapun tujuan dari PKM Karsa Cipta ini adalah sebagai berikut:`,
+      style: 'wellSpaced'
     }),
     ...createParagraphsFromArray(pendahuluan?.tujuan),
     new Paragraph({
       text: '1.4. Luaran',
       heading: HeadingLevel.HEADING_2
     }),
+    new Paragraph({
+      text: `Luaran wajib kegiatan PKM-KC:`,
+      style: 'wellSpaced'
+    }),
     ...createParagraphsFromArray(pendahuluan?.luaran),
     new Paragraph({
       text: '1.5. Manfaat',
       heading: HeadingLevel.HEADING_2
     }),
+    new Paragraph({
+      text: `Berdasarkan tujuan yang dibuat, maka didapat manfaat sebagai berikut:`,
+      style: 'wellSpaced'
+    }),
     ...createParagraphsFromArray(pendahuluan?.manfaat),
     //tinjauan pustaka
     new Paragraph({
-      text: tinjauan?.bab_title || 'BAB 2',
+      text: 'BAB 2 TINJAUAN PUSTAKA',
       heading: HeadingLevel.HEADING_1,
       pageBreakBefore: true
     }),
-    ...createParagraphsFromJSON(tinjauan?.json_data, 2),
+    ...createParagraphsFromJSON(tinjauan, 2),
     //tahap pelaksanaan
     new Paragraph({
-      text: pelaksanaan?.bab_title || 'BAB 3',
+      text: 'BAB 3 PELAKSANAAN',
       heading: HeadingLevel.HEADING_1,
       pageBreakBefore: true
     }),
-    ...createParagraphsFromJSON(pelaksanaan?.json_data, 3),
+    ...createParagraphsFromJSON(pelaksanaan, 3),
     //biaya dan jadwal kegiatan
     new Paragraph({
-      text: biaya?.bab_title || 'BAB 4',
+      text: 'BAB 4 BIAYA DAN JADWAL KEGIATAN',
       heading: HeadingLevel.HEADING_1,
       pageBreakBefore: true
     }),
@@ -150,6 +176,7 @@ const GenerateDocx = ({ data }) => {
       heading: HeadingLevel.HEADING_1,
       pageBreakBefore: true
     }),
+    ...createDapus(dapus),
     new Paragraph({
       text: 'LAMPIRAN',
       heading: HeadingLevel.HEADING_1,

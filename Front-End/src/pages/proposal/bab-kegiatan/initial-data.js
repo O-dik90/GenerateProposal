@@ -9,7 +9,7 @@ export const BIAYA_INIT = {
 };
 
 export const KEGIATAN_INIT = {
-  no: 1,
+  no: 0,
   activity: '',
   person: '',
   target: [[], [], [], []],

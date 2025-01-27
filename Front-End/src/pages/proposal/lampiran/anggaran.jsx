@@ -177,7 +177,7 @@ const Anggaran = () => {
                 initialValuesUpdate={object[key]}
               />
               <TableForm
-                columns={budgetColumns(handleBudget.edit(key), handleBudget.delete(key), handleBudget.reset(key), object[key]?.status)}
+                columns={budgetColumns(handleBudget.edit(key), handleBudget.delete(key), handleBudget.reset(key), object[key]?.no)}
                 rows={budgetData}
                 expand={false}
                 detail=""
@@ -185,10 +185,7 @@ const Anggaran = () => {
             </Stack>
             <Stack direction="column" spacing={1} sx={{ mt: 4 }}>
               <Typography variant="h6" gutterBottom>
-                {`Sub Total Belmawa Rp. ${belmawa}`}
-              </Typography>
-              <Typography variant="h6" gutterBottom>
-                {`Sub Total Perguruan Tinggi Rp. ${perguruan}`}
+                {`Sub Total Rp. ${belmawa + perguruan}`}
               </Typography>
             </Stack>
           </Grid>

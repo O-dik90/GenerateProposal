@@ -1,5 +1,5 @@
 export const PELAKSANAAN_INIT = {
-  no: 1,
+  no: 0,
   title: '',
   description: '',
   status: false

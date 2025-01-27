@@ -95,7 +95,7 @@ const StrukturOrganisasi = () => {
       />
       <Stack direction="column" sx={{ marginTop: 5 }}>
         <TableForm
-          columns={structureColumns(handleStructure.edit, handleStructure.delete, handleStructure.reset, object?.status)}
+          columns={structureColumns(handleStructure.edit, handleStructure.delete, handleStructure.reset, object?.no)}
           rows={data || []}
           expand={false}
         />

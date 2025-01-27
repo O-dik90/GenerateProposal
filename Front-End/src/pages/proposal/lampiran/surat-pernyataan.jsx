@@ -154,21 +154,18 @@ const SuratPernyataan = () => {
 
   useEffect(() => {
     refreshData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
 
   return (
     <Box>
-      <Typography variant="h6" gutterBottom>
-        Silahkan upload file lampiran
+      <Typography variant="h6">Silahkan upload file lampiran</Typography>
+      <Typography variant="body2" sx={{ fontWeight: 500 }} gutterBottom>
+        Note untuk menyertakan materai, tanda tangan dan tanggal yang tertera adalah selama pembukaan PKM 2025, jenis PKM dan Judul harus
+        sesuai nama tidak boleh disingkat.
       </Typography>
       <Stack direction="row" spacing={2} alignItems="center">
-        <Button
-          variant="outlined"
-          component="label"
-          size="small"
-          startIcon={<CloudUploadOutlined />}
-          disabled={isLoading || data.length >= 1}
-        >
+        <Button variant="outlined" component="label" size="small" startIcon={<CloudUploadOutlined />} disabled={isLoading}>
           Choose File
           <input accept={state.allowExtension.join(',')} type="file" hidden onChange={handleFileChange(state.key)} />
         </Button>
@@ -188,7 +185,12 @@ const SuratPernyataan = () => {
         )}
       </Stack>
       <TableForm
-        columns={statementColumns(handleFile.edit(state.key), handleFile.delete(), handleFile.reset(state.key), object[state.key]?.status)}
+        columns={statementColumns(
+          handleFile.edit(state.key),
+          handleFile.delete(),
+          handleFile.reset(state.key),
+          object[state.key]?.image_id
+        )}
         rows={data}
         expand={false}
       />

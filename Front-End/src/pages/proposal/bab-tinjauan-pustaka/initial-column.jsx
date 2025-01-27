@@ -12,7 +12,7 @@ export const Columns = {
       cell: (value, row) => {
         return (
           <Stack direction="row" spacing={1}>
-            {!status ? (
+            {status !== row.no ? (
               <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)}>
                 <EditFilled />
               </IconButton>

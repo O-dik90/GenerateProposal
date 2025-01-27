@@ -25,7 +25,7 @@ export const lampiranColumns = {
             <IconButton aria-label="detail" size="small" color="info" onClick={() => handleDetail(row)}>
               <UnorderedListOutlined />
             </IconButton>
-            {!status ? (
+            {status !== row.no ? (
               <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)}>
                 <EditFilled />
               </IconButton>
@@ -55,7 +55,7 @@ export const lampiranColumns = {
       cell: (value, row) => {
         return (
           <Stack direction="row" spacing={1}>
-            {!status ? (
+            {status !== row.no ? (
               <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)}>
                 <EditFilled />
               </IconButton>
@@ -84,7 +84,7 @@ export const lampiranColumns = {
       cell: (value, row) => {
         return (
           <Stack direction="row" spacing={1}>
-            {!status ? (
+            {status !== row.no ? (
               <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)}>
                 <EditFilled />
               </IconButton>
@@ -114,7 +114,7 @@ export const lampiranColumns = {
       cell: (value, row) => {
         return (
           <Stack direction="row" spacing={1}>
-            {!status ? (
+            {status !== row.no ? (
               <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)}>
                 <EditFilled />
               </IconButton>
@@ -143,7 +143,7 @@ export const lampiranColumns = {
       cell: (value, row) => {
         return (
           <Stack direction="row" spacing={1}>
-            {!status ? (
+            {status !== row.no ? (
               <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)}>
                 <EditFilled />
               </IconButton>
@@ -171,7 +171,7 @@ export const lampiranColumns = {
       cell: (value, row) => {
         return (
           <Stack direction="row" spacing={1}>
-            {!status ? (
+            {status !== row.no ? (
               <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)}>
                 <EditFilled />
               </IconButton>
@@ -200,7 +200,7 @@ export const lampiranColumns = {
       cell: (value, row) => {
         return (
           <Stack direction="row" spacing={1}>
-            {!status ? (
+            {!status !== row.no ? (
               <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)}>
                 <EditFilled />
               </IconButton>
@@ -240,7 +240,7 @@ export const budgetColumns = (handleEdit, handleDelete, handleReset, status) => 
     cell: (value, row) => {
       return (
         <Stack direction="row" spacing={1}>
-          {!status ? (
+          {status !== row.no ? (
             <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)}>
               <EditFilled />
             </IconButton>
@@ -271,9 +271,10 @@ export const structureColumns = (handleEdit, handleDelete, handleReset, status) 
     field: 'action',
     width: '5rem',
     cell: (value, row) => {
+      console.log(row);
       return (
         <Stack direction="row" spacing={1}>
-          {!status ? (
+          {status !== row.no ? (
             <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)}>
               <EditFilled />
             </IconButton>
@@ -320,7 +321,7 @@ export const attachmentColumns = (handleEdit, handleDelete, handleReset, status)
     cell: (value, row) => {
       return (
         <Stack direction="row" spacing={1}>
-          {!status ? (
+          {row.id !== status ? (
             <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)}>
               <EditFilled />
             </IconButton>
@@ -364,7 +365,7 @@ export const statementColumns = (handleEdit, handleDelete, handleReset, status) 
     cell: (value, row) => {
       return (
         <Stack direction="row" spacing={1}>
-          {!status ? (
+          {row.id !== status ? (
             <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)}>
               <EditFilled />
             </IconButton>

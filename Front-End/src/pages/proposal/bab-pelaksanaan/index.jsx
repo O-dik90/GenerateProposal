@@ -114,7 +114,7 @@ const Pelaksanaan = () => {
                 handlePelaksanan.edit('pelaksanaan'),
                 handlePelaksanan.delete('pelaksanaan'),
                 handlePelaksanan.reset('pelaksanaan'),
-                formObject['pelaksanaan'].status
+                formObject['pelaksanaan'].no
               )}
               rows={data.pelaksanaan || []}
               expand

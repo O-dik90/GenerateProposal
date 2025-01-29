@@ -1,4 +1,4 @@
-import { AUTHOR_INIT, BOOK_INIT, URL_INIT } from './initial-data';
+import { AUTHOR_INIT, BOOK_INIT, JOURNAL_INIT, URL_INIT } from './initial-data';
 import { Button, Grid, MenuItem, Select, Stack, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { masterDapusRef, masterDapusStyle } from 'store/slices/master-data';

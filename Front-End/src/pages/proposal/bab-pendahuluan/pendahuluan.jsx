@@ -257,6 +257,9 @@ const Pendahuluan = () => {
           <Typography variant="h5" gutterBottom>
             1.2 Rumusan Masalah
           </Typography>
+          <Typography variant="body1" gutterBottom>
+            Berdasarkan latar belakang tersebut, dapat dibuat beberapa rumusan masalah sebagai berikut:
+          </Typography>
           <TextField label="Rumusan Masalah" variant="outlined" value={rumusan.data} onChange={handleRumusan.onchange} fullWidth />
           <Button
             variant="contained"
@@ -351,7 +354,7 @@ const Pendahuluan = () => {
             1.5 Manfaat
           </Typography>
           <Typography variant="body1" gutterBottom>
-            Isi Manfaat:
+            Berdasarkan tujuan yang dibuat, maka didapat manfaat sebagai berikut:
           </Typography>
           <TextField label="Manfaat" variant="outlined" value={manfaat.data} onChange={handleManfaat.onchange} fullWidth />
           <Button

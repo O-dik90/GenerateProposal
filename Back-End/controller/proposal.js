@@ -20,9 +20,9 @@ const getListProposals = async (req, res) => {
       data: data,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       message: 'Server Error',
-      serverMessage: error,
+      serverMessage: error.message,
     });
   }
 };
@@ -79,7 +79,16 @@ const getProposal = async (req, res) => {
 
 const addProposal = async (req, res) => {
   try {
-    const { user_id, title, description, year, type, category } = req.body;
+    const {
+      user_id,
+      title,
+      description,
+      year,
+      type,
+      category,
+      belmawa,
+      perguruan,
+    } = req.body;
 
     if (!title || !description) {
       throw new Error('Title and description are required');
@@ -91,6 +100,8 @@ const addProposal = async (req, res) => {
       year,
       type,
       category,
+      belmawa,
+      perguruan,
     };
     const [result] = await Proposals.addProposal(data);
 
@@ -112,9 +123,9 @@ const addProposal = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       message: 'Server Error',
-      serverMessage: error,
+      serverMessage: error.message,
     });
   }
 };
@@ -129,9 +140,9 @@ const initProposal = async (req, res) => {
       data: data,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       message: 'Server Error',
-      serverMessage: error,
+      serverMessage: error.message,
     });
   }
 };
@@ -153,9 +164,9 @@ const deleteProposal = async (req, res) => {
       message: 'Proposal deleted successfully',
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       message: 'Server Error',
-      serverMessage: error,
+      serverMessage: error.message,
     });
   }
 };
@@ -163,7 +174,8 @@ const deleteProposal = async (req, res) => {
 const updateProposal = async (req, res) => {
   try {
     const { proposals_id } = req.params;
-    const { title, description, year, type, category } = req.body;
+    const { title, description, year, type, category, belmawa, perguruan } =
+      req.body;
 
     if (!proposals_id) {
       throw new Error('Proposal ID is required');
@@ -181,6 +193,8 @@ const updateProposal = async (req, res) => {
       year,
       type,
       category,
+      belmawa,
+      perguruan,
     });
 
     if (result.affectedRows === 1) {
@@ -194,9 +208,9 @@ const updateProposal = async (req, res) => {
       message: 'Proposal not found',
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       message: 'Server Error',
-      serverMessage: error,
+      serverMessage: error.message,
     });
   }
 };

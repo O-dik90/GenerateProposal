@@ -11,10 +11,11 @@ const getProposalId = (id) => {
 };
 
 const addProposal = (data) => {
+  console.log(data);
   const query = `
   INSERT INTO proposals (
-  user_id, title, description, year, type, category, creation_date
-  ) VALUES (?,?,?,?,?,?, NOW())`;
+  user_id, title, description, year, type, category, belmawa, perguruan, creation_date
+  ) VALUES (?,?,?,?,?,?,?,?, NOW())`;
 
   const params = [
     data.user_id,
@@ -23,6 +24,8 @@ const addProposal = (data) => {
     data.year,
     data.type,
     data.category,
+    data.belmawa,
+    data.perguruan,
   ];
   return dbPool.execute(query, params);
 };
@@ -41,6 +44,8 @@ const updateProposal = (id, data) => {
   year = ${data.year} ,  
   type = '${data.type}', 
   category = '${data.category}',
+  belmawa = '${data.belmawa}',
+  perguruan = '${data.perguruan}',
   last_update = NOW()
   WHERE id = ${id}
   `;

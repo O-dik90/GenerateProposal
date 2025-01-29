@@ -23,9 +23,9 @@ const masterDropdown = async (req, res) => {
       data: data,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       message: 'Server Error',
-      serverMessage: error,
+      serverMessage: error.message,
     });
   }
 };
@@ -51,9 +51,9 @@ const masterDapus = async (req, res) => {
       data: data,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       message: 'Server Error',
-      serverMessage: error,
+      serverMessage: error.message,
     });
   }
 };

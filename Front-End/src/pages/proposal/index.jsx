@@ -7,6 +7,7 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
+  InputAdornment,
   MenuItem,
   Select,
   Stack,
@@ -35,6 +36,8 @@ export const INITIAL = {
   type: '',
   year: '',
   last_update: '',
+  belmawa: 6000000,
+  perguruan: 50000,
   edit_status: false
 };
 
@@ -121,6 +124,34 @@ const ProposalTable = () => {
       }
     },
     {
+      field: 'belmawa',
+      headerName: 'Dana Belmawa',
+      width: 175,
+      align: 'center',
+      headerAlign: 'center',
+      filterable: false,
+      valueFormatter: (params) => {
+        if (params) {
+          return `Rp. ${formatCurrency(params)}`;
+        }
+        return '-';
+      }
+    },
+    {
+      field: 'perguruan',
+      headerName: 'Dana Perguruan Tinggi',
+      width: 175,
+      align: 'center',
+      headerAlign: 'center',
+      filterable: false,
+      valueFormatter: (params) => {
+        if (params) {
+          return `Rp. ${formatCurrency(params)}`;
+        }
+        return '-';
+      }
+    },
+    {
       field: 'actions',
       headerName: 'Actions',
       width: 160,
@@ -154,9 +185,6 @@ const ProposalTable = () => {
     }
   ];
 
-  useEffect(() => {
-    console.log(object);
-  }, [object]);
   const handleSubmit = async () => {
     try {
       if (btnAction === 'Buat') {
@@ -180,10 +208,30 @@ const ProposalTable = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setObject((prevObject) => ({
-      ...prevObject,
-      [name]: value
-    }));
+
+    // Remove non-numeric characters
+    let numericValue = String(value).replace(/[^\d]/g, '');
+
+    // Convert to number
+    let numValue = parseInt(numericValue, 10) || 0;
+
+    if (name === 'belmawa' || name === 'perguruan') {
+      setObject((prevObject) => ({
+        ...prevObject,
+        [name]: numValue
+      }));
+    } else {
+      setObject((prevObject) => ({
+        ...prevObject,
+        [name]: value
+      }));
+    }
+  };
+
+  // Format currency helper function
+  const formatCurrency = (value) => {
+    if (!value) return '';
+    return new Intl.NumberFormat('id-ID').format(value);
   };
 
   const handleEdit = (id) => {
@@ -230,6 +278,16 @@ const ProposalTable = () => {
       }
     }
   };
+
+  let disableButton =
+    !object.category ||
+    !object.type ||
+    !object.year ||
+    !object.title ||
+    object.perguruan < 50000 ||
+    object.perguruan > 2000000 ||
+    object.belmawa < 6000000 ||
+    object.belmawa > 10000000;
 
   return (
     <>
@@ -307,6 +365,43 @@ const ProposalTable = () => {
                 ))}
               </Select>
             </Stack>
+            <Stack direction="row" spacing={1} sx={{ marginTop: 2 }}>
+              <TextField
+                id="belmawa"
+                name="belmawa"
+                label="Jumlah Belmawa"
+                type="text"
+                value={formatCurrency(object.belmawa)}
+                onChange={handleChange}
+                fullWidth
+                error={object.belmawa < 6000000 || object.belmawa > 10000000}
+                helperText="Pengajuan Belmawa min. Rp. 6.000.000 - Rp. 10.000.000"
+                variant="outlined"
+                InputProps={{
+                  startAdornment: <InputAdornment position="start">Rp</InputAdornment>,
+                  inputMode: 'numeric',
+                  pattern: '[0-9]*'
+                }}
+              />
+
+              <TextField
+                id="perguruan"
+                name="perguruan"
+                label="Jumlah Perguruan Tinggi"
+                type="text"
+                value={formatCurrency(object.perguruan)}
+                onChange={handleChange}
+                fullWidth
+                error={object.perguruan < 50000 || object.perguruan > 2000000}
+                helperText="Pengajuan Perguruan Tinggi min. Rp. 50.000 - Rp. 2.000.000"
+                variant="outlined"
+                InputProps={{
+                  startAdornment: <InputAdornment position="start">Rp</InputAdornment>,
+                  inputMode: 'numeric',
+                  pattern: '[0-9]*'
+                }}
+              />
+            </Stack>
             <TextField
               autoFocus
               required
@@ -342,7 +437,7 @@ const ProposalTable = () => {
           </Box>
           <DialogActions>
             <Button onClick={handleClose}>Cancel</Button>
-            <Button type="button" variant="contained" disabled={!object.type || !object.category} onClick={handleSubmit}>
+            <Button type="button" variant="contained" disabled={disableButton} onClick={handleSubmit}>
               {btnAction}
             </Button>
           </DialogActions>

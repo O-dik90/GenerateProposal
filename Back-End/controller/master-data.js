@@ -1,4 +1,25 @@
-const MasterData = require('../models/masters-data');
+const MasterData = require('../models/master-data');
+
+const getMaster = async (req, res) => {
+  try {
+    const [data] = await MasterData.getMaster();
+    if (!data || data.length === 0) {
+      return res.status(404).json({
+        message: 'Data not found',
+        data: [],
+      });
+    }
+    return res.status(200).json({
+      message: 'success',
+      data: data,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: 'Server Error',
+      serverMessage: error.message,
+    });
+  }
+};
 
 const masterDropdown = async (req, res) => {
   const { source_name: sourceName } = req.body;
@@ -59,6 +80,7 @@ const masterDapus = async (req, res) => {
 };
 
 module.exports = {
+  getMaster,
   masterDropdown,
   masterDapus,
 };

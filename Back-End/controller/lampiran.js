@@ -75,7 +75,7 @@ const addFiles = async (req, res) => {
         return res.status(400).json({ message: validationError });
       }
       const ext = path.extname(file.name);
-      const fileName = `${file.md5}_${proposals_id}_${ext}`;
+      const fileName = `${file.md5}_${proposals_id + ext}`;
       const uploadPath = `public/${proposals_id}/${fileName}`;
 
       try {
@@ -148,7 +148,7 @@ const updateFile = async (req, res) => {
     const proposals_id = JSON.parse(data)?.proposals_id;
     const image_id = JSON.parse(data)?.image_id;
     const ext = path.extname(file.name);
-    const fileName = `${file.md5}_${proposals_id}_${ext}`;
+    const fileName = `${file.md5}_${proposals_id + ext}`;
     const baseUploadPath = path.join(__dirname, '../public');
     const uploadFolder = path.join(baseUploadPath, proposals_id.toString());
     const uploadPath = `public/${proposals_id}/${fileName}`;

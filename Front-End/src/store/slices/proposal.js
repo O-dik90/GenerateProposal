@@ -188,6 +188,10 @@ const proposalSlice = createSlice({
         state.data = action.payload.data;
         state.error = null;
       })
+      .addCase(fetchProposal.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
       // Detail proposal
       .addCase(detailProposal.pending, (state) => {
         state.loading = true;

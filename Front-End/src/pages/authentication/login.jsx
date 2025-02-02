@@ -20,7 +20,7 @@ export default function Login() {
           </Stack>
         </Grid>
         <Grid item xs={12}>
-          <AuthLogin />
+          <AuthLogin isDemo={false} />
         </Grid>
       </Grid>
     </AuthWrapper>

@@ -1,31 +1,33 @@
-import PropTypes from 'prop-types';
+import { getMe, userLogout } from 'store/slices/auth';
 import { useRef, useState } from 'react';
 
-import { useTheme } from '@mui/material/styles';
+import Avatar from 'components/@extended/Avatar';
+import Box from '@mui/material/Box';
 import ButtonBase from '@mui/material/ButtonBase';
 import CardContent from '@mui/material/CardContent';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
+import LogoutOutlined from '@ant-design/icons/LogoutOutlined';
+import MainCard from 'components/MainCard';
+import Paper from '@mui/material/Paper';
 import Popper from '@mui/material/Popper';
+import ProfileTab from './ProfileTab';
+import PropTypes from 'prop-types';
+import SettingOutlined from '@ant-design/icons/SettingOutlined';
+import SettingTab from './SettingTab';
 import Stack from '@mui/material/Stack';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-
-import ProfileTab from './ProfileTab';
-import SettingTab from './SettingTab';
-import Avatar from 'components/@extended/Avatar';
-import MainCard from 'components/MainCard';
 import Transitions from 'components/@extended/Transitions';
-
-import LogoutOutlined from '@ant-design/icons/LogoutOutlined';
-import SettingOutlined from '@ant-design/icons/SettingOutlined';
+import Typography from '@mui/material/Typography';
 import UserOutlined from '@ant-design/icons/UserOutlined';
 import avatar1 from 'assets/images/users/avatar-1.png';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router';
+import { useTheme } from '@mui/material/styles';
+
 function TabPanel({ children, value, index, ...other }) {
   return (
     <div role="tabpanel" hidden={value !== index} id={`profile-tabpanel-${index}`} aria-labelledby={`profile-tab-${index}`} {...other}>
@@ -44,7 +46,9 @@ function a11yProps(index) {
 // ==============================|| HEADER CONTENT - PROFILE ||============================== //
 
 export default function Profile() {
-  const theme = useTheme();
+  const theme = useTheme(),
+    navigate = useNavigate(),
+    dispatch = useDispatch();
 
   const anchorRef = useRef(null);
   const [open, setOpen] = useState(false);
@@ -63,6 +67,19 @@ export default function Profile() {
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
+  };
+
+  const handleLogout = async () => {
+    try {
+      const res = await dispatch(userLogout());
+      if (userLogout.fulfilled.match(res)) {
+        const check = await dispatch(getMe());
+        console.log(check);
+        navigate('/login');
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const iconBackColorOpen = 'grey.100';
@@ -128,7 +145,7 @@ export default function Profile() {
                       </Grid>
                       <Grid item>
                         <Tooltip title="Logout">
-                          <IconButton size="large" sx={{ color: 'text.primary' }}>
+                          <IconButton size="large" sx={{ color: 'text.primary' }} onClick={handleLogout}>
                             <LogoutOutlined />
                           </IconButton>
                         </Tooltip>

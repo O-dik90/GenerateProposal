@@ -24,6 +24,7 @@ import GenerateDocx from 'utils/generate';
 import MainCard from 'components/MainCard';
 import { detailProposal } from 'store/slices/proposal';
 import { format } from 'date-fns';
+import { useAuth } from 'pages/protect/authProvider';
 import { useNavigate } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 
@@ -53,6 +54,14 @@ const ProposalTable = () => {
 
   const { data, loading } = useSelector((state) => state.app.proposal),
     { pkm, lomba, tahunLomba } = useSelector((state) => state.app.masterData);
+
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/login');
+    }
+  }, [navigate, user]);
 
   useEffect(() => {
     dispatch(fetchProposal(1));

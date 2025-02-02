@@ -7,11 +7,30 @@ const masterData = require('./routes/master-data');
 const helmet = require('helmet');
 const fileUpload = require('express-fileupload');
 const path = require('path');
+const session = require('express-session');
 
 const app = express();
 
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+      secure: 'auto',
+    },
+  })
+);
 // Enable CORS for all routes
-app.use('*', cors());
+app.use(
+  cors({
+    credentials: true,
+    origin: [
+      `http://localhost:${process.env.PORT}`,
+      'https://genproposal.ubaicorner.com',
+    ],
+  })
+);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

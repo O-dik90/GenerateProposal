@@ -1,34 +1,35 @@
+import AnalyticEcommerce from 'components/cards/statistics/AnalyticEcommerce';
 // material-ui
 import Avatar from '@mui/material/Avatar';
 import AvatarGroup from '@mui/material/AvatarGroup';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+// assets
+import GiftOutlined from '@ant-design/icons/GiftOutlined';
 import Grid from '@mui/material/Grid';
 import List from '@mui/material/List';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-
 // project import
 import MainCard from 'components/MainCard';
-import AnalyticEcommerce from 'components/cards/statistics/AnalyticEcommerce';
-import MonthlyBarChart from './MonthlyBarChart';
-import ReportAreaChart from './ReportAreaChart';
-import UniqueVisitorCard from './UniqueVisitorCard';
-import SaleReportCard from './SaleReportCard';
-import OrdersTable from './OrdersTable';
-
-// assets
-import GiftOutlined from '@ant-design/icons/GiftOutlined';
 import MessageOutlined from '@ant-design/icons/MessageOutlined';
+import MonthlyBarChart from './MonthlyBarChart';
+import OrdersTable from './OrdersTable';
+import ReportAreaChart from './ReportAreaChart';
+import SaleReportCard from './SaleReportCard';
 import SettingOutlined from '@ant-design/icons/SettingOutlined';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
+import UniqueVisitorCard from './UniqueVisitorCard';
 import avatar1 from 'assets/images/users/avatar-1.png';
 import avatar2 from 'assets/images/users/avatar-2.png';
 import avatar3 from 'assets/images/users/avatar-3.png';
 import avatar4 from 'assets/images/users/avatar-4.png';
+import { useAuth } from 'pages/protect/authProvider';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router';
 
 // avatar style
 const avatarSX = {
@@ -50,6 +51,14 @@ const actionSX = {
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
 
 export default function DashboardDefault() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/login');
+    }
+  }, [navigate, user]);
   return (
     <Grid container rowSpacing={4.5} columnSpacing={2.75}>
       {/* row 1 */}

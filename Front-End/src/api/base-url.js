@@ -4,8 +4,9 @@ import { enqueueSnackbar } from 'notistack';
 export const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const axiosInstance = axios.create({
-  baseURL: API_URL + '/api-genpro',
-  timeout: 10000
+  baseURL: API_URL,
+  timeout: 10000,
+  withCredentials: true
 });
 
 axiosInstance.interceptors.request.use(
@@ -24,7 +25,7 @@ axiosInstance.interceptors.response.use(
   },
   (error) => {
     if (error.response) {
-      enqueueSnackbar('Response error: ' + error.response.data.message || error.message, { variant: 'error' });
+      enqueueSnackbar(error.response.data.msg || error.response.data.message || error.message, { variant: 'error' });
     } else if (error.request) {
       enqueueSnackbar('No response received: ' + error.message, { variant: 'error' });
     } else {

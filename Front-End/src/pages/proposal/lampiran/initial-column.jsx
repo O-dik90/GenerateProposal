@@ -1,5 +1,5 @@
+import { Button, IconButton, Stack } from '@mui/material';
 import { DeleteFilled, EditFilled, RedoOutlined, SelectOutlined, UnorderedListOutlined } from '@ant-design/icons';
-import { IconButton, Stack } from '@mui/material';
 
 import { API_URL } from 'api/base-url';
 
@@ -7,6 +7,20 @@ import { API_URL } from 'api/base-url';
 export const lampiranColumns = {
   personal: (handleEdit, handleDelete, handleReset, handleDetail, status) => [
     { name: 'No', field: 'no', width: '4rem', align: 'center' },
+    {
+      name: 'Detail',
+      field: 'action-detail',
+      width: '5rem',
+      cell: (value, row) => {
+        return (
+          <Stack direction="row" spacing={1}>
+            <Button aria-label="detail" size="small" color="info" onClick={() => handleDetail(row)}>
+              Detail Personal
+            </Button>
+          </Stack>
+        );
+      }
+    },
     { name: 'Nama', field: 'name', width: '30rem' },
     { name: 'Jabatan', field: 'role_person' },
     { name: 'Email', field: 'email' },

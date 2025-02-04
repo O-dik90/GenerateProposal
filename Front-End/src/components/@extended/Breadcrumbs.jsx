@@ -77,7 +77,7 @@ export default function Breadcrumbs({ navigation, title, maxItems = 8, separator
                   }
                 }}
               >
-                {renderBreadcrumbLink('/dashboard', 'Home')}
+                {renderBreadcrumbLink('/', 'Home')}
                 {renderBreadcrumbLink(location.pathname, item.title, true)}
               </MuiBreadcrumbs>
             </Grid>

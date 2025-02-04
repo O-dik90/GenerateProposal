@@ -12,18 +12,13 @@ import LogoutOutlined from '@ant-design/icons/LogoutOutlined';
 import MainCard from 'components/MainCard';
 import Paper from '@mui/material/Paper';
 import Popper from '@mui/material/Popper';
-import ProfileTab from './ProfileTab';
 import PropTypes from 'prop-types';
-import SettingOutlined from '@ant-design/icons/SettingOutlined';
-import SettingTab from './SettingTab';
 import Stack from '@mui/material/Stack';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
 import Tooltip from '@mui/material/Tooltip';
 import Transitions from 'components/@extended/Transitions';
 import Typography from '@mui/material/Typography';
-import UserOutlined from '@ant-design/icons/UserOutlined';
 import avatar1 from 'assets/images/users/avatar-1.png';
+import { useAuth } from 'pages/protect/authProvider';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { useTheme } from '@mui/material/styles';
@@ -36,17 +31,18 @@ function TabPanel({ children, value, index, ...other }) {
   );
 }
 
-function a11yProps(index) {
-  return {
-    id: `profile-tab-${index}`,
-    'aria-controls': `profile-tabpanel-${index}`
-  };
-}
+// function a11yProps(index) {
+//   return {
+//     id: `profile-tab-${index}`,
+//     'aria-controls': `profile-tabpanel-${index}`
+//   };
+// }
 
 // ==============================|| HEADER CONTENT - PROFILE ||============================== //
 
 export default function Profile() {
   const theme = useTheme(),
+    { user } = useAuth(),
     navigate = useNavigate(),
     dispatch = useDispatch();
 
@@ -63,11 +59,11 @@ export default function Profile() {
     setOpen(false);
   };
 
-  const [value, setValue] = useState(0);
+  // const [value, setValue] = useState(0);
 
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
+  // const handleChange = (event, newValue) => {
+  //   setValue(newValue);
+  // };
 
   const handleLogout = async () => {
     try {
@@ -103,7 +99,7 @@ export default function Profile() {
         <Stack direction="row" spacing={1.25} alignItems="center" sx={{ p: 0.5 }}>
           <Avatar alt="profile user" src={avatar1} size="sm" />
           <Typography variant="subtitle1" sx={{ textTransform: 'capitalize' }}>
-            John Doe
+            {user?.name || ''}
           </Typography>
         </Stack>
       </ButtonBase>
@@ -136,10 +132,10 @@ export default function Profile() {
                         <Stack direction="row" spacing={1.25} alignItems="center">
                           <Avatar alt="profile user" src={avatar1} sx={{ width: 32, height: 32 }} />
                           <Stack>
-                            <Typography variant="h6">John Doe</Typography>
-                            <Typography variant="body2" color="text.secondary">
+                            <Typography variant="h6">{user?.name || ''}</Typography>
+                            {/* <Typography variant="body2" color="text.secondary">
                               UI/UX Designer
-                            </Typography>
+                            </Typography> */}
                           </Stack>
                         </Stack>
                       </Grid>
@@ -153,7 +149,7 @@ export default function Profile() {
                     </Grid>
                   </CardContent>
 
-                  <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                  {/* <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                     <Tabs variant="fullWidth" value={value} onChange={handleChange} aria-label="profile tabs">
                       <Tab
                         sx={{
@@ -180,13 +176,13 @@ export default function Profile() {
                         {...a11yProps(1)}
                       />
                     </Tabs>
-                  </Box>
-                  <TabPanel value={value} index={0} dir={theme.direction}>
+                  </Box> */}
+                  {/* <TabPanel value={value} index={0} dir={theme.direction}>
                     <ProfileTab />
                   </TabPanel>
                   <TabPanel value={value} index={1} dir={theme.direction}>
                     <SettingTab />
-                  </TabPanel>
+                  </TabPanel> */}
                 </MainCard>
               </ClickAwayListener>
             </Paper>

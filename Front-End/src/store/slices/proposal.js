@@ -5,9 +5,9 @@ import axiosInstance from 'api/base-url';
 // Create async thunks for API calls
 export const createProposal = createAsyncThunk('proposal/create', async (proposalData, { dispatch, rejectWithValue }) => {
   try {
-    const response = await axiosInstance.post('/add-proposal', proposalData);
+    const response = await axiosInstance.post(`/create-proposal/${proposalData.user_id}`, proposalData);
 
-    if (response.data.message === 'success') {
+    if (response.status === 201) {
       dispatch(fetchProposal(proposalData.user_id));
     }
 
@@ -18,7 +18,7 @@ export const createProposal = createAsyncThunk('proposal/create', async (proposa
 });
 
 export const fetchProposal = createAsyncThunk('proposal/getlist', async (id) => {
-  const response = await axiosInstance.post(`/get-proposals/${id}`);
+  const response = await axiosInstance.get(`/get-proposals/${id}`);
   return response.data;
 });
 
@@ -42,7 +42,7 @@ export const updateProposal = createAsyncThunk('proposal/update', async (params,
 
 export const deleteProposal = createAsyncThunk('proposal/delete', async (params, { dispatch, rejectWithValue }) => {
   try {
-    const res = await axiosInstance.delete(`/delete-proposal/${params.id}`);
+    const res = await axiosInstance.delete(`/delete-proposal/${params.item_id}`);
 
     if (res.status === 200) {
       dispatch(fetchProposal(params.user_id));
@@ -185,7 +185,7 @@ const proposalSlice = createSlice({
       })
       .addCase(fetchProposal.fulfilled, (state, action) => {
         state.loading = false;
-        state.data = action.payload.data;
+        state.data = action.payload;
         state.error = null;
       })
       .addCase(fetchProposal.rejected, (state, action) => {

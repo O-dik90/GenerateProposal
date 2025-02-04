@@ -26,10 +26,6 @@ axiosInstance.interceptors.response.use(
   (error) => {
     if (error.response) {
       enqueueSnackbar(error.response.data.msg || error.response.data.message || error.message, { variant: 'error' });
-    } else if (error.request) {
-      enqueueSnackbar('No response received: ' + error.message, { variant: 'error' });
-    } else {
-      enqueueSnackbar('Request setup error: ' + error.message, { variant: 'error' });
     }
     return Promise.reject(error);
   }

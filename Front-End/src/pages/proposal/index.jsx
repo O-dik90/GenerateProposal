@@ -30,15 +30,14 @@ import { useSnackbar } from 'notistack';
 
 export const INITIAL = {
   id: 0,
-  user_id: 1,
-  title: '',
-  description: '',
-  category: '',
-  type: '',
-  year: '',
-  last_update: '',
-  belmawa: 6000000,
-  perguruan: 50000,
+  user_id: '',
+  title: 'title',
+  description: 'in description',
+  pkm_category: '',
+  pkm_type: '',
+  year: '2025',
+  pkm_belmawa: 6000000,
+  pkm_perguruan: 50000,
   edit_status: false
 };
 
@@ -46,6 +45,7 @@ const ProposalTable = () => {
   const title = 'Daftar Proposal';
   const navigate = useNavigate(),
     dispatch = useDispatch(),
+    { user } = useAuth(),
     { enqueueSnackbar } = useSnackbar();
 
   const [open, setOpen] = useState(false),
@@ -55,8 +55,6 @@ const ProposalTable = () => {
   const { data, loading } = useSelector((state) => state.app.proposal),
     { pkm, lomba, tahunLomba } = useSelector((state) => state.app.masterData);
 
-  const { user } = useAuth();
-
   useEffect(() => {
     if (!user) {
       navigate('/login');
@@ -64,26 +62,30 @@ const ProposalTable = () => {
   }, [navigate, user]);
 
   useEffect(() => {
-    dispatch(fetchProposal(1));
-  }, [dispatch]);
+    console.log(user);
+    if (user) {
+      dispatch(fetchProposal(user.uuid));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   useEffect(() => {
     const loadMasterData = async () => {
-      if (pkm.length <= 0) await dispatch(masterPkm({ source_name: 'PKM' }));
+      if (pkm.length <= 0) await dispatch(masterPkm({ name: 'PKM' }));
     };
 
     loadMasterData();
   }, [dispatch, pkm]);
   useEffect(() => {
     const loadMasterData = async () => {
-      if (lomba.length <= 0) await dispatch(masterLomba({ source_name: 'LOMBA' }));
+      if (lomba.length <= 0) await dispatch(masterLomba({ name: 'LOMBA' }));
     };
 
     loadMasterData();
   }, [dispatch, lomba]);
   useEffect(() => {
     const loadMasterData = async () => {
-      if (tahunLomba.length <= 0) await dispatch(masterTahunLomba({ source_name: 'TAHUN_LOMBA' }));
+      if (tahunLomba.length <= 0) await dispatch(masterTahunLomba({ name: 'TAHUN_LOMBA' }));
     };
 
     loadMasterData();
@@ -94,22 +96,28 @@ const ProposalTable = () => {
       field: 'title',
       headerName: 'Judul',
       headerAlign: 'center',
-      minWidth: 150,
+      minWidth: 200,
       flex: 1,
       filterable: true
     },
     {
-      field: 'description',
-      headerName: 'Deskripsi',
-      type: 'text',
+      field: 'pkm_category',
+      headerName: 'Kategori PKM',
       headerAlign: 'center',
-      align: 'center',
-      width: 250,
-      filterable: false
+      width: 100,
+      filterable: true
     },
     {
-      field: 'creation_date',
-      headerName: 'Tanggal',
+      field: 'year',
+      headerName: 'Tahun PKM',
+      headerAlign: 'center',
+      align: 'center',
+      width: 125,
+      filterable: true
+    },
+    {
+      field: 'create_date',
+      headerName: 'Tanggal Pembuatan',
       width: 175,
       align: 'center',
       headerAlign: 'center',
@@ -119,7 +127,7 @@ const ProposalTable = () => {
       }
     },
     {
-      field: 'last_update',
+      field: 'update_date',
       headerName: 'Tanggal Update',
       width: 175,
       align: 'center',
@@ -163,7 +171,7 @@ const ProposalTable = () => {
     {
       field: 'actions',
       headerName: 'Actions',
-      width: 160,
+      minWidth: 250,
       headerAlign: 'center',
       align: 'center',
       flex: 1,
@@ -197,6 +205,8 @@ const ProposalTable = () => {
   const handleSubmit = async () => {
     try {
       if (btnAction === 'Buat') {
+        console.log(user.uuid);
+        console.log(object);
         const res = await dispatch(createProposal(object));
         if (createProposal.fulfilled.match(res)) {
           enqueueSnackbar('Berhasil Menambah!', { variant: 'success' });
@@ -257,7 +267,7 @@ const ProposalTable = () => {
 
   const handleDelete = async (param) => {
     try {
-      const res = await dispatch(deleteProposal(param));
+      const res = await dispatch(deleteProposal({ user_id: user.uuid, item_id: param.id }));
       if (deleteProposal.fulfilled.match(res)) {
         enqueueSnackbar('Berhasil Menghapus!', { variant: 'success' });
       }
@@ -289,15 +299,23 @@ const ProposalTable = () => {
   };
 
   let disableButton =
-    !object.category ||
-    !object.type ||
+    !object.pkm_category ||
+    !object.pkm_type ||
     !object.year ||
     !object.title ||
-    object.perguruan < 50000 ||
-    object.perguruan > 2000000 ||
-    object.belmawa < 6000000 ||
-    object.belmawa > 10000000;
+    object.pkm_perguruan < 50000 ||
+    object.pkm_perguruan > 2000000 ||
+    object.pkm_belmawa < 6000000 ||
+    object.pkm_belmawa > 10000000;
 
+  useEffect(() => {
+    if (user) {
+      setObject((prevObject) => ({
+        ...prevObject,
+        user_id: user.uuid
+      }));
+    }
+  }, [user]);
   return (
     <>
       <MainCard title={title}>
@@ -341,13 +359,13 @@ const ProposalTable = () => {
         <DialogContent>
           <Box sx={{ width: '100%' }}>
             <Stack direction="row" spacing={2}>
-              <Select id="lomba" name="type" displayEmpty value={object.type} onChange={handleChange} sx={{ width: '10rem' }}>
+              <Select id="lomba" name="pkm_type" displayEmpty value={object.pkm_type} onChange={handleChange} sx={{ width: '10rem' }}>
                 <MenuItem disabled value="">
                   <em>Pilih Lomba</em>
                 </MenuItem>
                 {lomba.map((item) => (
-                  <MenuItem key={`${item.code}-${item.id}`} value={item.name_id}>
-                    {item.name_desc}
+                  <MenuItem key={`${item.code}-${item.id}`} value={item.init}>
+                    {item.description}
                   </MenuItem>
                 ))}
               </Select>
@@ -356,20 +374,20 @@ const ProposalTable = () => {
                   <em>Pilih Tahun</em>
                 </MenuItem>
                 {tahunLomba.map((item) => (
-                  <MenuItem key={`${item.code}-${item.id}`} value={item.name_id}>
-                    {item.name_desc}
+                  <MenuItem key={`${item.code}-${item.id}`} value={item.init}>
+                    {item.description}
                   </MenuItem>
                 ))}
               </Select>
             </Stack>
             <Stack direction="row" spacing={2} sx={{ marginTop: 1 }}>
-              <Select id="pkm" name="category" displayEmpty value={object.category} onChange={handleChange} sx={{ width: '100%' }}>
+              <Select id="pkm" name="pkm_category" displayEmpty value={object.pkm_category} onChange={handleChange} sx={{ width: '100%' }}>
                 <MenuItem disabled value="">
                   <em>Pilih PKM</em>
                 </MenuItem>
                 {pkm.map((item) => (
-                  <MenuItem key={`${item.code}-${item.id}`} value={item.name_id}>
-                    {item.name_desc}
+                  <MenuItem key={`${item.init}-${item.id}`} value={item.init}>
+                    {item.description}
                   </MenuItem>
                 ))}
               </Select>
@@ -380,10 +398,10 @@ const ProposalTable = () => {
                 name="belmawa"
                 label="Jumlah Belmawa"
                 type="text"
-                value={formatCurrency(object.belmawa)}
+                value={formatCurrency(object.pkm_belmawa)}
                 onChange={handleChange}
                 fullWidth
-                error={object.belmawa < 6000000 || object.belmawa > 10000000}
+                error={object.pkm_belmawa < 6000000 || object.pkm_belmawa > 10000000}
                 helperText="Pengajuan Belmawa min. Rp. 6.000.000 - Rp. 10.000.000"
                 variant="outlined"
                 InputProps={{
@@ -394,14 +412,14 @@ const ProposalTable = () => {
               />
 
               <TextField
-                id="perguruan"
-                name="perguruan"
+                id="pkm_perguruan"
+                name="pkm_perguruan"
                 label="Jumlah Perguruan Tinggi"
                 type="text"
-                value={formatCurrency(object.perguruan)}
+                value={formatCurrency(object.pkm_perguruan)}
                 onChange={handleChange}
                 fullWidth
-                error={object.perguruan < 50000 || object.perguruan > 2000000}
+                error={object.pkm_perguruan < 50000 || object.pkm_perguruan > 2000000}
                 helperText="Pengajuan Perguruan Tinggi min. Rp. 50.000 - Rp. 2.000.000"
                 variant="outlined"
                 InputProps={{

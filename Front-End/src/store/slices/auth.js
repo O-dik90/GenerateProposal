@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import axios from 'axios';
 import axiosInstance from 'api/base-url';
 
 export const userLogin = createAsyncThunk('user/login', async (params, { rejectWithValue }) => {

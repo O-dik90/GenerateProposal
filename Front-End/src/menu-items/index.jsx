@@ -1,4 +1,4 @@
-import dashboard from './dashboard';
+// import dashboard from './dashboard';
 // import pages from './page';
 import proposal from './proposal';
 // import support from './support';
@@ -7,7 +7,7 @@ import proposal from './proposal';
 // ==============================|| MENU ITEMS ||============================== //
 
 const menuItems = {
-  items: [dashboard, proposal]
+  items: [proposal]
 };
 
 export default menuItems;

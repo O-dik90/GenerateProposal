@@ -1,8 +1,5 @@
 import * as Yup from 'yup';
 
-import React, { useEffect } from 'react';
-import { getMe, userLogin } from 'store/slices/auth';
-
 import AnimateButton from 'components/@extended/AnimateButton';
 import Button from '@mui/material/Button';
 import EyeInvisibleOutlined from '@ant-design/icons/EyeInvisibleOutlined';
@@ -15,10 +12,12 @@ import InputAdornment from '@mui/material/InputAdornment';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import PropTypes from 'prop-types';
+import React from 'react';
 import Stack from '@mui/material/Stack';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { useState } from 'react';
+import { userLogin } from 'store/slices/auth';
 
 export default function AuthLogin() {
   const [showPassword, setShowPassword] = useState(false),
@@ -46,20 +45,9 @@ export default function AuthLogin() {
     setSubmitting(false);
   };
 
-  useEffect(() => {
-    const getUser = async () => {
-      const res = await dispatch(getMe());
-
-      if (getMe.fulfilled.match(res)) {
-        navigate('/');
-      }
-    };
-    getUser();
-  }, [dispatch, navigate]);
-
   return (
     <Formik
-      initialValues={{ email: 'odik@email.com', password: 'odik.123' }}
+      initialValues={{ email: 'odik@email.com', password: 'password.123' }}
       validationSchema={Yup.object().shape({
         email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
         password: Yup.string().max(255).required('Password is required')
@@ -130,7 +118,15 @@ export default function AuthLogin() {
             )}
             <Grid item xs={12}>
               <AnimateButton>
-                <Button disableElevation disabled={isSubmitting} fullWidth size="large" type="submit" variant="contained" color="primary">
+                <Button
+                  disableElevation
+                  disabled={isSubmitting || !values.email || !values.password}
+                  fullWidth
+                  size="large"
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                >
                   Login
                 </Button>
               </AnimateButton>

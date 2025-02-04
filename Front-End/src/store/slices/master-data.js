@@ -42,13 +42,13 @@ const masterSlice = createSlice({
   extraReducers: (builder) => {
     const handleFulfilled = (state, action, key) => {
       state.loading = false;
-      state[key] = action.payload.data;
+      state[key] = action.payload;
       state.error = null;
     };
 
     const dapusFulfilled = (state, action, key) => {
       state.loading = false;
-      state.dapus[key] = action.payload.data;
+      state.dapus[key] = action.payload;
       state.error = null;
     };
     const lampiranFulfilled = (state, action, key) => {

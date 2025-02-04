@@ -217,30 +217,6 @@ const Identitas = () => {
           </MenuItem>
         ))}
       </Select>
-      <Grid item xs={12} sx={{ marginY: 15 }}>
-        {object.role_person && (
-          <GenForm
-            formFields={initialFields.personal}
-            buttonDisable={false || open}
-            onSubmit={handleForm}
-            titleButton={object.status ? 'Update Data Personal' : 'Tambah Data Personal'}
-            initialValuesUpdate={object}
-          />
-        )}
-        <Stack direction="column" sx={{ marginTop: 5 }}>
-          <TableForm
-            columns={lampiranColumns.personal(
-              handlePersonal.edit,
-              handlePersonal.delete,
-              handlePersonal.reset,
-              handlePersonal.detail,
-              object.no
-            )}
-            rows={data || []}
-            expand={false}
-          />
-        </Stack>
-      </Grid>
       {open && (
         <Grid item xs={12}>
           <Divider sx={{ marginTop: 10, borderBottomWidth: 5 }} />
@@ -317,6 +293,30 @@ const Identitas = () => {
           </Stack>
         </Grid>
       )}
+      <Grid item xs={12} sx={{ marginY: 15 }}>
+        {object.role_person && (
+          <GenForm
+            formFields={initialFields.personal}
+            buttonDisable={false || open}
+            onSubmit={handleForm}
+            titleButton={object.status ? 'Update Data Personal' : 'Tambah Data Personal'}
+            initialValuesUpdate={object}
+          />
+        )}
+        <Stack direction="column" sx={{ marginTop: 5 }}>
+          <TableForm
+            columns={lampiranColumns.personal(
+              handlePersonal.edit,
+              handlePersonal.delete,
+              handlePersonal.reset,
+              handlePersonal.detail,
+              object.no
+            )}
+            rows={data || []}
+            expand={false}
+          />
+        </Stack>
+      </Grid>
       <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 4 }}>
         <Button variant="contained" color="success" onClick={handlePersonal.save}>
           Simpan Detail

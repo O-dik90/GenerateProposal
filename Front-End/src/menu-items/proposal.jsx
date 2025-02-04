@@ -16,7 +16,7 @@ const proposal = {
       id: 'proposal-table',
       title: 'Proposal Tabel',
       type: 'item',
-      url: '/proposal-table',
+      url: '/',
       icon: icons.BookOutlined
     }
   ]

@@ -56,7 +56,7 @@ const MainRoutes = {
       element: <ProposalTable />
     },
     {
-      path: 'proposal-table/:id',
+      path: 'proposal-table/:user_id/:id',
       element: <ProposalDetail />
     }
   ]

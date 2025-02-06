@@ -22,15 +22,19 @@ export const fetchProposal = createAsyncThunk('proposal/getlist', async (id) => 
   return response.data;
 });
 
-export const detailProposal = createAsyncThunk('proposal/fetch-detail', async (id) => {
-  const response = await axiosInstance.post(`/get-proposal/${id}`);
-  return response.data;
+export const detailProposal = createAsyncThunk('proposal/fetch-detail', async (params, { rejectWithValue }) => {
+  try {
+    const response = await axiosInstance.post(`/get-proposal/${params.user_id}`, { id: params.proposal_id });
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || 'An error occurred');
+  }
 });
 
 export const updateProposal = createAsyncThunk('proposal/update', async (params, { dispatch, rejectWithValue }) => {
   try {
-    const { id, user_id, ...updateData } = params;
-    const res = await axiosInstance.put(`/update-proposal/${id}`, updateData);
+    const { user_id, ...updateData } = params;
+    const res = await axiosInstance.put(`/update-proposal/${user_id}`, updateData);
 
     if (res.status === 200) {
       dispatch(fetchProposal(user_id));
@@ -146,6 +150,7 @@ export const updateFileLampiran = createAsyncThunk('proposal/update-file', async
 
 const initialState = {
   data: [],
+  proposal_detail: {},
   metadata: {},
   pendahuluan: {},
   pelaksanaan: {},
@@ -198,7 +203,7 @@ const proposalSlice = createSlice({
       })
       .addCase(detailProposal.fulfilled, (state, action) => {
         state.loading = false;
-        state.detail = action.payload;
+        state.proposal_detail = action.payload[0]?.proposalDetails;
         state.error = null;
       })
       // Update proposal

@@ -193,7 +193,7 @@ const ProposalTable = () => {
             variant="outlined"
             color="primary"
             sx={{ marginLeft: 3 }}
-            onClick={() => navigate(`/proposal-table/${params.row.id}`)}
+            onClick={() => navigate(`/proposal-table/${params.row.user_id}/${params.row.id}`)}
           >
             <ArrowRightOutlined />
           </IconButton>

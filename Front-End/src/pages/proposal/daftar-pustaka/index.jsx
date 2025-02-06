@@ -323,7 +323,7 @@ const Dapus = () => {
   }, [dispatch, style]);
   useEffect(() => {
     if (dapus) {
-      setData(dapus ?? []);
+      setData([]);
     }
   }, [dapus]);
 

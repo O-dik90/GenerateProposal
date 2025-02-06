@@ -10,27 +10,28 @@ import Pendahuluan from './bab-pendahuluan/pendahuluan';
 import TabContext from '@mui/lab/TabContext';
 import TabPanel from '@mui/lab/TabPanel';
 import Tinjauan from './bab-tinjauan-pustaka';
-import { getListBabProposal } from 'store/slices/proposal';
+import { detailProposal, } from 'store/slices/proposal';
 import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
 const ProposalDetail = () => {
-  const { id } = useParams();
+  const param = useParams();
   const dispatch = useDispatch();
 
   const [value, setValue] = useState('1');
 
   useEffect(() => {
     const fetchData = async () => {
+      console.log({ user_id: param.user_id, proposal_id: param.id });
       try {
-        await dispatch(getListBabProposal(id));
+        await dispatch(detailProposal({ user_id: param.user_id, proposal_id: param.id }));
       } catch (error) {
         console.error('Error fetching proposal details:', error);
       }
     };
 
     fetchData();
-  }, [dispatch, id]);
+  }, [dispatch]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);

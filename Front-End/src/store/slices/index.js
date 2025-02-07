@@ -5,8 +5,8 @@ import proposal from './proposal';
 import user from './user';
 
 const AppReducer = combineReducers({
-  auth,
   user,
+  auth,
   proposal,
   masterData
 });

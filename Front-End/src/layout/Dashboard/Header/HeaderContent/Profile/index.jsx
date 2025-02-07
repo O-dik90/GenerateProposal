@@ -1,4 +1,3 @@
-import { getMe, userLogout } from 'store/slices/auth';
 import { useRef, useState } from 'react';
 
 import Avatar from 'components/@extended/Avatar';
@@ -22,6 +21,7 @@ import { useAuth } from 'pages/protect/authProvider';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { useTheme } from '@mui/material/styles';
+import { userLogout } from 'store/slices/auth';
 
 function TabPanel({ children, value, index, ...other }) {
   return (
@@ -69,8 +69,6 @@ export default function Profile() {
     try {
       const res = await dispatch(userLogout());
       if (userLogout.fulfilled.match(res)) {
-        const check = await dispatch(getMe());
-        console.log(check);
         navigate('/login');
       }
     } catch (error) {

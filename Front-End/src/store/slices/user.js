@@ -5,7 +5,6 @@ import axiosInstance from 'api/base-url';
 
 export const userRegister = createAsyncThunk('user/add-user', async (params, { rejectWithValue }) => {
   try {
-    console.log('a', params);
     const res = await axiosInstance.post(`/add-user`, params);
 
     return res.data;
@@ -27,7 +26,7 @@ export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    reset: (state) => initialState
+    userReset: (state) => initialState
   },
   extraReducers: (builder) => {
     builder
@@ -48,5 +47,5 @@ export const userSlice = createSlice({
   }
 });
 
-export const { reset } = userSlice.actions;
+export const { userReset } = userSlice.actions;
 export default userSlice.reducer;

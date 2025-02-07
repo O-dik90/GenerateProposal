@@ -16,12 +16,14 @@ import React from 'react';
 import Stack from '@mui/material/Stack';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
+import { useSnackbar } from 'notistack';
 import { useState } from 'react';
 import { userLogin } from 'store/slices/auth';
 
 export default function AuthLogin() {
   const [showPassword, setShowPassword] = useState(false),
     dispatch = useDispatch(),
+    { enqueueSnackbar } = useSnackbar(),
     navigate = useNavigate();
 
   const handleClickShowPassword = () => {
@@ -37,6 +39,7 @@ export default function AuthLogin() {
       const res = await dispatch(userLogin({ email: values.email, password: values.password }));
 
       if (userLogin.fulfilled.match(res)) {
+        enqueueSnackbar('Berhasil Masuk', { variant: 'success' });
         navigate('/');
       }
     } catch (error) {
@@ -127,7 +130,7 @@ export default function AuthLogin() {
                   variant="contained"
                   color="primary"
                 >
-                  Login
+                  Masuk
                 </Button>
               </AnimateButton>
             </Grid>

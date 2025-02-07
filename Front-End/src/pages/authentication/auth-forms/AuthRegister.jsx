@@ -20,12 +20,14 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
+import { useSnackbar } from 'notistack';
 import { userRegister } from 'store/slices/user';
 
 export default function AuthRegister() {
   const [level, setLevel] = useState();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
   const [showPassword, setShowPassword] = useState(false);
   const [showPassword1, setShowPassword1] = useState(false);
   const handleClickShowPassword = () => {
@@ -50,10 +52,11 @@ export default function AuthRegister() {
 
   const handleSubmit = async (values, { setSubmitting, setErrors }) => {
     try {
-      console.log(values);
       const res = await dispatch(userRegister(values));
       if (res.meta.requestStatus === 'fulfilled') {
-        navigate('/login');
+        Promise.resolve()
+          .then(() => enqueueSnackbar('Registrasi berhasil, silahkan login', { variant: 'success' }))
+          .finally(navigate('/login'));
       }
     } catch (error) {
       setErrors({ submit: error.message });

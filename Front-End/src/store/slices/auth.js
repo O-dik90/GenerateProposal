@@ -16,13 +16,16 @@ export const userLogin = createAsyncThunk('user/login', async (params, { rejectW
     }
   }
 });
-export const getMe = createAsyncThunk('user/getMe', async () => {
+export const getMe = createAsyncThunk('user/getMe', async ({dispatch }) => {
   try {
     const res = await axiosInstance.get(`/my-self`);
 
     return res.data;
   } catch (error) {
     console.log(error);
+    if (error.response.status === 401) {
+      dispatch(userLogout());
+    }
   }
 });
 

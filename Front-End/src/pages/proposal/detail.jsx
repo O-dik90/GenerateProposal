@@ -31,7 +31,7 @@ const ProposalDetail = () => {
     };
 
     fetchData();
-  }, [dispatch]);
+  }, [dispatch, param.id, param.user_id]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);

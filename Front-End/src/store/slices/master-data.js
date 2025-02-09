@@ -28,7 +28,7 @@ const initialState = {
   tahunLomba: [],
   gender: [],
   dapus: { style: [], reference: [] },
-  lampiran: { role: [] },
+  lampiran: [],
   loading: false,
   error: null
 };

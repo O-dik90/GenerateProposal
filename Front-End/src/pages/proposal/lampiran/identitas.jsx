@@ -149,14 +149,14 @@ const Identitas = () => {
   );
   useEffect(() => {
     const loadMasterData = async () => {
-      if (!gender.length) await dispatch(masterGender({ source_name: 'GENDER' }));
+      if (!gender.length) await dispatch(masterGender({ name: 'GENDER' }));
     };
     loadMasterData();
   }, [dispatch, gender]);
 
   useEffect(() => {
     const loadMasterData = async () => {
-      if (!role.length) await dispatch(masterLampiranRole({ source_name: 'ROLE_IDENTITAS' }));
+      if (!role.length) await dispatch(masterLampiranRole({ name: 'ROLE_IDENTITAS' }));
     };
     loadMasterData();
   }, [dispatch, role]);
@@ -211,7 +211,7 @@ const Identitas = () => {
         <MenuItem disabled value="">
           <em>Pilih Keanggotaan</em>
         </MenuItem>
-        {role.map((item) => (
+        {role?.map((item) => (
           <MenuItem key={item.id} value={item.name_id}>
             {item.name_id}
           </MenuItem>

@@ -92,6 +92,7 @@ export default function Breadcrumbs({ navigation, title, maxItems = 8, separator
         </Box>
       </MainCard>
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [item, main, title, maxItems, separator, others, location.pathname]);
 
   return breadcrumbContent;

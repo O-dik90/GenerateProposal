@@ -5,9 +5,11 @@ import axiosInstance from 'api/base-url';
 
 export const userLogin = createAsyncThunk('user/login', async (params, { rejectWithValue }) => {
   try {
-    console.log('a', params);
     const res = await axiosInstance.post(`/login`, params);
 
+    if (res) {
+      sessionStorage.setItem('token', res.data.token);
+    }
     return res.data;
   } catch (error) {
     console.log(error);
@@ -16,23 +18,31 @@ export const userLogin = createAsyncThunk('user/login', async (params, { rejectW
     }
   }
 });
-export const getMe = createAsyncThunk('user/getMe', async ({dispatch }) => {
+export const getMe = createAsyncThunk('user/getMe', async (_, thunkAPI) => {
   try {
-    const res = await axiosInstance.get(`/my-self`);
-
+    const res = await axiosInstance.post('/my-self');
+    if (res) {
+      sessionStorage.setItem('token', res.data.token);
+    }
     return res.data;
   } catch (error) {
-    console.log(error);
-    if (error.response.status === 401) {
-      dispatch(userLogout());
+    console.error('Error in getMe:', error);
+    if (error.response) {
+      if (error.response.status === 401) {
+        thunkAPI.dispatch(userLogout());
+        toast.error('Sessi kadaluarsa. Silahkan login kembali.');
+      }
+      return thunkAPI.rejectWithValue(error.response.data);
     }
+    return thunkAPI.rejectWithValue('An unknown error occurred');
   }
 });
-
 export const userLogout = createAsyncThunk('user/logout', async () => {
   try {
     const res = await axiosInstance.delete(`/logout`);
-
+    if (res) {
+      sessionStorage.removeItem('token');
+    }
     return res.data;
   } catch (error) {
     console.log(error);
@@ -40,7 +50,6 @@ export const userLogout = createAsyncThunk('user/logout', async () => {
 });
 const initialState = {
   user: null,
-  token: null,
   loading: false,
   message: '',
   error: null
@@ -73,7 +82,7 @@ export const authSlice = createSlice({
       })
       .addCase(getMe.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload.user;
+        state.user = action.payload;
         state.error = null;
       })
       .addCase(getMe.rejected, (state, action) => {

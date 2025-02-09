@@ -1,13 +1,24 @@
+import { Link, useNavigate } from 'react-router-dom';
+
 import AuthRegister from './auth-forms/AuthRegister';
 import AuthWrapper from './AuthWrapper';
 import Grid from '@mui/material/Grid';
-import { Link } from 'react-router-dom';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { useAuth } from 'pages/protect/authProvider';
+import { useEffect } from 'react';
 
 // ================================|| REGISTER ||================================ //
 
 export default function Register() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      navigate('/');
+    }
+  }, [navigate, user]);
   return (
     <AuthWrapper>
       <Grid container spacing={3}>

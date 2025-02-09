@@ -17,9 +17,9 @@ const AutoLoginCheck = () => {
       }
     };
 
-    checkSession(); // Check session when the page loads
-    const interval = setInterval(checkSession, 60000); // Check every minute
-    return () => clearInterval(interval); // Clean up the interval on unmount
+    checkSession();
+    const interval = setInterval(checkSession, 60000);
+    return () => clearInterval(interval);
   }, [dispatch]);
 
   return null; // No need to render anything, this is for session management

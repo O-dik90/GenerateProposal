@@ -14,6 +14,7 @@ axiosInstance.interceptors.request.use(
     return config;
   },
   (error) => {
+    console.log(error.response);
     enqueueSnackbar('Request error: ' + error.message, { variant: 'error' });
     return Promise.reject(error);
   }
@@ -24,12 +25,10 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (error.response && error.response.status === 401) {
-      // enqueueSnackbar('Sessi kadaluarsa.', { variant: 'error' });
-
-      // setTimeout(() => {
-      //   window.location.href = '/login';
-      // }, 1000);
+    console.log(error.response);
+    if (error.response.status === 401) {
+      enqueueSnackbar('Unauthorized', { variant: 'error' });
+      window.sessionStorage.clear();
     } else if (error.response) {
       enqueueSnackbar(error.response.data.msg || error.response.data.message || error.message, { variant: 'error' });
     }

@@ -3,6 +3,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { deleteFileLampiran, getListLampiran, updateFileLampiran, uploadFileLampiran } from 'store/slices/proposal';
 
 import { CloudUploadOutlined } from '@ant-design/icons';
+import FileDownloader from 'components/button-download';
 import { STATEMENT_INIT } from './initial-data';
 import { TableForm } from 'components/table-form';
 import { statementColumns } from './initial-column';
@@ -164,15 +165,19 @@ const SuratPernyataan = () => {
         Note untuk menyertakan materai, tanda tangan dan tanggal yang tertera adalah selama pembukaan PKM 2025, jenis PKM dan Judul harus
         sesuai nama tidak boleh disingkat.
       </Typography>
-      <Stack direction="row" spacing={2} alignItems="center">
-        <Button variant="outlined" component="label" size="small" startIcon={<CloudUploadOutlined />} disabled={isLoading}>
-          Choose File
-          <input accept={state.allowExtension.join(',')} type="file" hidden onChange={handleFileChange(state.key)} />
-        </Button>
-        <Typography variant="body1" sx={{ fontWeight: 500, color: 'primary.main' }}>
-          {object[state.key]?.filename || 'No file selected'}
-        </Typography>
-      </Stack>
+
+      <Box display="flex" justifyContent="space-between">
+        <Stack direction="row" spacing={2} alignItems="center">
+          <Button variant="outlined" component="label" size="small" startIcon={<CloudUploadOutlined />} disabled={isLoading}>
+            Choose File
+            <input accept={state.allowExtension.join(',')} type="file" hidden onChange={handleFileChange(state.key)} />
+          </Button>
+          <Typography variant="body1" sx={{ fontWeight: 500, color: 'primary.main' }}>
+            {object[state.key]?.filename || 'No file selected'}
+          </Typography>
+        </Stack>
+        <FileDownloader />
+      </Box>
       <Stack direction="row" spacing={2} my={2}>
         {!object[state.key]?.status ? (
           <Button variant="contained" color="primary" onClick={handleUploadFile} disabled={isLoading || data.length >= 1}>

@@ -1,5 +1,8 @@
 import * as Yup from 'yup';
 
+import React, { useEffect } from 'react';
+import { getMe, userLogin } from 'store/slices/auth';
+
 import AnimateButton from 'components/@extended/AnimateButton';
 import Button from '@mui/material/Button';
 import EyeInvisibleOutlined from '@ant-design/icons/EyeInvisibleOutlined';
@@ -12,13 +15,11 @@ import InputAdornment from '@mui/material/InputAdornment';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import PropTypes from 'prop-types';
-import React from 'react';
 import Stack from '@mui/material/Stack';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { useSnackbar } from 'notistack';
 import { useState } from 'react';
-import { userLogin } from 'store/slices/auth';
 
 export default function AuthLogin() {
   const [showPassword, setShowPassword] = useState(false),
@@ -48,9 +49,13 @@ export default function AuthLogin() {
     setSubmitting(false);
   };
 
+  useEffect(() => {
+    dispatch(getMe());
+  }, [dispatch]);
+
   return (
     <Formik
-      initialValues={{ email: 'odik@email.com', password: 'password.123' }}
+      initialValues={{ email: 'andika@email.com', password: 'password.123' }}
       validationSchema={Yup.object().shape({
         email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
         password: Yup.string().max(255).required('Password is required')

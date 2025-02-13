@@ -11,9 +11,17 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
+    const user = sessionStorage.getItem('user');
+    const token = user ? JSON.parse(user)?.token : null;
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
   (error) => {
+    if (error.code === 'ECONNABORTED') {
+      enqueueSnackbar(`Error, ${error.code}}`, { variant: 'error' });
+    }
     console.log(error.response);
     enqueueSnackbar('Request error: ' + error.message, { variant: 'error' });
     return Promise.reject(error);
@@ -29,6 +37,7 @@ axiosInstance.interceptors.response.use(
     if (error.response.status === 401) {
       enqueueSnackbar('Unauthorized', { variant: 'error' });
       window.sessionStorage.clear();
+      window.location.reload();
     } else if (error.response) {
       enqueueSnackbar(error.response.data.msg || error.response.data.message || error.message, { variant: 'error' });
     }

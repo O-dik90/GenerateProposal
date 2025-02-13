@@ -8,7 +8,7 @@ export const userLogin = createAsyncThunk('user/login', async (params, { rejectW
     const res = await axiosInstance.post(`/login`, params);
 
     if (res) {
-      sessionStorage.setItem('token', res.data.token);
+      sessionStorage.setItem('user', JSON.stringify(res.data));
     }
     return res.data;
   } catch (error) {
@@ -20,28 +20,20 @@ export const userLogin = createAsyncThunk('user/login', async (params, { rejectW
 });
 export const getMe = createAsyncThunk('user/getMe', async (_, thunkAPI) => {
   try {
-    const res = await axiosInstance.post('/my-self');
-    if (res) {
-      sessionStorage.setItem('token', res.data.token);
-    }
-    return res.data;
+    const res = sessionStorage.getItem('user');
+
+    const data = JSON.parse(res);
+    return data;
   } catch (error) {
-    console.error('Error in getMe:', error);
-    if (error.response) {
-      if (error.response.status === 401) {
-        thunkAPI.dispatch(userLogout());
-        toast.error('Sessi kadaluarsa. Silahkan login kembali.');
-      }
-      return thunkAPI.rejectWithValue(error.response.data);
-    }
-    return thunkAPI.rejectWithValue('An unknown error occurred');
+    console.log(error.message);
+    return thunkAPI.rejectWithValue(error);
   }
 });
 export const userLogout = createAsyncThunk('user/logout', async () => {
   try {
     const res = await axiosInstance.delete(`/logout`);
     if (res) {
-      sessionStorage.removeItem('token');
+      sessionStorage.clear();
     }
     return res.data;
   } catch (error) {

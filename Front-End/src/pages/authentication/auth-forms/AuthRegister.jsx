@@ -68,11 +68,11 @@ export default function AuthRegister() {
     <>
       <Formik
         initialValues={{
-          name: 'testing',
+          name: '',
           lastname: '',
-          email: 'testing@email.com',
-          password: 'testing123',
-          confPassword: 'testing123',
+          email: '',
+          password: '',
+          confPassword: '',
           role: 'user'
         }}
         validationSchema={Yup.object().shape({

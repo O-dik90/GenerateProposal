@@ -34,11 +34,7 @@ axiosInstance.interceptors.response.use(
   },
   (error) => {
     console.log(error.response);
-    if (error.response.status === 401) {
-      enqueueSnackbar('Unauthorized', { variant: 'error' });
-      window.sessionStorage.clear();
-      window.location.reload();
-    } else if (error.response) {
+    if (error.response) {
       enqueueSnackbar(error.response.data.msg || error.response.data.message || error.message, { variant: 'error' });
     }
     return Promise.reject(error);

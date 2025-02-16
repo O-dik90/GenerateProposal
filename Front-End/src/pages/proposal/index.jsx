@@ -141,7 +141,7 @@ const ProposalTable = () => {
       }
     },
     {
-      field: 'belmawa',
+      field: 'pkm_belmawa',
       headerName: 'Dana Belmawa',
       width: 175,
       align: 'center',
@@ -155,7 +155,7 @@ const ProposalTable = () => {
       }
     },
     {
-      field: 'perguruan',
+      field: 'pkm_perguruan',
       headerName: 'Dana Perguruan Tinggi',
       width: 175,
       align: 'center',
@@ -234,7 +234,7 @@ const ProposalTable = () => {
     // Convert to number
     let numValue = parseInt(numericValue, 10) || 0;
 
-    if (name === 'belmawa' || name === 'perguruan') {
+    if (name === 'pkm_belmawa' || name === 'pkm_perguruan') {
       setObject((prevObject) => ({
         ...prevObject,
         [name]: numValue

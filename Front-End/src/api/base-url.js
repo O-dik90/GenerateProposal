@@ -34,6 +34,10 @@ axiosInstance.interceptors.response.use(
   },
   (error) => {
     console.log(error.response);
+    if (error.response.status === 401) {
+      sessionStorage.removeItem('user');
+      window.location.href = '/login';
+    }
     if (error.response) {
       enqueueSnackbar(error.response.data.msg || error.response.data.message || error.message, { variant: 'error' });
     }

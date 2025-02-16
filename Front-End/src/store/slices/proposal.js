@@ -148,9 +148,19 @@ export const updateFileLampiran = createAsyncThunk('proposal/update-file', async
   }
 });
 
+export const getBabProposalDetail = createAsyncThunk('proposal/get-bab-proposal', async (params, { rejectWithValue }) => {
+  try {
+    const response = await axiosInstance.post(`/get-bab-proposal/${params.id}`, params);
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data);
+  }
+});
+
 const initialState = {
   data: [],
-  proposal_detail: {},
+  proposal_detail: [],
   metadata: {},
   pendahuluan: {},
   pelaksanaan: {},
@@ -283,6 +293,20 @@ const proposalSlice = createSlice({
         state.message = action.payload.message;
         state.document = action.payload.data;
         state.error = null;
+      })
+      .addCase(getBabProposalDetail.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getBabProposalDetail.fulfilled, (state, action) => {
+        state.loading = false;
+        state.message = action.payload.message;
+        state.proposal_detail = action.payload;
+        state.error = null;
+      })
+      .addCase(getBabProposalDetail.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
       });
   }
 });

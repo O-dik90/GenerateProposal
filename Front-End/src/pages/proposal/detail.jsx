@@ -29,18 +29,18 @@ const ProposalDetail = () => {
     }
   }, [navigate, user]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      console.log({ user_id: param.user_id, proposal_id: param.id });
-      try {
-        await dispatch(detailProposal({ user_id: param.user_id, proposal_id: param.id }));
-      } catch (error) {
-        console.error('Error fetching proposal details:', error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     console.log({ user_id: param.user_id, proposal_id: param.id });
+  //     try {
+  //       await dispatch(detailProposal({ user_id: param.user_id, proposal_id: param.id }));
+  //     } catch (error) {
+  //       console.error('Error fetching proposal details:', error);
+  //     }
+  //   };
 
-    fetchData();
-  }, [dispatch, param.id, param.user_id]);
+  //   fetchData();
+  // }, [dispatch, param.id, param.user_id]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);

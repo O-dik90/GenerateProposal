@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import TableGrid from 'components/table/TableGrid';
-import { updateBabPendahuluan } from 'store/slices/proposal';
+import { getBabProposalDetail, updateBabPendahuluan } from 'store/slices/proposal';
 import { useParams } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 
@@ -42,6 +42,16 @@ const Pendahuluan = () => {
       manfaat: []
     });
 
+  useEffect(() => {
+    if (id) {
+      dispatch(
+        getBabProposalDetail({
+          id: id,
+          bab_title: 'BAB 1'
+        })
+      );
+    }
+  }, [id]);
   // Populate data from Redux state
   useEffect(() => {
     if (pendahuluan.latar_belakang !== null || pendahuluan.latar_belakang !== null) {

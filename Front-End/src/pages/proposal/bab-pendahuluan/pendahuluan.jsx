@@ -1,19 +1,20 @@
 import { Grid, TextField, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
+import { getBabProposalDetail, updateBabProposalDetail } from 'store/slices/proposal';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import TableGrid from 'components/table/TableGrid';
-import { getBabProposalDetail, updateBabPendahuluan } from 'store/slices/proposal';
 import { useParams } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 
 const Pendahuluan = () => {
+  const BAB_TITLE = 'BAB 1 PENDAHULUAN';
   const { id } = useParams(),
     { enqueueSnackbar } = useSnackbar(),
     dispatch = useDispatch();
-  const { pendahuluan } = useSelector((state) => state.app.proposal);
+  const { proposal_detail } = useSelector((state) => state.app.proposal);
   const [rumusan, setRumusan] = useState({
       no: 1,
       data: '',
@@ -47,24 +48,35 @@ const Pendahuluan = () => {
       dispatch(
         getBabProposalDetail({
           id: id,
-          bab_title: 'BAB 1'
+          bab_title: BAB_TITLE
         })
       );
     }
-  }, [id]);
-  // Populate data from Redux state
+  }, [dispatch, id]);
+
   useEffect(() => {
-    if (pendahuluan.latar_belakang !== null || pendahuluan.latar_belakang !== null) {
-      setData({
-        proposals_id: Number(id),
-        latar_belakang: pendahuluan?.latar_belakang || '',
-        rumusan_masalah: pendahuluan?.rumusan_masalah || [],
-        tujuan: pendahuluan?.tujuan || [],
-        luaran: pendahuluan?.luaran || [],
-        manfaat: pendahuluan?.manfaat || []
-      });
+    if (proposal_detail.length > 0 && BAB_TITLE === 'BAB 1 PENDAHULUAN') {
+      const bab1 = JSON.parse(proposal_detail[0].json_data || '{}');
+      if (bab1) {
+        setData({
+          latar_belakang: bab1.latar_belakang,
+          rumusan_masalah: bab1.rumusan_masalah === null ? [] : bab1.rumusan_masalah,
+          tujuan: bab1.tujuan === null ? [] : bab1.tujuan,
+          luaran: bab1.luaran === null ? [] : bab1.luaran,
+          manfaat: bab1.manfaat === null ? [] : bab1.manfaat
+        });
+      }
     }
-  }, [id, pendahuluan]);
+    return () => {
+      setData({
+        latar_belakang: '',
+        rumusan_masalah: [],
+        tujuan: [],
+        luaran: [],
+        manfaat: []
+      });
+    };
+  }, [proposal_detail]);
 
   // Handler for adding a new item to a specific array
   const handleRumusan = {
@@ -233,7 +245,7 @@ const Pendahuluan = () => {
 
   const handleSimpan = () => {
     try {
-      dispatch(updateBabPendahuluan(data));
+      dispatch(updateBabProposalDetail({ id: Number(id), data: { json_data: data, bab_title: 'BAB 1' } }));
       enqueueSnackbar('Berhasil Menyimpan!', { variant: 'success' });
     } catch (error) {
       enqueueSnackbar('Gagal Menyimpan!', { variant: 'error' });

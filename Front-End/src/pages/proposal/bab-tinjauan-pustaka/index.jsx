@@ -1,5 +1,6 @@
 import { Button, Grid, Stack, Typography } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
+import { getBabProposalDetail, updateBabProposalDetail } from 'store/slices/proposal';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { Columns } from './initial-column';
@@ -7,13 +8,15 @@ import { FieldsData } from './initial-form';
 import GenForm from 'components/general-form';
 import { TINJAUAN_INIT } from './initial-data';
 import { TableForm } from 'components/table-form';
-import { updateBab } from 'store/slices/proposal';
+import { useParams } from 'react-router';
 import { useSnackbar } from 'notistack';
 
 const Tinjauan = () => {
+  const BAB_TITLE2 = 'BAB 2 TINJAUAN PUSTAKA';
   const dispatch = useDispatch();
+  const { id } = useParams();
   const { enqueueSnackbar } = useSnackbar();
-  const { tinjauan: DataTinjauan, metadata: rawData } = useSelector((state) => state.app.proposal);
+  const { proposal_detail } = useSelector((state) => state.app.proposal);
 
   const [data, setData] = useState([]);
   const [formObject, setFormObject] = useState({ tinjauan: TINJAUAN_INIT });
@@ -66,15 +69,13 @@ const Tinjauan = () => {
     ),
     save: async () => {
       const newData = {
-        id: rawData[5]?.id,
-        proposals_id: rawData[5]?.proposals_id,
-        bab_title: rawData[5]?.bab_title,
+        bab_title: BAB_TITLE2,
         json_data: data?.tinjauan
       };
 
       try {
-        const res = await dispatch(updateBab(newData));
-        if (updateBab.fulfilled.match(res)) {
+        const res = await dispatch(updateBabProposalDetail({ id: Number(id), data: newData }));
+        if (updateBabProposalDetail.fulfilled.match(res)) {
           enqueueSnackbar('Berhasil menyimpan', { variant: 'success' });
         } else {
           enqueueSnackbar('Gagal menyimpan', { variant: 'error' });
@@ -86,12 +87,30 @@ const Tinjauan = () => {
   };
 
   useEffect(() => {
-    if (Array.isArray(DataTinjauan)) {
-      setData({ tinjauan: DataTinjauan });
-    } else {
-      setData([]);
+    if (id) {
+      dispatch(
+        getBabProposalDetail({
+          id: id,
+          bab_title: BAB_TITLE2
+        })
+      );
     }
-  }, [DataTinjauan]);
+  }, [dispatch, id]);
+
+  useEffect(() => {
+    if (proposal_detail?.length > 0 && BAB_TITLE2) {
+      const bab2 = JSON.parse(proposal_detail[0].json_data || '[]');
+      console.log(bab2);
+      if (Array.isArray(bab2)) {
+        setData({ tinjauan: bab2 });
+      } else {
+        setData([]);
+      }
+    }
+    return () => {
+      setData([]);
+    };
+  }, [proposal_detail]);
 
   return (
     <>

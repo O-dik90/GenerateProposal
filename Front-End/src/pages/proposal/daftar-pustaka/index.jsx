@@ -351,8 +351,8 @@ const Dapus = () => {
                 <em>Referensi</em>
               </MenuItem>
               {reference.map((o) => (
-                <MenuItem key={o.name_id} value={o.name_desc}>
-                  {o.name}
+                <MenuItem key={o.id} value={o.init}>
+                  {o.description}
                 </MenuItem>
               ))}
             </Select>
@@ -369,8 +369,8 @@ const Dapus = () => {
                 <em>Gaya Penulisan</em>
               </MenuItem>
               {style.map((o) => (
-                <MenuItem key={o.name_id} value={o.name_desc}>
-                  {o.name}
+                <MenuItem key={o.id} value={o.init}>
+                  {o.description}
                 </MenuItem>
               ))}
             </Select>

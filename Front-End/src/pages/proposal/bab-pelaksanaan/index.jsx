@@ -1,5 +1,6 @@
 import { Button, Grid, Stack, Typography } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
+import { getBabProposalDetail, updateBabProposalDetail } from 'store/slices/proposal';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { Columns } from './initial-column';
@@ -7,11 +8,13 @@ import { FieldsData } from './initial-form';
 import GenForm from 'components/general-form';
 import { PELAKSANAAN_INIT } from './initial-data';
 import { TableForm } from 'components/table-form';
-import { updateBab } from 'store/slices/proposal';
+import { useParams } from 'react-router';
 import { useSnackbar } from 'notistack';
 
 const Pelaksanaan = () => {
-  const { pelaksanaan: DataPelaksanaan, metadata: rawData } = useSelector((state) => state.app.proposal),
+  const BAB_TITLE3 = 'BAB 3 TAHAP PELAKSANAAN';
+  const { id } = useParams();
+  const { proposal_detail } = useSelector((state) => state.app.proposal),
     dispatch = useDispatch(),
     { enqueueSnackbar } = useSnackbar();
   const [data, setData] = useState([]),
@@ -65,31 +68,45 @@ const Pelaksanaan = () => {
     ),
     save: async () => {
       const newData = {
-        id: rawData[6]?.id,
-        proposals_id: rawData[6]?.proposals_id,
-        bab_title: rawData[6]?.bab_title,
+        bab_title: BAB_TITLE3,
         json_data: data?.pelaksanaan
       };
       try {
-        const res = await dispatch(updateBab(newData));
-        if (updateBab.fulfilled.match(res)) {
+        const res = await dispatch(updateBabProposalDetail({ id: Number(id), data: newData }));
+        if (updateBabProposalDetail.fulfilled.match(res)) {
           enqueueSnackbar('Berhasil menyimpan', { variant: 'success' });
-        } else if (updateBab.rejected.match(res)) {
+        } else {
           enqueueSnackbar('Gagal menyimpan', { variant: 'error' });
         }
-      } catch (error) {
+      } catch {
         enqueueSnackbar('Terjadi error', { variant: 'error' });
       }
     }
   };
 
   useEffect(() => {
-    if (Array.isArray(DataPelaksanaan)) {
-      setData({ pelaksanaan: DataPelaksanaan });
-    } else {
-      setData([]);
+    if (id) {
+      dispatch(
+        getBabProposalDetail({
+          id: id,
+          bab_title: BAB_TITLE3
+        })
+      );
     }
-  }, [DataPelaksanaan]);
+  }, [dispatch, id]);
+
+  useEffect(() => {
+    if (proposal_detail?.length > 0 && BAB_TITLE3) {
+      const bab3 = JSON.parse(proposal_detail[0].json_data || '[]');
+      console.log(bab3);
+      if (Array.isArray(bab3)) {
+        setData({ pelaksanaan: bab3 });
+      }
+    }
+    return () => {
+      setData([]);
+    };
+  }, [proposal_detail]);
   return (
     <>
       <Typography variant="h4" gutterBottom>

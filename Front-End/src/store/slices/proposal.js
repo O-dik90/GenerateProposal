@@ -158,6 +158,17 @@ export const getBabProposalDetail = createAsyncThunk('proposal/get-bab-proposal'
   }
 });
 
+export const updateBabProposalDetail = createAsyncThunk('proposal/update-bab-proposal', async (params, { dispatch, rejectWithValue }) => {
+  try {
+    const res = await axiosInstance.put(`/update-bab-proposal/${params?.id}`, params?.data);
+    if (res.status === 200) {
+      await dispatch(getBabProposalDetail(params?.proposals_id));
+    }
+    return res.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data || 'An error occurred');
+  }
+});
 const initialState = {
   data: [],
   proposal_detail: [],
@@ -305,6 +316,19 @@ const proposalSlice = createSlice({
         state.error = null;
       })
       .addCase(getBabProposalDetail.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      .addCase(updateBabProposalDetail.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateBabProposalDetail.fulfilled, (state, action) => {
+        state.loading = false;
+        state.message = action.payload.message;
+        state.error = null;
+      })
+      .addCase(updateBabProposalDetail.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       });

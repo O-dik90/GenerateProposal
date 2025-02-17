@@ -1,20 +1,23 @@
 import { BIAYA_INIT, KEGIATAN_INIT, dataBiaya } from './initial-data';
 import { Button, Grid, Stack, Typography } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
+import { getBabProposalDetail, updateBabProposalDetail } from 'store/slices/proposal';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { Columns } from './initial-column';
 import { FieldsData } from './initial-form';
 import GenForm from 'components/general-form';
 import { TableForm } from 'components/table-form';
-import { updateBab } from 'store/slices/proposal';
+import { useParams } from 'react-router';
 import { useSnackbar } from 'notistack';
 
+const BAB_TITLE4 = 'BAB 4 BIAYA DAN JADWAL KEGIATAN';
+
 const Kegiatan = () => {
+  const { id } = useParams();
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
-
-  const { biaya: kegiatanData, metadata: rawData, lampiran } = useSelector((state) => state.app.proposal);
+  const { lampiran, proposal_detail } = useSelector((state) => state.app.proposal);
 
   const [object, setObject] = useState({
     biaya: BIAYA_INIT,
@@ -26,21 +29,12 @@ const Kegiatan = () => {
     kegiatan: []
   });
 
-  // Helper to reset form state
   const resetFormState = useCallback((key) => {
-    setObject((prev) => ({ ...prev, [key]: initialStateForKey(key) }));
+    setObject((prev) => ({ ...prev, [key]: key === 'kegiatan' ? KEGIATAN_INIT : {} }));
   }, []);
 
-  const initialStateForKey = (key) => {
-    if (key === 'kegiatan') return KEGIATAN_INIT;
-    return {};
-  };
-
-  // Handle Kegiatan actions (edit, reset, delete, save)
   const handleKegiatan = {
-    edit: (key) => (item) => {
-      setObject((prev) => ({ ...prev, [key]: { ...item, status: true } }));
-    },
+    edit: (key) => (item) => setObject((prev) => ({ ...prev, [key]: { ...item, status: true } })),
     reset: (key) => () => resetFormState(key),
     delete: (key) => (item) => {
       setData((prev) => ({
@@ -50,87 +44,71 @@ const Kegiatan = () => {
     },
     save: async () => {
       const newData = {
-        id: rawData[7]?.id,
-        proposals_id: rawData[7]?.proposals_id,
-        bab_title: rawData[7]?.bab_title,
+        bab_title: BAB_TITLE4,
         json_data: data.kegiatan
       };
 
       try {
-        const res = await dispatch(updateBab(newData));
-        if (updateBab.fulfilled.match(res)) {
+        const res = await dispatch(updateBabProposalDetail({ id: Number(id), data: newData }));
+        if (updateBabProposalDetail.fulfilled.match(res)) {
           enqueueSnackbar('Berhasil menyimpan', { variant: 'success' });
         } else {
           enqueueSnackbar('Gagal menyimpan', { variant: 'error' });
         }
       } catch {
-        enqueueSnackbar('Terjadi error saat menyimpan', { variant: 'error' });
+        enqueueSnackbar('Terjadi error', { variant: 'error' });
       }
     }
   };
 
-  // Handle form submission for both biaya and kegiatan
   const handleFormSubmit = useCallback(
     (values, key) => {
-      if (object[key]?.status) {
-        setData((prev) => ({
-          ...prev,
-          [key]: prev[key].map((item) => (item.no === object[key]?.no ? { ...item, ...values, status: false } : item))
-        }));
-        resetFormState(key);
-      } else {
-        const newItem = { ...values, no: (data[key]?.length || 0) + 1 };
-        setData((prev) => ({
-          ...prev,
-          [key]: [...prev[key], newItem]
-        }));
-      }
+      setData((prev) => ({
+        ...prev,
+        [key]: object[key]?.status
+          ? prev[key].map((item) => (item.no === object[key]?.no ? { ...item, ...values, status: false } : item))
+          : [...prev[key], { ...values, no: (prev[key]?.length || 0) + 1 }]
+      }));
+      resetFormState(key);
     },
-    [data, object, resetFormState]
+    [object, resetFormState]
   );
 
-  // Populate data on component mount or when biaya changes
   useEffect(() => {
-    if (Array.isArray(kegiatanData) && lampiran?.anggaran?.cost) {
-      const cost = lampiran.anggaran.cost;
+    if (id) {
+      dispatch(getBabProposalDetail({ id, bab_title: BAB_TITLE4 }));
+    }
+  }, [dispatch, id]);
 
-      const updatedBiaya = dataBiaya.reduce((acc, item) => {
-        const ref = item.ref;
-        if (cost[ref]) {
-          acc.push({
-            ...item,
-            sub_total: cost[ref].belmawa + cost[ref].perguruan,
-            sumber: item.sumber.map((sumberItem) => ({
-              ...sumberItem,
-              amount: cost[ref][sumberItem.type]
-            }))
-          });
-        } else {
-          acc.push(item);
-        }
-        return acc;
-      }, []);
+  useEffect(() => {
+    if (!proposal_detail?.length) {
+      setData({ biaya: [], kegiatan: [] });
+      return;
+    }
 
-      setData((prev) => {
-        const isBiayaChanged = JSON.stringify(prev.biaya) !== JSON.stringify(updatedBiaya);
-        const isKegiatanChanged = JSON.stringify(prev.kegiatan) !== JSON.stringify(kegiatanData);
+    const bab4 = JSON.parse(proposal_detail[0]?.json_data || '[]');
+    console.log('4', bab4);
 
-        if (isBiayaChanged || isKegiatanChanged) {
-          return {
-            ...prev,
-            kegiatan: kegiatanData,
-            biaya: updatedBiaya
-          };
-        }
-        return prev;
-      });
-    } else {
+    if (!Array.isArray(bab4)) {
       setData((prev) => ({
         ...prev,
         kegiatan: []
       }));
+      return;
     }
-  }, [kegiatanData, lampiran]);
+
+    const cost = lampiran?.anggaran?.cost || {};
+    const updatedBiaya = dataBiaya?.map((item) => ({
+      ...item,
+      sub_total: (cost[item.ref]?.belmawa || 0) + (cost[item.ref]?.perguruan || 0),
+      sumber: item.sumber.map((sumberItem) => ({
+        ...sumberItem,
+        amount: cost[item.ref]?.[sumberItem.type] ?? sumberItem.amount
+      }))
+    }));
+
+    setData((prev) => (prev.kegiatan !== bab4 || prev.biaya !== updatedBiaya ? { kegiatan: bab4, biaya: updatedBiaya } : prev));
+  }, [proposal_detail, lampiran]);
 
   return (
     <>
@@ -138,7 +116,6 @@ const Kegiatan = () => {
         BAB 4. BIAYA DAN JADWAL KEGIATAN
       </Typography>
 
-      {/* Section 4.1 Anggaran Biaya */}
       <Grid item xs={12} sx={{ marginTop: 2 }}>
         <Typography variant="h5" gutterBottom>
           4.1 Anggaran Biaya
@@ -146,15 +123,9 @@ const Kegiatan = () => {
         <Typography variant="h6" gutterBottom>
           Kalkulasi anggaran biaya akan ditampilkan setelah meng-upload data lampiran untuk anggaran kegiatan.
         </Typography>
-        <TableForm
-          columns={Columns.Biaya(handleKegiatan.edit('biaya'), handleKegiatan.delete('biaya'), false)}
-          rows={data.biaya}
-          expand={false}
-          detail=""
-        />
+        <TableForm columns={Columns.Biaya(handleKegiatan.edit('biaya'), handleKegiatan.delete('biaya'))} rows={data.biaya} />
       </Grid>
 
-      {/* Section 4.2 Jadwal Kegiatan */}
       <Grid item xs={12} sx={{ marginTop: 2 }}>
         <Typography variant="h5" gutterBottom>
           4.2 Jadwal Kegiatan
@@ -171,20 +142,12 @@ const Kegiatan = () => {
             initialValuesUpdate={object['kegiatan']}
           />
           <TableForm
-            columns={Columns.Kegiatan(
-              handleKegiatan.edit('kegiatan'),
-              handleKegiatan.delete('kegiatan'),
-              handleKegiatan.reset('kegiatan'),
-              object['kegiatan'].no
-            )}
+            columns={Columns.Kegiatan(handleKegiatan.edit('kegiatan'), handleKegiatan.delete('kegiatan'), object['kegiatan'].status)}
             rows={data.kegiatan}
-            expand={false}
-            detail=""
           />
         </Stack>
       </Grid>
 
-      {/* Save Button */}
       <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 4 }}>
         <Button variant="contained" color="success" onClick={handleKegiatan.save}>
           Simpan Kegiatan

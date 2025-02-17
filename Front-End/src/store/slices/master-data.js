@@ -28,7 +28,7 @@ const initialState = {
   tahunLomba: [],
   gender: [],
   dapus: { style: [], reference: [] },
-  lampiran: [],
+  lampiran: { role: [] },
   loading: false,
   error: null
 };
@@ -53,7 +53,7 @@ const masterSlice = createSlice({
     };
     const lampiranFulfilled = (state, action, key) => {
       state.loading = false;
-      state.lampiran[key] = action.payload.data;
+      state.lampiran[key] = action.payload;
       state.error = null;
     };
 

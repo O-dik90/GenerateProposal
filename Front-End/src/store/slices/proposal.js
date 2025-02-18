@@ -57,49 +57,6 @@ export const deleteProposal = createAsyncThunk('proposal/delete', async (params,
   }
 });
 
-export const getListBabProposal = createAsyncThunk('proposal/get-detail', async (id) => {
-  const response = await axiosInstance.post(`/get-listProposal-bab/${id}`);
-  return response.data;
-});
-
-export const updateBabPendahuluan = createAsyncThunk('proposal/update-pendahuluan', async (params, { dispatch, rejectWithValue }) => {
-  try {
-    const res = await axiosInstance.put(`/update-bab-pendahuluan`, params);
-    if (res.status === 200) {
-      await dispatch(getListBabProposal(params?.proposals_id));
-    }
-    return res.data;
-  } catch (error) {
-    return rejectWithValue(error.response?.data || 'An error occurred');
-  }
-});
-
-export const updateDapus = createAsyncThunk('proposal/update-dapus', async (params, { dispatch, rejectWithValue }) => {
-  try {
-    const res = await axiosInstance.put(`/update-dapus`, params);
-    if (res.status === 200) {
-      await dispatch(getListBabProposal(params.proposals_id));
-    }
-
-    return res.data;
-  } catch (error) {
-    return rejectWithValue(error.response?.data || 'An error occurred');
-  }
-});
-
-export const updateBab = createAsyncThunk('proposal/update-bab', async (params, { dispatch, rejectWithValue }) => {
-  try {
-    const res = await axiosInstance.put(`/update-bab`, params);
-
-    if (res.status === 200) {
-      await dispatch(getListBabProposal(params?.proposals_id));
-    }
-    return res.data;
-  } catch (error) {
-    return rejectWithValue(error.response?.data || 'An error occurred');
-  }
-});
-
 export const getListLampiran = createAsyncThunk('proposal/get-statement', async (params, { rejectWithValue }) => {
   try {
     const response = await axiosInstance.post(`/get-files/${params?.proposals_id}`, params);
@@ -169,15 +126,34 @@ export const updateBabProposalDetail = createAsyncThunk('proposal/update-bab-pro
     return rejectWithValue(error.response?.data || 'An error occurred');
   }
 });
+
+export const getLampiranProposalDetail = createAsyncThunk('proposal/get-lampiran-proposal', async (params, { rejectWithValue }) => {
+  try {
+    const response = await axiosInstance.post(`/get-bab-proposal/${params.id}`, params);
+
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(error.response?.data);
+  }
+});
+
+export const updateLampiranProposalDetail = createAsyncThunk(
+  'proposal/update-lampiran-proposal',
+  async (params, { dispatch, rejectWithValue }) => {
+    try {
+      const res = await axiosInstance.put(`/update-bab-proposal/${params?.id}`, params?.data);
+      if (res.status === 200) {
+        await dispatch(getLampiranProposalDetail(params?.proposals_id));
+      }
+      return res.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'An error occurred');
+    }
+  }
+);
 const initialState = {
   data: [],
   proposal_detail: [],
-  metadata: {},
-  pendahuluan: {},
-  pelaksanaan: {},
-  biaya: {},
-  tinjauan: {},
-  dapus: {},
   lampiran: {},
   document: [],
   loading: false,
@@ -245,54 +221,6 @@ const proposalSlice = createSlice({
         state.message = action.payload.message;
         state.error = null;
       })
-      // Get detail proposal
-      .addCase(getListBabProposal.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(getListBabProposal.fulfilled, (state, action) => {
-        state.loading = false;
-        state.metadata = action.payload.metadata ? JSON.parse(action.payload.metadata) : {};
-        state.pendahuluan = action.payload.pendahuluan;
-        state.pelaksanaan = action.payload.pelaksanaan;
-        state.biaya = action.payload.biaya;
-        state.tinjauan = action.payload.tinjauan;
-        state.dapus = action.payload.dapus;
-        state.lampiran = action.payload.lampiran;
-        state.message = action.payload.message;
-        state.error = null;
-      })
-      .addCase(getListBabProposal.rejected, (state, action) => {
-        state.loading = true;
-        state.error = action.error.message;
-      })
-      // Update Pendahuluan
-      .addCase(updateBabPendahuluan.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(updateBabPendahuluan.fulfilled, (state, action) => {
-        state.loading = false;
-        state.message = action.payload.message;
-        state.error = null;
-      })
-      // Update Dapus
-      .addCase(updateDapus.pending, (state) => {
-        state.loading = false;
-        state.error = null;
-      })
-      .addCase(updateDapus.fulfilled, (state, action) => {
-        state.loading = false;
-        state.message = action.payload.message;
-        state.error = null;
-      })
-      // Update Bab
-      .addCase(updateBab.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(updateBab.fulfilled, (state, action) => {
-        state.loading = false;
-        state.message = action.payload.message;
-        state.error = null;
-      })
       // Get List Lampiran
       .addCase(getListLampiran.pending, (state) => {
         state.loading = true;
@@ -329,6 +257,33 @@ const proposalSlice = createSlice({
         state.error = null;
       })
       .addCase(updateBabProposalDetail.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      .addCase(getLampiranProposalDetail.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getLampiranProposalDetail.fulfilled, (state, action) => {
+        state.loading = false;
+        state.message = action.payload.message;
+        state.lampiran = action.payload;
+        state.error = null;
+      })
+      .addCase(getLampiranProposalDetail.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+      .addCase(updateLampiranProposalDetail.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateLampiranProposalDetail.fulfilled, (state, action) => {
+        state.loading = false;
+        state.message = action.payload.message;
+        state.error = null;
+      })
+      .addCase(updateLampiranProposalDetail.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       });

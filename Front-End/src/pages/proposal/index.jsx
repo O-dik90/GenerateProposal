@@ -31,11 +31,11 @@ import { useSnackbar } from 'notistack';
 export const INITIAL = {
   id: 0,
   user_id: '',
-  title: 'title',
-  description: 'in description',
+  title: '',
+  description: '',
   pkm_category: '',
   pkm_type: '',
-  year: '2025',
+  year: '',
   pkm_belmawa: 6000000,
   pkm_perguruan: 50000,
   edit_status: false
@@ -394,8 +394,8 @@ const ProposalTable = () => {
             </Stack>
             <Stack direction="row" spacing={1} sx={{ marginTop: 2 }}>
               <TextField
-                id="belmawa"
-                name="belmawa"
+                id="pkm_belmawa"
+                name="pkm_belmawa"
                 label="Jumlah Belmawa"
                 type="text"
                 value={formatCurrency(object.pkm_belmawa)}

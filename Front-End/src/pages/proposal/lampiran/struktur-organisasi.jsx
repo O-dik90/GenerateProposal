@@ -7,34 +7,32 @@ import { STRUCTURE_INIT } from './initial-data';
 import { TableForm } from 'components/table-form';
 import { structureColumns } from './initial-column';
 import { structureFields } from './initial-form';
-import { updateBab } from 'store/slices/proposal';
+import { updateLampiranProposalDetail } from 'store/slices/proposal';
+import { useParams } from 'react-router';
 import { useSnackbar } from 'notistack';
 
 const StrukturOrganisasi = () => {
-  const [object, setObject] = useState(STRUCTURE_INIT),
-    [data, setData] = useState([]),
-    dispatch = useDispatch(),
-    { enqueueSnackbar } = useSnackbar();
-  const { lampiran, metadata: rawData } = useSelector((state) => state.app.proposal);
+  const BAB_TITLE6 = 'LAMPIRAN';
+  const { id } = useParams();
+  const dispatch = useDispatch();
+  const { enqueueSnackbar } = useSnackbar();
+  const { proposal_detail } = useSelector((state) => state.app.proposal);
+
+  const [object, setObject] = useState(STRUCTURE_INIT);
+  const [data, setData] = useState([]);
 
   const handleForm = useCallback(
     (values) => {
-      if (object?.status) {
-        setData((prevData) =>
-          prevData.map((item) => {
-            if (item.no === object.no) {
-              return { ...item, ...values, status: false };
-            }
-            return item;
-          })
-        );
-      } else {
-        const newItem = { ...values, no: data.length + 1 };
-        setData((prevData) => [...prevData, newItem]);
-      }
+      setData((prevData) => {
+        if (object?.status) {
+          return prevData.map((item) => (item.no === object.no ? { ...item, ...values, status: false } : item));
+        } else {
+          return [...prevData, { ...values, no: prevData.length + 1 }];
+        }
+      });
       setObject(STRUCTURE_INIT);
     },
-    [data, object.no, object?.status]
+    [object]
   );
 
   const handleStructure = {
@@ -45,52 +43,68 @@ const StrukturOrganisasi = () => {
       setObject(STRUCTURE_INIT);
     },
     delete: (param) => {
-      const updatedData = [...data];
-      updatedData.splice(param, 1);
-      setData(updatedData);
+      setData((prevData) => prevData.filter((_, index) => index !== param));
     },
     cancel: () => {
       setObject(STRUCTURE_INIT);
     },
     save: async () => {
-      const jsonData = JSON.parse(rawData[9]?.json_data);
-      const payload = {
-        id: rawData[9]?.id,
-        proposals_id: rawData[9]?.proposals_id,
-        bab_title: rawData[9]?.bab_title,
-        json_data: {
-          ...jsonData,
-          organisasi: data
-        }
-      };
-      //console.log('payload', payload);
+      if (!proposal_detail.length) return;
 
       try {
-        const result = await dispatch(updateBab(payload));
-        if (updateBab.fulfilled.match(result)) {
+        const jsonData = JSON.parse(proposal_detail[0]?.json_data || '{}');
+        const payload = {
+          bab_title: BAB_TITLE6,
+          json_data: {
+            ...jsonData,
+            organisasi: data
+          }
+        };
+        console.log('payload', payload);
+
+        const res = await dispatch(updateLampiranProposalDetail({ id: Number(id), data: payload }));
+        if (updateLampiranProposalDetail.fulfilled.match(res)) {
           enqueueSnackbar('Berhasil menyimpan', { variant: 'success' });
         } else {
           enqueueSnackbar('Gagal menyimpan', { variant: 'error' });
         }
       } catch (error) {
-        enqueueSnackbar('Terjadi kesalahan', { variant: 'error' });
+        console.error('Error saving proposal:', error);
+        enqueueSnackbar('Gagal menyimpan data pustaka', { variant: 'error' });
       }
     }
   };
+
   useEffect(() => {
-    if (lampiran && lampiran.organisasi) {
-      setData(lampiran.organisasi);
+    if (!proposal_detail.length) {
+      setData([]);
+      return;
     }
-  }, [lampiran]);
+
+    try {
+      const bab6 = JSON.parse(proposal_detail[0]?.json_data || '{}');
+
+      if (Array.isArray(bab6?.organisasi)) {
+        setData((prev) => (JSON.stringify(prev) !== JSON.stringify(bab6.organisasi) ? bab6.organisasi : prev));
+      } else {
+        setData([]);
+      }
+    } catch (error) {
+      console.error('Error parsing JSON data:', error);
+      setData([]);
+    }
+
+    return () => setData([]);
+  }, [proposal_detail]);
 
   return (
     <>
       <GenForm
         formFields={structureFields}
         buttonDisable={false}
-        onSubmit={(values) => handleForm(values)}
+        onSubmit={handleForm}
         onCancel={handleStructure.cancel}
-        titleButton={object?.status ? `Update Data ` : `Tambah Data`}
+        titleButton={object?.status ? 'Update Data' : 'Tambah Data'}
         initialValuesUpdate={object}
       />
       <Stack direction="column" sx={{ marginTop: 5 }}>

@@ -100,7 +100,7 @@ const Tinjauan = () => {
   useEffect(() => {
     if (proposal_detail?.length > 0 && BAB_TITLE2) {
       const bab2 = JSON.parse(proposal_detail[0].json_data || '[]');
-      console.log(bab2);
+
       if (Array.isArray(bab2)) {
         setData({ tinjauan: bab2 });
       } else {

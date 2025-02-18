@@ -267,7 +267,7 @@ const Pendahuluan = () => {
             label="Latar Belakang"
             name="latar_belakang"
             variant="outlined"
-            value={data.latar_belakang}
+            value={data.latar_belakang ?? ''}
             onChange={(e) => setData({ ...data, latar_belakang: e.target.value })}
             fullWidth
             multiline
@@ -298,7 +298,7 @@ const Pendahuluan = () => {
               { name: 'No', field: 'no', width: '4rem' },
               { name: 'Rumusan Masalah', field: 'data' }
             ]}
-            rows={data.rumusan_masalah}
+            rows={data.rumusan_masalah ?? []}
             expand={false}
             action
             onEdit={handleRumusan.edit}

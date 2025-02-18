@@ -87,7 +87,6 @@ const Kegiatan = () => {
     }
 
     const bab4 = JSON.parse(proposal_detail[0]?.json_data || '[]');
-    console.log('4', bab4);
 
     if (!Array.isArray(bab4)) {
       setData((prev) => ({
@@ -123,7 +122,10 @@ const Kegiatan = () => {
         <Typography variant="h6" gutterBottom>
           Kalkulasi anggaran biaya akan ditampilkan setelah meng-upload data lampiran untuk anggaran kegiatan.
         </Typography>
-        <TableForm columns={Columns.Biaya(handleKegiatan.edit('biaya'), handleKegiatan.delete('biaya'))} rows={data.biaya} />
+        <TableForm
+          columns={Columns.Biaya(handleKegiatan.edit('biaya'), handleKegiatan.delete('biaya'), object['biaya'].status)}
+          rows={data.biaya}
+        />
       </Grid>
 
       <Grid item xs={12} sx={{ marginTop: 2 }}>

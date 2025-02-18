@@ -7,10 +7,13 @@ import GenForm from 'components/general-form';
 import { TableForm } from 'components/table-form';
 import { budgetColumns } from './initial-column';
 import { budgetFields } from './initial-form';
-import { updateBab } from 'store/slices/proposal';
+import { updateLampiranProposalDetail } from 'store/slices/proposal';
+import { useParams } from 'react-router';
 import { useSnackbar } from 'notistack';
 
 const Anggaran = () => {
+  const BAB_TITLE6 = 'LAMPIRAN';
+  const { id } = useParams();
   const [data, setData] = useState(BUDGET_INIT),
     [object, setObject] = useState({
       materials: DETAIL_BUDGET_INIT,
@@ -20,7 +23,7 @@ const Anggaran = () => {
     }),
     dispatch = useDispatch(),
     { enqueueSnackbar } = useSnackbar(),
-    { lampiran, metadata: rawData } = useSelector((state) => state.app.proposal);
+    { proposal_detail } = useSelector((state) => state.app.proposal);
 
   const budget = [
     { key: 'materials', label: 'Bahan Material', limit: '60' },
@@ -81,11 +84,9 @@ const Anggaran = () => {
       calculateTotalCosts();
     },
     save: async () => {
-      const jsonData = JSON.parse(rawData[9]?.json_data);
+      const jsonData = JSON.parse(proposal_detail[0]?.json_data);
       const payload = {
-        id: rawData[9]?.id,
-        proposals_id: rawData[9]?.proposals_id,
-        bab_title: rawData[9]?.bab_title,
+        bab_title: BAB_TITLE6,
         json_data: {
           ...jsonData,
           anggaran: data
@@ -94,14 +95,15 @@ const Anggaran = () => {
       console.log('payload', payload);
 
       try {
-        const result = await dispatch(updateBab(payload));
-        if (updateBab.fulfilled.match(result)) {
+        const res = await dispatch(updateLampiranProposalDetail({ id: Number(id), data: payload }));
+
+        if (updateLampiranProposalDetail.fulfilled.match(res)) {
           enqueueSnackbar('Berhasil menyimpan', { variant: 'success' });
         } else {
           enqueueSnackbar('Gagal menyimpan', { variant: 'error' });
         }
       } catch (error) {
-        enqueueSnackbar('Terjadi kesalahan', { variant: 'error' });
+        enqueueSnackbar('Gagal menyimpan data pustaka', { variant: 'error' });
       }
     }
   };
@@ -143,14 +145,26 @@ const Anggaran = () => {
   );
 
   useEffect(() => {
-    if (lampiran && lampiran.anggaran) {
-      setData(lampiran.anggaran);
+    if (!proposal_detail.length) {
+      setData(BUDGET_INIT);
+      return;
     }
-  }, [lampiran]);
 
-  useEffect(() => {
-    console.log(data);
-  }, [data]);
+    try {
+      const bab6 = JSON.parse(proposal_detail[0].json_data || BUDGET_INIT);
+      console.log(bab6);
+      if (bab6.anggaran && typeof bab6.anggaran === 'object') {
+        setData((prev) => (JSON.stringify(prev) !== JSON.stringify(bab6.anggaran) ? bab6.anggaran : prev));
+      } else {
+        setData([]);
+      }
+    } catch (error) {
+      console.error('Error parsing JSON data:', error.message);
+      setData([]);
+    }
+
+    return () => setData(BUDGET_INIT);
+  }, [proposal_detail]);
 
   return (
     <>
@@ -158,7 +172,7 @@ const Anggaran = () => {
         const budgetData = data[key] || [];
         const budgetStatus = object[key]?.status;
         const budgetFieldsData = budgetFields[key];
-        const { belmawa = 0, perguruan = 0 } = data.cost[key] || {};
+        const { belmawa = 0, perguruan = 0 } = data.cost?.[key] || {};
 
         return (
           <Grid item xs={12} key={`${key}-${index}`} sx={{ marginBottom: 15 }}>

@@ -98,7 +98,6 @@ const Pelaksanaan = () => {
   useEffect(() => {
     if (proposal_detail?.length > 0 && BAB_TITLE3) {
       const bab3 = JSON.parse(proposal_detail[0].json_data || '[]');
-      console.log(bab3);
       if (Array.isArray(bab3)) {
         setData({ pelaksanaan: bab3 });
       }

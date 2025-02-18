@@ -1,19 +1,22 @@
 import { AUTHOR_INIT, BOOK_INIT, JOURNAL_INIT, URL_INIT } from './initial-data';
 import { Button, Grid, MenuItem, Select, Stack, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
+import { getBabProposalDetail, updateBabProposalDetail } from 'store/slices/proposal';
 import { masterDapusRef, masterDapusStyle } from 'store/slices/master-data';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { Fields } from './initial-column';
 import { GeneralForm } from 'components/form/GeneralForm';
 import TableGrid from 'components/table/TableGrid';
-import { updateDapus } from 'store/slices/proposal';
+import { useParams } from 'react-router';
 import { useSnackbar } from 'notistack';
 
 const Dapus = () => {
-  const { dapus, metadata: rawData } = useSelector((state) => state.app.proposal);
+  const BAB_TITLE5 = 'DAFTAR PUSTAKA';
+  const { proposal_detail } = useSelector((state) => state.app.proposal);
   const { style, reference } = useSelector((state) => state.app.masterData.dapus);
   const dispatch = useDispatch();
+  const { id } = useParams();
   const { enqueueSnackbar } = useSnackbar();
 
   const [object, setObject] = useState({});
@@ -291,15 +294,16 @@ const Dapus = () => {
 
       try {
         const dataPustaka = {
-          id: rawData[8].id,
-          proposals_id: rawData[8].proposals_id,
-          bab_title: rawData[8].bab_title,
+          bab_title: BAB_TITLE5,
           json_data: data
         };
-        const res = await dispatch(updateDapus(dataPustaka));
+        console.log(dataPustaka);
+        const res = await dispatch(updateBabProposalDetail({ id: Number(id), data: dataPustaka }));
 
-        if (updateDapus.fulfilled.match(res)) {
+        if (updateBabProposalDetail.fulfilled.match(res)) {
           enqueueSnackbar('Berhasil menyimpan', { variant: 'success' });
+        } else {
+          enqueueSnackbar('Gagal menyimpan', { variant: 'error' });
         }
       } catch (error) {
         enqueueSnackbar('Gagal menyimpan data pustaka', { variant: 'error' });
@@ -321,11 +325,23 @@ const Dapus = () => {
 
     loadMasterData();
   }, [dispatch, style]);
+
   useEffect(() => {
-    if (dapus) {
-      setData([]);
+    if (id) {
+      dispatch(getBabProposalDetail({ id, bab_title: BAB_TITLE5 }));
     }
-  }, [dapus]);
+  }, [dispatch, id]);
+  useEffect(() => {
+    if (proposal_detail?.length > 0 && BAB_TITLE5) {
+      const bab5 = JSON.parse(proposal_detail[0].json_data || '[]');
+      if (Array.isArray(bab5)) {
+        setData(bab5);
+      }
+    }
+    return () => {
+      setData([]);
+    };
+  }, [proposal_detail]);
 
   useEffect(() => {
     console.log(object);

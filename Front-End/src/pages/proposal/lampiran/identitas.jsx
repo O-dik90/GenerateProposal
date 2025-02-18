@@ -1,6 +1,7 @@
 import { ACT_INIT, AWARD_INIT, COMMUNITY_INIT, COURSE_INIT, EDUCATION_INIT, ID_INIT, RESEARCH_INIT } from './initial-data';
 import { Button, Divider, Grid, MenuItem, Select, Stack, Typography } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
+import { getLampiranProposalDetail, updateLampiranProposalDetail } from 'store/slices/proposal';
 import { masterGender, masterLampiranRole } from 'store/slices/master-data';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -8,15 +9,17 @@ import GenForm from 'components/general-form';
 import { TableForm } from 'components/table-form';
 import { initialFields } from './initial-form';
 import { lampiranColumns } from './initial-column';
-import { updateBab } from 'store/slices/proposal';
+import { useParams } from 'react-router';
 import { useSnackbar } from 'notistack';
 
 const Identitas = () => {
+  const BAB_TITLE6 = 'LAMPIRAN';
+  const { id } = useParams();
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
   const { gender } = useSelector((state) => state.app.masterData);
   const { role } = useSelector((state) => state.app.masterData.lampiran);
-  const { lampiran, metadata: rawData } = useSelector((state) => state.app.proposal);
+  const { proposal_detail } = useSelector((state) => state.app.proposal);
 
   const [object, setObject] = useState(ID_INIT);
   const [data, setData] = useState([]);
@@ -70,11 +73,9 @@ const Identitas = () => {
     },
     delete: (param) => setData((prev) => prev.filter((item) => item.no !== param.no)?.map((item, index) => ({ ...item, no: index + 1 }))),
     save: async () => {
-      const jsonData = JSON.parse(rawData[9]?.json_data);
+      const jsonData = JSON.parse(proposal_detail[0]?.json_data);
       const payload = {
-        id: rawData[9]?.id,
-        proposals_id: rawData[9]?.proposals_id,
-        bab_title: rawData[9]?.bab_title,
+        bab_title: BAB_TITLE6,
         json_data: {
           ...jsonData,
           identitas: data
@@ -83,14 +84,15 @@ const Identitas = () => {
       console.log('payload', payload);
 
       try {
-        const res = await dispatch(updateBab(payload));
-        if (updateBab.fulfilled.match(res)) {
+        const res = await dispatch(updateLampiranProposalDetail({ id: Number(id), data: payload }));
+
+        if (updateLampiranProposalDetail.fulfilled.match(res)) {
           enqueueSnackbar('Berhasil menyimpan', { variant: 'success' });
         } else {
           enqueueSnackbar('Gagal menyimpan', { variant: 'error' });
         }
-      } catch {
-        enqueueSnackbar('Terjadi error', { variant: 'error' });
+      } catch (error) {
+        enqueueSnackbar('Gagal menyimpan data pustaka', { variant: 'error' });
       }
     },
     detail: (param) => {
@@ -116,7 +118,7 @@ const Identitas = () => {
       }
       setObject(ID_INIT);
     },
-    [data.length, object.no, object?.status]
+    [data, object.no, object?.status]
   );
 
   const handleDetailActions = {
@@ -190,10 +192,32 @@ const Identitas = () => {
   }, [detail.act, detail.award, detail.community_service, detail.course, detail.education, detail.research, object.no]);
 
   useEffect(() => {
-    if (lampiran && lampiran.identitas) {
-      setData(lampiran.identitas);
+    if (id) {
+      dispatch(getLampiranProposalDetail({ id, bab_title: BAB_TITLE6 }));
     }
-  }, [lampiran]);
+  }, [dispatch, id]);
+
+  useEffect(() => {
+    if (!proposal_detail.length || !BAB_TITLE6) {
+      setData([]);
+      return;
+    }
+
+    try {
+      const bab6 = JSON.parse(proposal_detail[0].json_data || '[]'); // Default to empty array
+      console.log(bab6);
+      if (Array.isArray(bab6?.identitas || [])) {
+        setData((prev) => (JSON.stringify(prev) !== JSON.stringify(bab6.identitas) ? bab6.identitas : prev));
+      } else {
+        setData([]);
+      }
+    } catch (error) {
+      console.error('Error parsing JSON data:', error.message);
+      setData([]);
+    }
+
+    return () => setData([]);
+  }, [proposal_detail, BAB_TITLE6]);
 
   return (
     <Stack direction="column" spacing={3}>
@@ -217,82 +241,6 @@ const Identitas = () => {
           </MenuItem>
         ))}
       </Select>
-      {open && (
-        <Grid item xs={12}>
-          <Divider sx={{ marginTop: 10, borderBottomWidth: 5 }} />
-          <Stack direction="column" sx={{ marginTop: 5 }}>
-            {object.role_person !== 'DOSEN' &&
-              roleMHS.map(({ key, label }, index) => {
-                const detailData = detail[key] || [];
-                const detailStatus = detailObject[key]?.status;
-                const detailFieldsData = initialFields[key];
-
-                return (
-                  <Grid item xs={12} key={`${key}-${index}`} sx={{ marginBottom: 15 }}>
-                    <Typography variant="h5" gutterBottom>
-                      Detail {label}
-                    </Typography>
-                    <Stack direction="column" spacing={5}>
-                      <GenForm
-                        formFields={detailFieldsData}
-                        buttonDisable={false}
-                        onSubmit={(values) => handleFormDetail(values, key)}
-                        titleButton={detailStatus ? `Update Data ${label}` : `Tambah Data ${label}`}
-                        initialValuesUpdate={detailObject[key]}
-                      />
-                      <TableForm
-                        columns={lampiranColumns[key](
-                          handleDetailActions.edit(key),
-                          handleDetailActions.delete(key),
-                          handleDetailActions.reset(key),
-                          object[key]?.no
-                        )}
-                        rows={detailData}
-                        expand={false}
-                        detail=""
-                      />
-                    </Stack>
-                  </Grid>
-                );
-              })}
-            {object.role_person === 'DOSEN' &&
-              roleDosen.map(({ key, label }, index) => {
-                const detailData = detail[key] || [];
-                const detailStatus = detailObject[key]?.status;
-                const detailFieldsData = initialFields[key];
-                const title = key !== 'education' ? `Tri Dharma ${label}` : label;
-
-                return (
-                  <Grid item xs={12} key={`${key}-${index}`} sx={{ marginBottom: 15 }}>
-                    <Typography variant="h5" gutterBottom>
-                      Detail {title}
-                    </Typography>
-                    <Stack direction="column" spacing={5}>
-                      <GenForm
-                        formFields={detailFieldsData}
-                        buttonDisable={false}
-                        onSubmit={(values) => handleFormDetail(values, key)}
-                        titleButton={detailStatus ? `Update Data ${title}` : `Tambah Data ${title}`}
-                        initialValuesUpdate={detailObject[key]}
-                      />
-                      <TableForm
-                        columns={lampiranColumns[key](
-                          handleDetailActions.edit(key),
-                          handleDetailActions.delete(key),
-                          handleDetailActions.reset(key),
-                          object[key]?.status
-                        )}
-                        rows={detailData}
-                        expand={false}
-                        detail=""
-                      />
-                    </Stack>
-                  </Grid>
-                );
-              })}
-          </Stack>
-        </Grid>
-      )}
       <Grid item xs={12} sx={{ marginY: 15 }}>
         {object.role_person && (
           <GenForm
@@ -304,6 +252,82 @@ const Identitas = () => {
           />
         )}
         <Stack direction="column" sx={{ marginTop: 5 }}>
+          {open && (
+            <Grid item xs={12}>
+              <Divider sx={{ marginTop: 10, borderBottomWidth: 5 }} />
+              <Stack direction="column" sx={{ marginTop: 5 }}>
+                {object.role_person !== 'DOSEN' &&
+                  roleMHS.map(({ key, label }, index) => {
+                    const detailData = detail[key] || [];
+                    const detailStatus = detailObject[key]?.status;
+                    const detailFieldsData = initialFields[key];
+
+                    return (
+                      <Grid item xs={12} key={`${key}-${index}`} sx={{ marginBottom: 15 }}>
+                        <Typography variant="h5" gutterBottom>
+                          Detail {label}
+                        </Typography>
+                        <Stack direction="column" spacing={5}>
+                          <GenForm
+                            formFields={detailFieldsData}
+                            buttonDisable={false}
+                            onSubmit={(values) => handleFormDetail(values, key)}
+                            titleButton={detailStatus ? `Update Data ${label}` : `Tambah Data ${label}`}
+                            initialValuesUpdate={detailObject[key]}
+                          />
+                          <TableForm
+                            columns={lampiranColumns[key](
+                              handleDetailActions.edit(key),
+                              handleDetailActions.delete(key),
+                              handleDetailActions.reset(key),
+                              object[key]?.no
+                            )}
+                            rows={detailData}
+                            expand={false}
+                            detail=""
+                          />
+                        </Stack>
+                      </Grid>
+                    );
+                  })}
+                {object.role_person === 'DOSEN' &&
+                  roleDosen.map(({ key, label }, index) => {
+                    const detailData = detail[key] || [];
+                    const detailStatus = detailObject[key]?.status;
+                    const detailFieldsData = initialFields[key];
+                    const title = key !== 'education' ? `Tri Dharma ${label}` : label;
+
+                    return (
+                      <Grid item xs={12} key={`${key}-${index}`} sx={{ marginBottom: 15 }}>
+                        <Typography variant="h5" gutterBottom>
+                          Detail {title}
+                        </Typography>
+                        <Stack direction="column" spacing={5}>
+                          <GenForm
+                            formFields={detailFieldsData}
+                            buttonDisable={false}
+                            onSubmit={(values) => handleFormDetail(values, key)}
+                            titleButton={detailStatus ? `Update Data ${title}` : `Tambah Data ${title}`}
+                            initialValuesUpdate={detailObject[key]}
+                          />
+                          <TableForm
+                            columns={lampiranColumns[key](
+                              handleDetailActions.edit(key),
+                              handleDetailActions.delete(key),
+                              handleDetailActions.reset(key),
+                              object[key]?.status
+                            )}
+                            rows={detailData}
+                            expand={false}
+                            detail=""
+                          />
+                        </Stack>
+                      </Grid>
+                    );
+                  })}
+              </Stack>
+            </Grid>
+          )}
           <TableForm
             columns={lampiranColumns.personal(
               handlePersonal.edit,

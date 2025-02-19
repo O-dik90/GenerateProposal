@@ -23,7 +23,7 @@ const Anggaran = () => {
     }),
     dispatch = useDispatch(),
     { enqueueSnackbar } = useSnackbar(),
-    { proposal_detail } = useSelector((state) => state.app.proposal);
+    { lampiran } = useSelector((state) => state.app.proposal);
 
   const budget = [
     { key: 'materials', label: 'Bahan Material', limit: '60' },
@@ -84,7 +84,7 @@ const Anggaran = () => {
       calculateTotalCosts();
     },
     save: async () => {
-      const jsonData = JSON.parse(proposal_detail[0]?.json_data);
+      const jsonData = JSON.parse(lampiran[0]?.json_data);
       const payload = {
         bab_title: BAB_TITLE6,
         json_data: {
@@ -145,13 +145,13 @@ const Anggaran = () => {
   );
 
   useEffect(() => {
-    if (!proposal_detail.length) {
+    if (!lampiran.length) {
       setData(BUDGET_INIT);
       return;
     }
 
     try {
-      const bab6 = JSON.parse(proposal_detail[0].json_data || BUDGET_INIT);
+      const bab6 = lampiran[0].json_data !== null ? JSON.parse(lampiran[0].json_data) : BUDGET_INIT;
       console.log(bab6);
       if (bab6.anggaran && typeof bab6.anggaran === 'object') {
         setData((prev) => (JSON.stringify(prev) !== JSON.stringify(bab6.anggaran) ? bab6.anggaran : prev));
@@ -164,7 +164,7 @@ const Anggaran = () => {
     }
 
     return () => setData(BUDGET_INIT);
-  }, [proposal_detail]);
+  }, [lampiran]);
 
   return (
     <>

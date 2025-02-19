@@ -19,7 +19,7 @@ const Identitas = () => {
   const { enqueueSnackbar } = useSnackbar();
   const { gender } = useSelector((state) => state.app.masterData);
   const { role } = useSelector((state) => state.app.masterData.lampiran);
-  const { proposal_detail } = useSelector((state) => state.app.proposal);
+  const { lampiran } = useSelector((state) => state.app.proposal);
 
   const [object, setObject] = useState(ID_INIT);
   const [data, setData] = useState([]);
@@ -73,7 +73,7 @@ const Identitas = () => {
     },
     delete: (param) => setData((prev) => prev.filter((item) => item.no !== param.no)?.map((item, index) => ({ ...item, no: index + 1 }))),
     save: async () => {
-      const jsonData = JSON.parse(proposal_detail[0]?.json_data);
+      const jsonData = JSON.parse(lampiran[0]?.json_data);
       const payload = {
         bab_title: BAB_TITLE6,
         json_data: {
@@ -111,14 +111,21 @@ const Identitas = () => {
 
   const handleForm = useCallback(
     (values) => {
-      if (object?.status) {
-        setData((prevData) => prevData.map((item) => (item.no === object.no ? { ...item, ...values, status: false } : item)));
-      } else {
-        setData((prevData) => [...prevData, { ...values, no: data.length + 1 }]);
-      }
+      setData((prevData) => {
+        const dataArray = Array.isArray(prevData) ? prevData : [];
+
+        if (object?.status) {
+          return dataArray.map((item) => (item.no === object.no ? { ...item, ...values, status: false } : item));
+        } else if (dataArray.length === 0) {
+          return [{ ...values, no: 1 }];
+        } else {
+          return [...dataArray, { ...values, no: dataArray.length + 1 }];
+        }
+      });
+
       setObject(ID_INIT);
     },
-    [data, object.no, object?.status]
+    [object]
   );
 
   const handleDetailActions = {
@@ -198,13 +205,13 @@ const Identitas = () => {
   }, [dispatch, id]);
 
   useEffect(() => {
-    if (!proposal_detail.length || !BAB_TITLE6) {
+    if (!lampiran.length || !BAB_TITLE6) {
       setData([]);
       return;
     }
 
     try {
-      const bab6 = JSON.parse(proposal_detail[0].json_data || '[]'); // Default to empty array
+      const bab6 = JSON.parse(lampiran[0].json_data || '[]'); // Default to empty array
       console.log(bab6);
       if (Array.isArray(bab6?.identitas || [])) {
         setData((prev) => (JSON.stringify(prev) !== JSON.stringify(bab6.identitas) ? bab6.identitas : prev));
@@ -217,7 +224,11 @@ const Identitas = () => {
     }
 
     return () => setData([]);
-  }, [proposal_detail, BAB_TITLE6]);
+  }, [BAB_TITLE6, lampiran]);
+
+  useEffect(() => {
+    console.log(data);
+  }, []);
 
   return (
     <Stack direction="column" spacing={3}>

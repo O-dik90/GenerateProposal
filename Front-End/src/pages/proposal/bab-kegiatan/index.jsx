@@ -86,27 +86,36 @@ const Kegiatan = () => {
       return;
     }
 
-    const bab4 = JSON.parse(proposal_detail[0]?.json_data || '[]');
+    try {
+      const bab4 = JSON.parse(proposal_detail[0]?.json_data || '{}'); // Ensure parsing safely
+      const isBab4Array = Array.isArray(bab4) ? bab4 : [];
 
-    if (!Array.isArray(bab4)) {
-      setData((prev) => ({
-        ...prev,
-        kegiatan: []
-      }));
-      return;
+      let updatedBiaya = [];
+      if (lampiran?.length > 0) {
+        const dataLampiran = JSON.parse(lampiran[0]?.json_data || '{}');
+
+        const cost = dataLampiran?.anggaran?.cost || {};
+        updatedBiaya =
+          dataBiaya?.map((item) => ({
+            ...item,
+            sub_total: (cost[item.ref]?.belmawa || 0) + (cost[item.ref]?.perguruan || 0),
+            sumber: item.sumber.map((sumberItem) => ({
+              ...sumberItem,
+              amount: cost[item.ref]?.[sumberItem.type] ?? sumberItem.amount
+            }))
+          })) || [];
+      }
+
+      setData((prev) => {
+        if (JSON.stringify(prev.kegiatan) !== JSON.stringify(isBab4Array) || JSON.stringify(prev.biaya) !== JSON.stringify(updatedBiaya)) {
+          return { kegiatan: isBab4Array, biaya: updatedBiaya };
+        }
+        return prev;
+      });
+    } catch (error) {
+      console.error('Error parsing proposal_detail JSON:', error);
+      setData({ biaya: [], kegiatan: [] });
     }
-
-    const cost = lampiran?.anggaran?.cost || {};
-    const updatedBiaya = dataBiaya?.map((item) => ({
-      ...item,
-      sub_total: (cost[item.ref]?.belmawa || 0) + (cost[item.ref]?.perguruan || 0),
-      sumber: item.sumber.map((sumberItem) => ({
-        ...sumberItem,
-        amount: cost[item.ref]?.[sumberItem.type] ?? sumberItem.amount
-      }))
-    }));
-
-    setData((prev) => (prev.kegiatan !== bab4 || prev.biaya !== updatedBiaya ? { kegiatan: bab4, biaya: updatedBiaya } : prev));
   }, [proposal_detail, lampiran]);
 
   return (
@@ -122,10 +131,7 @@ const Kegiatan = () => {
         <Typography variant="h6" gutterBottom>
           Kalkulasi anggaran biaya akan ditampilkan setelah meng-upload data lampiran untuk anggaran kegiatan.
         </Typography>
-        <TableForm
-          columns={Columns.Biaya(handleKegiatan.edit('biaya'), handleKegiatan.delete('biaya'), object['biaya'].status)}
-          rows={data.biaya}
-        />
+        <TableForm expand={false} columns={Columns.Biaya()} rows={data.biaya} />
       </Grid>
 
       <Grid item xs={12} sx={{ marginTop: 2 }}>

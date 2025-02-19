@@ -137,7 +137,7 @@ const Tinjauan = () => {
                 handleTinjauan.edit('tinjauan'),
                 handleTinjauan.delete('tinjauan'),
                 handleTinjauan.reset('tinjauan'),
-                formObject['tinjauan'].no
+                formObject['tinjauan'].status
               )}
               rows={data.tinjauan || []}
               expand

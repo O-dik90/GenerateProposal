@@ -16,7 +16,7 @@ const StrukturOrganisasi = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
-  const { proposal_detail } = useSelector((state) => state.app.proposal);
+  const { lampiran } = useSelector((state) => state.app.proposal);
 
   const [object, setObject] = useState(STRUCTURE_INIT);
   const [data, setData] = useState([]);
@@ -49,10 +49,10 @@ const StrukturOrganisasi = () => {
       setObject(STRUCTURE_INIT);
     },
     save: async () => {
-      if (!proposal_detail.length) return;
+      if (!lampiran.length) return;
 
       try {
-        const jsonData = JSON.parse(proposal_detail[0]?.json_data || '{}');
+        const jsonData = JSON.parse(lampiran[0]?.json_data || '{}');
         const payload = {
           bab_title: BAB_TITLE6,
           json_data: {
@@ -76,13 +76,13 @@ const StrukturOrganisasi = () => {
   };
 
   useEffect(() => {
-    if (!proposal_detail.length) {
+    if (!lampiran.length) {
       setData([]);
       return;
     }
 
     try {
-      const bab6 = JSON.parse(proposal_detail[0]?.json_data || '{}');
+      const bab6 = JSON.parse(lampiran[0]?.json_data || '{}');
 
       if (Array.isArray(bab6?.organisasi)) {
         setData((prev) => (JSON.stringify(prev) !== JSON.stringify(bab6.organisasi) ? bab6.organisasi : prev));
@@ -95,7 +95,7 @@ const StrukturOrganisasi = () => {
     }
 
     return () => setData([]);
-  }, [proposal_detail]);
+  }, [lampiran]);
 
   return (
     <>

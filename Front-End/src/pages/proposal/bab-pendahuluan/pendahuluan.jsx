@@ -330,7 +330,7 @@ const Pendahuluan = () => {
               { name: 'No', field: 'no', width: '4rem' },
               { name: 'Tujuan', field: 'data' }
             ]}
-            rows={data.tujuan}
+            rows={data.tujua ?? []}
             expand={false}
             action
             onEdit={handleTujuan.edit}
@@ -362,7 +362,7 @@ const Pendahuluan = () => {
               { name: 'No', field: 'no', width: '4rem' },
               { name: 'Rumusan Masalah', field: 'data' }
             ]}
-            rows={data.luaran}
+            rows={data.luaran ?? []}
             expand={false}
             action
             onEdit={handleLuaran.edit}
@@ -394,7 +394,7 @@ const Pendahuluan = () => {
               { name: 'No', field: 'no', width: '4rem' },
               { name: 'Manfaat', field: 'data' }
             ]}
-            rows={data.manfaat}
+            rows={data.manfaat ?? []}
             expand={false}
             action
             onEdit={handleManfaat.edit}

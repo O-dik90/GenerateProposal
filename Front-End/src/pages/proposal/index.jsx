@@ -62,7 +62,6 @@ const ProposalTable = () => {
   }, [navigate, user]);
 
   useEffect(() => {
-    console.log(user);
     if (user) {
       dispatch(fetchProposal(user.uuid));
     }
@@ -205,8 +204,6 @@ const ProposalTable = () => {
   const handleSubmit = async () => {
     try {
       if (btnAction === 'Buat') {
-        console.log(user.uuid);
-        console.log(object);
         const res = await dispatch(createProposal(object));
         if (createProposal.fulfilled.match(res)) {
           enqueueSnackbar('Berhasil Menambah!', { variant: 'success' });
@@ -255,7 +252,6 @@ const ProposalTable = () => {
 
   const handleEdit = (id) => {
     const editData = data.find((item) => item.id === id);
-    console.log(editData);
     setObject((prevObject) => ({
       ...prevObject,
       ...editData,

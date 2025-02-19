@@ -50,7 +50,6 @@ export const finals = {
 };
 
 export const tableBiaya = (data) => {
-  console.log('biaya', data);
   const headers = [
     { text: 'No', width: 10 },
     { text: 'Jenis Pengeluaran', width: 40 },
@@ -120,9 +119,6 @@ export const tableBiaya = (data) => {
       }
     ]
   };
-
-  console.log('rawData', rows);
-  console.log('updatedData', updatedData);
 
   const createHeaderRow = () => {
     return new TableRow({

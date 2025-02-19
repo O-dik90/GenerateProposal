@@ -60,7 +60,6 @@ const StrukturOrganisasi = () => {
             organisasi: data
           }
         };
-        console.log('payload', payload);
 
         const res = await dispatch(updateLampiranProposalDetail({ id: Number(id), data: payload }));
         if (updateLampiranProposalDetail.fulfilled.match(res)) {

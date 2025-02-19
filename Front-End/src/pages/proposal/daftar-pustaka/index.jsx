@@ -297,7 +297,6 @@ const Dapus = () => {
           bab_title: BAB_TITLE5,
           json_data: data
         };
-        console.log(dataPustaka);
         const res = await dispatch(updateBabProposalDetail({ id: Number(id), data: dataPustaka }));
 
         if (updateBabProposalDetail.fulfilled.match(res)) {
@@ -342,10 +341,6 @@ const Dapus = () => {
       setData([]);
     };
   }, [proposal_detail]);
-
-  useEffect(() => {
-    console.log(object);
-  }, [object]);
 
   return (
     <>

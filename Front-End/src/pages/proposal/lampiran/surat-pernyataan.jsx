@@ -141,7 +141,7 @@ const SuratPernyataan = () => {
 
   const refreshData = async () => {
     const res = await dispatch(getListLampiran({ proposals_id: param.id, type: state.type }));
-    console.log(res);
+
     if (getListLampiran.fulfilled.match(res)) {
       const formattedData = res.payload.data.map((item, index) => ({
         ...item,

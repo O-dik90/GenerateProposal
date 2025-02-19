@@ -108,7 +108,6 @@ export const updateFileLampiran = createAsyncThunk('proposal/update-file', async
 export const getBabProposalDetail = createAsyncThunk('proposal/get-bab-proposal', async (params, { rejectWithValue }) => {
   try {
     const response = await axiosInstance.post(`/get-bab-proposal/${params.id}`, params);
-    console.log(response.data);
     return response.data;
   } catch (error) {
     return rejectWithValue(error.response?.data);

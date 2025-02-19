@@ -285,7 +285,6 @@ export const structureColumns = (handleEdit, handleDelete, handleReset, status) 
     field: 'action',
     width: '5rem',
     cell: (value, row) => {
-      console.log(row);
       return (
         <Stack direction="row" spacing={1}>
           {status !== row.no ? (

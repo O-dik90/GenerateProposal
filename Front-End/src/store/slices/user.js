@@ -9,7 +9,6 @@ export const userRegister = createAsyncThunk('user/add-user', async (params, { r
 
     return res.data;
   } catch (error) {
-    console.log(error);
     if (error.response) {
       return rejectWithValue(error);
     }

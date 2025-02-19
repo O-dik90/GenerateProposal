@@ -92,7 +92,6 @@ const Anggaran = () => {
           anggaran: data
         }
       };
-      console.log('payload', payload);
 
       try {
         const res = await dispatch(updateLampiranProposalDetail({ id: Number(id), data: payload }));
@@ -152,7 +151,7 @@ const Anggaran = () => {
 
     try {
       const bab6 = lampiran[0].json_data !== null ? JSON.parse(lampiran[0].json_data) : BUDGET_INIT;
-      console.log(bab6);
+
       if (bab6.anggaran && typeof bab6.anggaran === 'object') {
         setData((prev) => (JSON.stringify(prev) !== JSON.stringify(bab6.anggaran) ? bab6.anggaran : prev));
       } else {

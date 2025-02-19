@@ -12,7 +12,6 @@ export const userLogin = createAsyncThunk('user/login', async (params, { rejectW
     }
     return res.data;
   } catch (error) {
-    console.log(error);
     if (error.response) {
       return rejectWithValue(error);
     }
@@ -25,7 +24,6 @@ export const getMe = createAsyncThunk('user/getMe', async (_, thunkAPI) => {
     const data = JSON.parse(res);
     return data;
   } catch (error) {
-    console.log(error.message);
     return thunkAPI.rejectWithValue(error);
   }
 });
@@ -37,7 +35,7 @@ export const userLogout = createAsyncThunk('user/logout', async () => {
     }
     return res.data;
   } catch (error) {
-    console.log(error);
+    console.error(error.message);
   }
 });
 const initialState = {

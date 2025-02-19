@@ -22,7 +22,6 @@ axiosInstance.interceptors.request.use(
     if (error.code === 'ECONNABORTED') {
       enqueueSnackbar(`Error, ${error.code}}`, { variant: 'error' });
     }
-    console.log(error.response);
     enqueueSnackbar('Request error: ' + error.message, { variant: 'error' });
     return Promise.reject(error);
   }
@@ -33,7 +32,6 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   (error) => {
-    console.log(error.response);
     if (error.response.status === 401) {
       sessionStorage.removeItem('user');
       window.location.href = '/login';

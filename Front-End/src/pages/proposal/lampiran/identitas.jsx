@@ -81,7 +81,6 @@ const Identitas = () => {
           identitas: data
         }
       };
-      console.log('payload', payload);
 
       try {
         const res = await dispatch(updateLampiranProposalDetail({ id: Number(id), data: payload }));
@@ -212,7 +211,7 @@ const Identitas = () => {
 
     try {
       const bab6 = JSON.parse(lampiran[0].json_data || '[]'); // Default to empty array
-      console.log(bab6);
+
       if (Array.isArray(bab6?.identitas || [])) {
         setData((prev) => (JSON.stringify(prev) !== JSON.stringify(bab6.identitas) ? bab6.identitas : prev));
       } else {
@@ -225,10 +224,6 @@ const Identitas = () => {
 
     return () => setData([]);
   }, [BAB_TITLE6, lampiran]);
-
-  useEffect(() => {
-    console.log(data);
-  }, []);
 
   return (
     <Stack direction="column" spacing={3}>

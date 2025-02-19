@@ -69,7 +69,6 @@ import { AlignmentType, Paragraph, ShadingType, Table, TableCell, TableRow, Vert
 // ];
 
 export const tableKegiatan = (data) => {
-  console.log('kegiatan', data);
   const rows = [
     new TableRow({
       children: [

@@ -47,7 +47,7 @@ const Pendahuluan = () => {
     if (id) {
       dispatch(
         getBabProposalDetail({
-          id: id,
+          id: Number(id),
           bab_title: BAB_TITLE
         })
       );

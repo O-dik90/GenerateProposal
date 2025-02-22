@@ -306,6 +306,11 @@ const Dapus = () => {
         }
       } catch (error) {
         enqueueSnackbar('Gagal menyimpan data pustaka', { variant: 'error' });
+      } finally {
+        dispatch(getBabProposalDetail({ id, bab_title: BAB_TITLE5 }));
+        setObject({});
+        setAuthor({ object: AUTHOR_INIT, data: [] });
+        setErrors({});
       }
     }
   };

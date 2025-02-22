@@ -165,12 +165,12 @@ const GenerateDocx = ({ data }) => {
       text: `4.1 Biaya`,
       heading: HeadingLevel.HEADING_2
     }),
-    // tableBiaya(lampiran?.anggaran),
+    tableBiaya(lampiran?.anggaran),
     new Paragraph({
       text: `4.2 Jadwal Kegiatan`,
       heading: HeadingLevel.HEADING_2
     }),
-    // tableKegiatan(biaya),
+    tableKegiatan(biaya),
     new Paragraph({
       text: 'DAFTAR PUSTAKA',
       heading: HeadingLevel.HEADING_1,

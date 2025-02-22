@@ -299,12 +299,12 @@ const ProposalTable = () => {
         enqueueSnackbar('Memproses data...', { variant: 'success' });
         await GenerateDocx({
           data: {
-            pendahuluan: proposal.proposalDetails[0]?.json_data,
-            tinjauan: proposal.proposalDetails[1]?.json_data,
-            pelaksanaan: proposal.proposalDetails[2]?.json_data,
-            kegiatan: proposal.proposalDetails[3]?.json_data,
-            dapus: proposal.proposalDetails[4]?.json_data,
-            lampiran: proposal.proposalDetails[5]?.json_data
+            pendahuluan: JSON.parse(proposal.proposalDetails[0]?.json_data),
+            tinjauan: JSON.parse(proposal.proposalDetails[1]?.json_data),
+            pelaksanaan: JSON.parse(proposal.proposalDetails[2]?.json_data),
+            kegiatan: JSON.parse(proposal.proposalDetails[3]?.json_data),
+            dapus: JSON.parse(proposal.proposalDetails[4]?.json_data),
+            lampiran: JSON.parse(proposal.proposalDetails[5]?.json_data)
           }
         });
       } else {

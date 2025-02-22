@@ -330,7 +330,7 @@ const Pendahuluan = () => {
               { name: 'No', field: 'no', width: '4rem' },
               { name: 'Tujuan', field: 'data' }
             ]}
-            rows={data.tujua ?? []}
+            rows={data.tujuan ?? []}
             expand={false}
             action
             onEdit={handleTujuan.edit}

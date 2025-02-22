@@ -1,8 +1,7 @@
 import { Button, IconButton, Stack } from '@mui/material';
 import { DeleteFilled, EditFilled, RedoOutlined, SelectOutlined, UnorderedListOutlined } from '@ant-design/icons';
 
-import { API_URL } from 'api/base-url';
-
+const origin_url = import.meta.env.VITE_ORIGINAL_SERVER;
 // ** Regional Identitas
 export const lampiranColumns = {
   personal: (handleEdit, handleDelete, handleReset, handleDetail, status) => [
@@ -315,9 +314,9 @@ export const attachmentColumns = (handleEdit, handleDelete, handleReset, status)
       const mode = import.meta.env.MODE;
       let url = '';
       if (mode !== 'development') {
-        url = API_URL + '/api-genpro/' + row.url;
+        url = origin_url + '/api-genproposal/public' + row.file_path;
       } else {
-        url = API_URL + '/' + row.url;
+        url = origin_url + '/public' + row.file_path;
       }
 
       return (
@@ -357,12 +356,13 @@ export const statementColumns = (handleEdit, handleDelete, handleReset, status) 
     name: 'Surat Pernyataan',
     field: 'title',
     cell: (value, row) => {
+      console.log(row);
       const mode = import.meta.env.MODE;
       let url = '';
       if (mode !== 'development') {
-        url = API_URL + '/api-genpro/' + row.url;
+        url = origin_url + '/api-genproposal/public' + row.url;
       } else {
-        url = API_URL + '/' + row.url;
+        url = origin_url + '/' + row.url;
       }
       return (
         <a href={`${url}`} target="_blank" rel="noreferrer">

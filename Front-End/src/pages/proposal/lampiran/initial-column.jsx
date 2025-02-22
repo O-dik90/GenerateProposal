@@ -310,7 +310,7 @@ export const attachmentColumns = (handleEdit, handleDelete, handleReset, status)
   { name: 'No', field: 'no', width: '4rem', align: 'center' },
   {
     name: 'Nama File',
-    field: 'description',
+    field: 'title',
     cell: (value, row) => {
       const mode = import.meta.env.MODE;
       let url = '';
@@ -355,7 +355,7 @@ export const statementColumns = (handleEdit, handleDelete, handleReset, status) 
   { name: 'No', field: 'no', width: '4rem', align: 'center' },
   {
     name: 'Surat Pernyataan',
-    field: 'description',
+    field: 'title',
     cell: (value, row) => {
       const mode = import.meta.env.MODE;
       let url = '';

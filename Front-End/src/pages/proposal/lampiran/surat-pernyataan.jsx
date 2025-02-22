@@ -57,7 +57,8 @@ const SuratPernyataan = () => {
 
       setIsLoading(true);
       try {
-        const res = await dispatch(deleteFileLampiran({ id: item.id, proposals_id: item.proposals_id }));
+        const res = await dispatch(deleteFileLampiran({ id: item.id, proposal_id: item.proposal_id }));
+        console.log(res)
         if (deleteFileLampiran.fulfilled.match(res)) {
           enqueueSnackbar('File deleted successfully.', { variant: 'success' });
           refreshData();
@@ -85,8 +86,9 @@ const SuratPernyataan = () => {
     }
 
     const uploadData = new FormData();
-    uploadData.append('images', object.statement.selectedFile);
-    uploadData.append('data', JSON.stringify({ type: state.type, proposals_id: param.id }));
+    uploadData.append('file', object.statement.selectedFile);
+    uploadData.append('data', JSON.stringify({ type: state.type, proposal_id: param.id }));
+    uploadData.append('proposal_id', param.id);
 
     setIsLoading(true);
     try {
@@ -116,8 +118,9 @@ const SuratPernyataan = () => {
     }
 
     const uploadData = new FormData();
-    uploadData.append('images', object.statement.selectedFile);
-    uploadData.append('data', JSON.stringify({ type: state.type, proposals_id: param.id, image_id: object.statement.image_id }));
+    uploadData.append('file', object.statement.selectedFile);
+    uploadData.append('data', JSON.stringify({ type: state.type, proposal_id: param.id, image_id: object.statement.image_id }));
+    uploadData.append('proposal_id', param.id);
 
     setIsLoading(true);
     try {
@@ -140,14 +143,14 @@ const SuratPernyataan = () => {
   };
 
   const refreshData = async () => {
-    const res = await dispatch(getListLampiran({ proposals_id: param.id, type: state.type }));
+    const res = await dispatch(getListLampiran({ proposal_id: param.id, type: state.type }));
 
     if (getListLampiran.fulfilled.match(res)) {
-      const formattedData = res.payload.data.map((item, index) => ({
+      const formattedData = res.payload.files?.map((item, index) => ({
         ...item,
         no: index + 1
       }));
-      setData(formattedData);
+      setData(formattedData ?? []);
     } else {
       enqueueSnackbar(res.payload?.message || 'Failed to fetch data.', { variant: 'error' });
     }

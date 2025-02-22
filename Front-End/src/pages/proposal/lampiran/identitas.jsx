@@ -286,7 +286,7 @@ const Identitas = () => {
                               handleDetailActions.edit(key),
                               handleDetailActions.delete(key),
                               handleDetailActions.reset(key),
-                              object[key]?.no
+                              object[key]?.status
                             )}
                             rows={detailData}
                             expand={false}

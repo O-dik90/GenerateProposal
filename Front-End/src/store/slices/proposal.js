@@ -59,7 +59,7 @@ export const deleteProposal = createAsyncThunk('proposal/delete', async (params,
 
 export const getListLampiran = createAsyncThunk('proposal/get-statement', async (params, { rejectWithValue }) => {
   try {
-    const response = await axiosInstance.post(`/get-files/${params?.proposals_id}`, params);
+    const response = await axiosInstance.post(`/get-files/${params?.proposal_id}`, params);
     return response.data;
   } catch (error) {
     return rejectWithValue(error.response?.message || 'An error occurred');
@@ -68,7 +68,13 @@ export const getListLampiran = createAsyncThunk('proposal/get-statement', async 
 
 export const uploadFileLampiran = createAsyncThunk('proposal/upload-file', async (params, { rejectWithValue }) => {
   try {
-    const res = await axiosInstance.post(`/upload-file`, params, {
+    console.log('Entries:', [...params.entries()]);
+    const proposalId = params.get('proposal_id');
+
+    if (!proposalId) {
+      throw new Error('proposal_id is missing in FormData');
+    }
+    const res = await axiosInstance.postForm(`/add-file/${proposalId}`, params, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
@@ -79,13 +85,10 @@ export const uploadFileLampiran = createAsyncThunk('proposal/upload-file', async
   }
 });
 
-export const deleteFileLampiran = createAsyncThunk('proposal/delete-file', async (params, { dispatch, rejectWithValue }) => {
+export const deleteFileLampiran = createAsyncThunk('proposal/delete-file', async (params, { rejectWithValue }) => {
   try {
     const res = await axiosInstance.delete(`/delete-file/${params.id}`);
 
-    if (res.status === 200) {
-      await dispatch(getListBabProposal(params?.proposals_id));
-    }
     return res.data;
   } catch (error) {
     return rejectWithValue(error.response?.data || 'An error occurred');
@@ -94,9 +97,14 @@ export const deleteFileLampiran = createAsyncThunk('proposal/delete-file', async
 
 export const updateFileLampiran = createAsyncThunk('proposal/update-file', async (params, { dispatch, rejectWithValue }) => {
   try {
-    const res = await axiosInstance.put(`/update-file`, params);
+    const proposalId = params.get('proposal_id');
+
+    if (!proposalId) {
+      throw new Error('proposal_id is missing in FormData');
+    }
+    const res = await axiosInstance.put(`/update-file/${proposalId}`, params);
     if (res.status === 200) {
-      await dispatch(getListBabProposal(params?.proposals_id));
+      await dispatch(getListBabProposal(proposalId));
     }
 
     return res.data;

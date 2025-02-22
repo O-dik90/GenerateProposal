@@ -16,7 +16,6 @@ export const userRegister = createAsyncThunk('user/add-user', async (params, { r
 });
 
 const initialState = {
-  message: '',
   status: 0,
   error: null
 };
@@ -33,10 +32,8 @@ export const userSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(userRegister.fulfilled, (state, action) => {
+      .addCase(userRegister.fulfilled, (state) => {
         state.loading = false;
-        state.message = action.payload;
-        state.status = 201;
         state.error = null;
       })
       .addCase(userRegister.rejected, (state, action) => {

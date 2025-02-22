@@ -202,6 +202,10 @@ const ProposalTable = () => {
   ];
 
   const handleSubmit = async () => {
+    if (object.user_id === '') {
+      console.log(object);
+      setObject({ ...object, user_id: user.uuid });
+    }
     try {
       if (btnAction === 'Buat') {
         const res = await dispatch(createProposal(object));

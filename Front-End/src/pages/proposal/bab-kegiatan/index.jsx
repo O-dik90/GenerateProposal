@@ -150,6 +150,7 @@ const Kegiatan = () => {
             initialValuesUpdate={object['kegiatan']}
           />
           <TableForm
+            expand={false}
             columns={Columns.Kegiatan(handleKegiatan.edit('kegiatan'), handleKegiatan.delete('kegiatan'), object['kegiatan'].status)}
             rows={data.kegiatan}
           />

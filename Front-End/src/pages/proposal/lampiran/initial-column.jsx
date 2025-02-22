@@ -360,7 +360,7 @@ export const statementColumns = (handleEdit, handleDelete, handleReset, status) 
       const mode = import.meta.env.MODE;
       let url = '';
       if (mode !== 'development') {
-        url = origin_url + '/api-genproposal/public' + row.url;
+        url = origin_url + '/api-genproposal/public' + row.file_path;
       } else {
         url = origin_url + '/' + row.url;
       }

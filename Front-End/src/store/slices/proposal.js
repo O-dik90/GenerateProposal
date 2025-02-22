@@ -24,7 +24,7 @@ export const fetchProposal = createAsyncThunk('proposal/getlist', async (id) => 
 
 export const detailProposal = createAsyncThunk('proposal/fetch-detail', async (params, { rejectWithValue }) => {
   try {
-    const response = await axiosInstance.post(`/get-proposal/${params.user_id}`, { id: params.proposal_id });
+    const response = await axiosInstance.post(`/get-proposal/${params.user_id}`, params);
     return response.data;
   } catch (error) {
     return rejectWithValue(error.response?.data || 'An error occurred');
@@ -208,6 +208,10 @@ const proposalSlice = createSlice({
       .addCase(detailProposal.fulfilled, (state, action) => {
         state.loading = false;
         state.proposal_detail = action.payload[0]?.proposalDetails;
+        state.error = null;
+      })
+      .addCase(detailProposal.rejected, (state) => {
+        state.loading = false;
         state.error = null;
       })
       // Update proposal

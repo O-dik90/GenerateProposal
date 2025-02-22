@@ -279,18 +279,40 @@ const ProposalTable = () => {
   };
 
   const handleGenerate = async (param) => {
-    const res = await dispatch(detailProposal(param?.id));
+    try {
+      const res = await dispatch(detailProposal(param));
 
-    if (detailProposal.fulfilled.match(res)) {
-      if (res.payload?.generate_status) {
-        await enqueueSnackbar('Memproses data', { variant: 'success' });
-        const detail = res.payload?.data;
+      if (!detailProposal.fulfilled.match(res)) {
+        enqueueSnackbar('Gagal mengambil detail proposal', { variant: 'error' });
+        return;
+      }
+
+      console.log('Response from detailProposal:', res);
+
+      const proposal = res.payload?.[0];
+      if (!proposal) {
+        enqueueSnackbar('Data proposal tidak ditemukan', { variant: 'error' });
+        return;
+      }
+
+      if (proposal.generate_status) {
+        enqueueSnackbar('Memproses data...', { variant: 'success' });
         await GenerateDocx({
-          data: detail
+          data: {
+            pendahuluan: proposal.proposalDetails[0]?.json_data,
+            tinjauan: proposal.proposalDetails[1]?.json_data,
+            pelaksanaan: proposal.proposalDetails[2]?.json_data,
+            kegiatan: proposal.proposalDetails[3]?.json_data,
+            dapus: proposal.proposalDetails[4]?.json_data,
+            lampiran: proposal.proposalDetails[5]?.json_data
+          }
         });
       } else {
-        enqueueSnackbar('Data belum komplet', { variant: 'error' });
+        enqueueSnackbar('Data belum komplet', { variant: 'warning' });
       }
+    } catch (error) {
+      console.error('Error in handleGenerate:', error);
+      enqueueSnackbar('Terjadi kesalahan dalam proses', { variant: 'error' });
     }
   };
 

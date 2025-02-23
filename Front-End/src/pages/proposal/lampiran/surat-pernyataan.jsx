@@ -58,7 +58,6 @@ const SuratPernyataan = () => {
       setIsLoading(true);
       try {
         const res = await dispatch(deleteFileLampiran({ id: item.id, proposal_id: item.proposal_id }));
-        console.log(res)
         if (deleteFileLampiran.fulfilled.match(res)) {
           enqueueSnackbar('File deleted successfully.', { variant: 'success' });
           refreshData();

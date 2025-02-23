@@ -15,7 +15,7 @@ export const BOOK_INIT = {
   URL: '',
   access_date: '',
   accessed: { date_parts: [] },
-  style: '',
+  style: 'apa',
   status: false
 };
 export const JOURNAL_INIT = {
@@ -37,7 +37,7 @@ export const JOURNAL_INIT = {
   URL: '',
   access_date: '',
   accessed: { date_parts: [] },
-  style: '',
+  style: 'apa',
   status: false
 };
 export const URL_INIT = {
@@ -55,7 +55,7 @@ export const URL_INIT = {
   abstract: '',
   language: '',
   note: '',
-  style: '',
+  style: 'apa',
   status: false
 };
 export const AUTHOR_INIT = {

@@ -1,9 +1,10 @@
 import { BIAYA_INIT, KEGIATAN_INIT, dataBiaya } from './initial-data';
 import { Button, Grid, Stack, Typography } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
-import { getBabProposalDetail, updateBabProposalDetail } from 'store/slices/proposal';
+import { getBabProposalDetail, getLampiranProposalDetail, updateBabProposalDetail } from 'store/slices/proposal';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { BAB_TITLE6 } from '../lampiran/identitas';
 import { Columns } from './initial-column';
 import { FieldsData } from './initial-form';
 import GenForm from 'components/general-form';
@@ -18,7 +19,6 @@ const Kegiatan = () => {
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
   const { lampiran, proposal_detail } = useSelector((state) => state.app.proposal);
-
   const [object, setObject] = useState({
     biaya: BIAYA_INIT,
     kegiatan: KEGIATAN_INIT
@@ -77,6 +77,7 @@ const Kegiatan = () => {
   useEffect(() => {
     if (id) {
       dispatch(getBabProposalDetail({ id, bab_title: BAB_TITLE4 }));
+      dispatch(getLampiranProposalDetail({ id, bab_title: BAB_TITLE6 }));
     }
   }, [dispatch, id]);
 
@@ -151,7 +152,12 @@ const Kegiatan = () => {
           />
           <TableForm
             expand={false}
-            columns={Columns.Kegiatan(handleKegiatan.edit('kegiatan'), handleKegiatan.delete('kegiatan'), object['kegiatan'].status)}
+            columns={Columns.Kegiatan(
+              handleKegiatan.edit('kegiatan'),
+              handleKegiatan.delete('kegiatan'),
+              handleKegiatan.reset('kegiatan'),
+              object['kegiatan']
+            )}
             rows={data.kegiatan}
           />
         </Stack>

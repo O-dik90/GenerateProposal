@@ -12,8 +12,8 @@ import { lampiranColumns } from './initial-column';
 import { useParams } from 'react-router';
 import { useSnackbar } from 'notistack';
 
+export const BAB_TITLE6 = 'LAMPIRAN';
 const Identitas = () => {
-  const BAB_TITLE6 = 'LAMPIRAN';
   const { id } = useParams();
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
@@ -223,7 +223,7 @@ const Identitas = () => {
     }
 
     return () => setData([]);
-  }, [BAB_TITLE6, lampiran]);
+  }, [lampiran]);
 
   return (
     <Stack direction="column" spacing={3}>

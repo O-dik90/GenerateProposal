@@ -93,7 +93,7 @@ export const initialFields = {
     },
     {
       name: 'act_end_date',
-      label: 'Tanggal Mulai Kegiatan',
+      label: 'Tanggal Selesai Kegiatan',
       type: 'date',
       InputLabelProps: { shrink: true },
       placeholder: '',

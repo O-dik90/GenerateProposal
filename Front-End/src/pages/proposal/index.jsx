@@ -34,8 +34,9 @@ export const INITIAL = {
   title: '',
   description: '',
   pkm_category: '',
-  pkm_type: '',
-  year: '',
+  pkm_type: 'PKM',
+  pkm_desc: '',
+  year: '2025',
   pkm_belmawa: 6000000,
   pkm_perguruan: 50000,
   edit_status: false
@@ -65,8 +66,7 @@ const ProposalTable = () => {
     if (user) {
       dispatch(fetchProposal(user.uuid));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [dispatch, user]);
 
   useEffect(() => {
     const loadMasterData = async () => {
@@ -202,18 +202,15 @@ const ProposalTable = () => {
   ];
 
   const handleSubmit = async () => {
-    if (object.user_id === '') {
-      console.log(object);
-      setObject({ ...object, user_id: user.uuid });
-    }
+    let data = { ...object, user_id: user.uuid };
     try {
       if (btnAction === 'Buat') {
-        const res = await dispatch(createProposal(object));
+        const res = await dispatch(createProposal(data));
         if (createProposal.fulfilled.match(res)) {
           enqueueSnackbar('Berhasil Menambah!', { variant: 'success' });
         }
       } else {
-        const res = await dispatch(updateProposal(object));
+        const res = await dispatch(updateProposal(data));
         if (updateProposal.fulfilled.match(res)) {
           enqueueSnackbar('Berhasil Menyimpan!', { variant: 'success' });
         }
@@ -229,23 +226,25 @@ const ProposalTable = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // Remove non-numeric characters
+    // Remove non-numeric characters for specific fields
     let numericValue = String(value).replace(/[^\d]/g, '');
-
-    // Convert to number
     let numValue = parseInt(numericValue, 10) || 0;
 
-    if (name === 'pkm_belmawa' || name === 'pkm_perguruan') {
-      setObject((prevObject) => ({
+    setObject((prevObject) => {
+      let updatedObject = {
         ...prevObject,
-        [name]: numValue
-      }));
-    } else {
-      setObject((prevObject) => ({
-        ...prevObject,
-        [name]: value
-      }));
-    }
+        [name]: name === 'pkm_belmawa' || name === 'pkm_perguruan' ? numValue : value
+      };
+
+      if (name === 'pkm_category') {
+        const selectedItem = pkm.find((item) => item.init === value);
+        if (selectedItem) {
+          updatedObject.pkm_desc = selectedItem.description;
+        }
+      }
+
+      return updatedObject;
+    });
   };
 
   // Format currency helper function
@@ -330,14 +329,6 @@ const ProposalTable = () => {
     object.pkm_belmawa < 6000000 ||
     object.pkm_belmawa > 10000000;
 
-  useEffect(() => {
-    if (user) {
-      setObject((prevObject) => ({
-        ...prevObject,
-        user_id: user.uuid
-      }));
-    }
-  }, [user]);
   return (
     <>
       <MainCard title={title}>

@@ -2,7 +2,7 @@ import { DeleteFilled, EditFilled, RedoOutlined } from '@ant-design/icons';
 import { IconButton, Stack } from '@mui/material';
 
 export const Columns = {
-  pelaksanaan: (handleEdit, handleDelete, handleReset, status) => [
+  pelaksanaan: (handleEdit, handleDelete, handleReset, data) => [
     { name: 'No', field: 'no', width: '4rem', align: 'center' },
     { name: 'Judul Sub Bab', field: 'title' },
     {
@@ -12,7 +12,7 @@ export const Columns = {
       cell: (value, row) => {
         return (
           <Stack direction="row" spacing={1}>
-            {status !== row.no ? (
+            {data.no !== row.no ? (
               <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)}>
                 <EditFilled />
               </IconButton>
@@ -21,7 +21,7 @@ export const Columns = {
                 <RedoOutlined />
               </IconButton>
             )}
-            <IconButton aria-label="delete" size="small" color="error" onClick={() => handleDelete(row)} disabled={status}>
+            <IconButton aria-label="delete" size="small" color="error" onClick={() => handleDelete(row)} disabled={data.no === row.no}>
               <DeleteFilled />
             </IconButton>
           </Stack>

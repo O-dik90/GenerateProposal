@@ -3,6 +3,7 @@ import { Button, Grid, Stack, Typography } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { BAB_TITLE6 } from './identitas';
 import GenForm from 'components/general-form';
 import { TableForm } from 'components/table-form';
 import { budgetColumns } from './initial-column';
@@ -12,7 +13,6 @@ import { useParams } from 'react-router';
 import { useSnackbar } from 'notistack';
 
 const Anggaran = () => {
-  const BAB_TITLE6 = 'LAMPIRAN';
   const { id } = useParams();
   const [data, setData] = useState(BUDGET_INIT),
     [object, setObject] = useState({
@@ -190,7 +190,7 @@ const Anggaran = () => {
                 initialValuesUpdate={object[key]}
               />
               <TableForm
-                columns={budgetColumns(handleBudget.edit(key), handleBudget.delete(key), handleBudget.reset(key), object[key]?.no)}
+                columns={budgetColumns(handleBudget.edit(key), handleBudget.delete(key), handleBudget.reset(key), object[key])}
                 rows={budgetData}
                 expand={false}
                 detail=""

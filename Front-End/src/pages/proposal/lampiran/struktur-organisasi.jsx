@@ -2,6 +2,7 @@ import { Button, Stack } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { BAB_TITLE6 } from './identitas';
 import GenForm from 'components/general-form';
 import { STRUCTURE_INIT } from './initial-data';
 import { TableForm } from 'components/table-form';
@@ -12,7 +13,6 @@ import { useParams } from 'react-router';
 import { useSnackbar } from 'notistack';
 
 const StrukturOrganisasi = () => {
-  const BAB_TITLE6 = 'LAMPIRAN';
   const { id } = useParams();
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
@@ -108,7 +108,7 @@ const StrukturOrganisasi = () => {
       />
       <Stack direction="column" sx={{ marginTop: 5 }}>
         <TableForm
-          columns={structureColumns(handleStructure.edit, handleStructure.delete, handleStructure.reset, object?.no)}
+          columns={structureColumns(handleStructure.edit, handleStructure.delete, handleStructure.reset, object)}
           rows={data || []}
           expand={false}
         />

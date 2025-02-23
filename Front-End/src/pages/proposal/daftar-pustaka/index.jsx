@@ -292,6 +292,11 @@ const Dapus = () => {
         return;
       }
 
+      if (object.status === true) {
+        enqueueSnackbar('Mohon update checklist action dahulu', { variant: 'info' });
+        return;
+      }
+
       try {
         const dataPustaka = {
           bab_title: BAB_TITLE5,
@@ -372,9 +377,9 @@ const Dapus = () => {
                 </MenuItem>
               ))}
             </Select>
-            <Select
+            {/* <Select
               displayEmpty
-              readOnly={object.status}
+              readOnly={true}
               inputProps={{ 'aria-label': 'Without label' }}
               value={object.style || ''}
               onChange={handlePustaka.onchange}
@@ -389,7 +394,7 @@ const Dapus = () => {
                   {o.description}
                 </MenuItem>
               ))}
-            </Select>
+            </Select> */}
           </Stack>
         </Grid>
         {object.style && (

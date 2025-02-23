@@ -21,7 +21,7 @@ export const Columns = {
     },
     { name: 'Total Pengeluaran (Rp.)', field: 'sub_total', align: 'right', width: '20rem' }
   ],
-  Kegiatan: (handleEdit, handleDelete, handleReset, status) => [
+  Kegiatan: (handleEdit, handleDelete, handleReset, data) => [
     { name: 'No', field: 'no', width: '4rem', align: 'center' },
     { name: 'Nama Kegiatan', field: 'activity' },
     { name: 'Penanggung Jawab', field: 'person', width: '20rem' },
@@ -32,7 +32,7 @@ export const Columns = {
       cell: (value, row) => {
         return (
           <Stack direction="row" spacing={1}>
-            {status !== row.no ? (
+            {data.no !== row.no ? (
               <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)}>
                 <EditFilled />
               </IconButton>
@@ -41,7 +41,7 @@ export const Columns = {
                 <RedoOutlined />
               </IconButton>
             )}
-            <IconButton aria-label="delete" size="small" color="error" onClick={() => handleDelete(row)} disabled={status}>
+            <IconButton aria-label="delete" size="small" color="error" onClick={() => handleDelete(row)} disabled={data.no === row.no}>
               <DeleteFilled />
             </IconButton>
           </Stack>

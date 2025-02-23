@@ -21,7 +21,7 @@ export const Columns = {
                 <RedoOutlined />
               </IconButton>
             )}
-            <IconButton aria-label="delete" size="small" color="error" onClick={() => handleDelete(row)} disabled={status}>
+            <IconButton aria-label="delete" size="small" color="error" onClick={() => handleDelete(row)} disabled={status === row.no}>
               <DeleteFilled />
             </IconButton>
           </Stack>

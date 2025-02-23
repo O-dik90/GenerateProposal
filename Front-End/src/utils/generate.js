@@ -14,13 +14,14 @@ import {
 } from 'docx';
 
 import { enqueueSnackbar } from 'notistack';
+import { lampiranIdentitas } from './lampiran-identitas';
 import { saveAs } from 'file-saver';
 import { tableBiaya } from './table-biaya';
 import { tableKegiatan } from './table-kegiatan';
 
 const GenerateDocx = ({ data }) => {
-  const { pendahuluan, tinjauan, biaya, pelaksanaan, lampiran, dapus } = data;
-  console.log('testing data', data);
+  const { pendahuluan, tinjauan, kegiatan, pelaksanaan, lampiran, dapus } = data;
+  // console.log('testing data', data);
 
   // Helper to create paragraphs from an array
   const createParagraphsFromArray = (items, style = 'wellSpaced') =>
@@ -170,7 +171,7 @@ const GenerateDocx = ({ data }) => {
       text: `4.2 Jadwal Kegiatan`,
       heading: HeadingLevel.HEADING_2
     }),
-    tableKegiatan(biaya),
+    tableKegiatan(kegiatan),
     new Paragraph({
       text: 'DAFTAR PUSTAKA',
       heading: HeadingLevel.HEADING_1,
@@ -181,7 +182,12 @@ const GenerateDocx = ({ data }) => {
       text: 'LAMPIRAN',
       heading: HeadingLevel.HEADING_1,
       pageBreakBefore: true
-    })
+    }),
+    lampiranIdentitas([
+      { name: 'Dies Natalis HMFT ITB 2022', role: 'Ketua Divisi Event', period: 'November 2022 - Februari 2023' },
+      { name: 'ITB In Move', role: 'Event', period: 'Januari - Maret 2022' },
+      { name: 'Ganesha IoTech', role: 'Public Relation', period: 'Januari - Maret 2022' }
+    ])
   ];
 
   // Document configuration

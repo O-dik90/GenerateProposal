@@ -290,8 +290,6 @@ const ProposalTable = () => {
         return;
       }
 
-      console.log('Response from detailProposal:', res);
-
       const proposal = res.payload?.[0];
       if (!proposal) {
         enqueueSnackbar('Data proposal tidak ditemukan', { variant: 'error' });

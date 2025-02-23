@@ -180,14 +180,16 @@ const GenerateDocx = ({ data }) => {
     ...createDapus(dapus),
     new Paragraph({
       text: 'LAMPIRAN',
-      heading: HeadingLevel.HEADING_1,
+      heading: HeadingLevel.HEADING_2,
+      size: '14pt',
       pageBreakBefore: true
     }),
-    lampiranIdentitas([
-      { name: 'Dies Natalis HMFT ITB 2022', role: 'Ketua Divisi Event', period: 'November 2022 - Februari 2023' },
-      { name: 'ITB In Move', role: 'Event', period: 'Januari - Maret 2022' },
-      { name: 'Ganesha IoTech', role: 'Public Relation', period: 'Januari - Maret 2022' }
-    ])
+    new Paragraph({
+      text: `Lampiran 1.  Biodata Ketua dan Anggota serta Dosen Pendamping`,
+      heading: HeadingLevel.HEADING_2,
+      alignment: AlignmentType.START
+    }),
+    ...lampiranIdentitas()
   ];
 
   // Document configuration

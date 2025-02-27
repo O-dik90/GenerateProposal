@@ -1,5 +1,5 @@
 import { Button, IconButton, Stack } from '@mui/material';
-import { DeleteFilled, EditFilled, RedoOutlined, SelectOutlined, UnorderedListOutlined } from '@ant-design/icons';
+import { DeleteFilled, EditFilled, RedoOutlined, SelectOutlined } from '@ant-design/icons';
 
 const origin_url = import.meta.env.VITE_ORIGINAL_SERVER;
 // ** Regional Identitas
@@ -13,7 +13,7 @@ export const lampiranColumns = {
       cell: (value, row) => {
         return (
           <Stack direction="row" spacing={1}>
-            <Button aria-label="detail" size="small" color="info" onClick={() => handleDetail(row)}>
+            <Button aria-label="detail" size="small" color="info" onClick={(e) => handleDetail(row, e)}>
               Detail Personal
             </Button>
           </Stack>
@@ -35,19 +35,16 @@ export const lampiranColumns = {
       cell: (value, row) => {
         return (
           <Stack direction="row" spacing={1}>
-            <IconButton aria-label="detail" size="small" color="info" onClick={() => handleDetail(row)}>
-              <UnorderedListOutlined />
-            </IconButton>
             {status !== row.no ? (
-              <IconButton aria-label="edit" size="small" color="primary" onClick={() => handleEdit(row)}>
+              <IconButton aria-label="edit" size="small" color="primary" onClick={(e) => handleEdit(row, e)}>
                 <EditFilled />
               </IconButton>
             ) : (
-              <IconButton aria-label="reset" size="small" color="primary" onClick={() => handleReset()}>
+              <IconButton aria-label="reset" size="small" color="primary" onClick={(e) => handleReset(e)}>
                 <RedoOutlined />
               </IconButton>
             )}
-            <IconButton aria-label="delete" size="small" color="error" onClick={() => handleDelete(row)} disabled={status === row.no}>
+            <IconButton aria-label="delete" size="small" color="error" onClick={(e) => handleDelete(row, e)} disabled={status === row.no}>
               <DeleteFilled />
             </IconButton>
           </Stack>

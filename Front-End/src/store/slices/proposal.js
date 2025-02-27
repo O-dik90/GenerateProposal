@@ -158,10 +158,16 @@ export const updateLampiranProposalDetail = createAsyncThunk(
     }
   }
 );
+
+export const lampiranIdentitasAsync = createAsyncThunk('proposal/lampiranIdentitas', async (payload) => {
+  return payload;
+});
+
 const initialState = {
   data: [],
   proposal_detail: [],
   lampiran: {},
+  identitas: [],
   document: [],
   loading: false,
   message: null,
@@ -301,6 +307,11 @@ const proposalSlice = createSlice({
       .addCase(updateLampiranProposalDetail.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
+      })
+      .addCase(lampiranIdentitasAsync.fulfilled, (state, action) => {
+        state.loading = false;
+        state.identitas = action.payload;
+        state.error = null;
       });
   }
 });

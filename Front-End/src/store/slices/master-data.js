@@ -28,7 +28,7 @@ const initialState = {
   tahunLomba: [],
   gender: [],
   dapus: { style: [], reference: [] },
-  lampiran: { role: [] },
+  role: [],
   loading: false,
   error: null
 };
@@ -51,9 +51,9 @@ const masterSlice = createSlice({
       state.dapus[key] = action.payload;
       state.error = null;
     };
-    const lampiranFulfilled = (state, action, key) => {
+    const lampiranFulfilled = (state, action) => {
       state.loading = false;
-      state.lampiran[key] = action.payload;
+      state.role = action.payload;
       state.error = null;
     };
 
@@ -73,7 +73,7 @@ const masterSlice = createSlice({
       .addCase(masterDapusStyle.rejected, handleRejected)
       .addCase(masterDapusRef.fulfilled, (state, action) => dapusFulfilled(state, action, 'reference'))
       .addCase(masterDapusRef.rejected, handleRejected)
-      .addCase(masterLampiranRole.fulfilled, (state, action) => lampiranFulfilled(state, action, 'role'))
+      .addCase(masterLampiranRole.fulfilled, (state, action) => lampiranFulfilled(state, action))
       .addCase(masterLampiranRole.rejected, handleRejected)
       .addCase(masterGender.fulfilled, (state, action) => handleFulfilled(state, action, 'gender'))
       .addCase(masterGender.rejected, handleRejected);

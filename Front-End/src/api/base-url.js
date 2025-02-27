@@ -33,10 +33,9 @@ axiosInstance.interceptors.response.use(
   },
   (error) => {
     if (error.response.status === 401) {
-      sessionStorage.removeItem('user');
-      localStorage.removeItem('user');
-
       if (window.location.pathname !== '/login') {
+        sessionStorage.removeItem('user');
+        localStorage.removeItem('user');
         window.location.href = '/login';
       }
     }

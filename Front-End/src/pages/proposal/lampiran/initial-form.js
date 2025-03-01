@@ -9,7 +9,7 @@ export const initialFields = {
       type: 'text',
       placeholder: '',
       validation: Yup.string().required('Wajib diisi'),
-      width: 6
+      width: 4
     },
     {
       name: 'email',
@@ -17,22 +17,6 @@ export const initialFields = {
       type: 'email',
       placeholder: '',
       validation: Yup.string().email('penulisan email harus benar').required('Wajib diisi'),
-      width: 4
-    },
-    {
-      name: 'phone',
-      label: 'No Telepon/HP',
-      type: 'text',
-      placeholder: '',
-      validation: Yup.string().required('Wajib diisi').max(13, 'No Telepon/HP maksimal 13 angka'),
-      width: 2
-    },
-    {
-      name: 'id_no',
-      label: 'NIM / NIDM',
-      type: 'text',
-      placeholder: '',
-      validation: Yup.string().required('Wajib diisi'),
       width: 4
     },
     {
@@ -48,6 +32,30 @@ export const initialFields = {
       width: 2
     },
     {
+      name: 'phone',
+      label: 'No Telepon/HP',
+      type: 'text',
+      placeholder: '',
+      validation: Yup.string().required('Wajib diisi').max(13, 'No Telepon/HP maksimal 13 angka'),
+      width: 2
+    },
+    {
+      name: 'id_no',
+      label: 'NIM / NIDM',
+      type: 'text',
+      placeholder: '',
+      validation: Yup.string().required('Wajib diisi'),
+      width: 3
+    },
+    {
+      name: 'major',
+      label: 'Program Studi',
+      type: 'text',
+      placeholder: '',
+      validation: Yup.string().required('Wajib diisi'),
+      width: 4
+    },
+    {
       name: 'birth_date',
       label: 'Tanggal Lahir',
       type: 'date',
@@ -58,11 +66,11 @@ export const initialFields = {
     },
     {
       name: 'birth_place',
-      label: 'Tempat Lahir',
+      label: 'Kota/Tempat Kelahiran',
       type: 'text',
       placeholder: '',
       validation: Yup.string().required('Wajib diisi'),
-      width: 4
+      width: 3
     }
   ],
   act: [

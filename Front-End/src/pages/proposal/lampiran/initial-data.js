@@ -2,6 +2,7 @@
 export const ID_INIT = {
   no: 0,
   role_person: '',
+  major: '',
   name: '',
   gender: '',
   id_no: '',

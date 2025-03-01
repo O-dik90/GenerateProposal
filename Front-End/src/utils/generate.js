@@ -21,7 +21,7 @@ import { tableKegiatan } from './table-kegiatan';
 
 const GenerateDocx = ({ data }) => {
   const { pendahuluan, tinjauan, kegiatan, pelaksanaan, lampiran, dapus } = data;
-  // console.log('testing data', data);
+  console.log('testing data', lampiran);
 
   // Helper to create paragraphs from an array
   const createParagraphsFromArray = (items, style = 'wellSpaced') =>
@@ -72,6 +72,10 @@ const GenerateDocx = ({ data }) => {
       })
     ]
   });
+
+  //lampiran identitas Divider
+  const createTableIdentitas = (dataIdentitas) =>
+    Array.isArray(dataIdentitas) ? dataIdentitas.flatMap((item) => lampiranIdentitas(item)) : [];
 
   // Footer configurations
   const emptyFooter = new Footer({
@@ -189,7 +193,7 @@ const GenerateDocx = ({ data }) => {
       heading: HeadingLevel.HEADING_2,
       alignment: AlignmentType.START
     }),
-    ...lampiranIdentitas()
+    ...createTableIdentitas(lampiran?.identitas)
   ];
 
   // Document configuration

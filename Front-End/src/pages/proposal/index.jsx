@@ -374,21 +374,23 @@ const ProposalTable = () => {
                 <MenuItem disabled value="">
                   <em>Pilih Lomba</em>
                 </MenuItem>
-                {lomba?.map((item) => (
-                  <MenuItem key={`${item.code}-${item.id}`} value={item.init}>
-                    {item.description}
-                  </MenuItem>
-                ))}
+                {lomba.length > 0 &&
+                  lomba?.map((item) => (
+                    <MenuItem key={`${item.code}-${item.id}`} value={item.init}>
+                      {item.description}
+                    </MenuItem>
+                  ))}
               </Select>
               <Select id="tahun" name="year" displayEmpty value={object.year} onChange={handleChange} sx={{ width: '10rem' }}>
                 <MenuItem disabled value="">
                   <em>Pilih Tahun</em>
                 </MenuItem>
-                {tahunLomba.map((item) => (
-                  <MenuItem key={`${item.code}-${item.id}`} value={item.init}>
-                    {item.description}
-                  </MenuItem>
-                ))}
+                {tahunLomba.length > 0 &&
+                  tahunLomba.map((item) => (
+                    <MenuItem key={`${item.code}-${item.id}`} value={item.init}>
+                      {item.description}
+                    </MenuItem>
+                  ))}
               </Select>
             </Stack>
             <Stack direction="row" spacing={2} sx={{ marginTop: 1 }}>
@@ -396,11 +398,12 @@ const ProposalTable = () => {
                 <MenuItem disabled value="">
                   <em>Pilih PKM</em>
                 </MenuItem>
-                {pkm?.map((item) => (
-                  <MenuItem key={`${item.init}-${item.id}`} value={item.init}>
-                    {item.description}
-                  </MenuItem>
-                ))}
+                {pkm.length > 0 &&
+                  pkm?.map((item) => (
+                    <MenuItem key={`${item.init}-${item.id}`} value={item.init}>
+                      {item.description}
+                    </MenuItem>
+                  ))}
               </Select>
             </Stack>
             <Stack direction="row" spacing={1} sx={{ marginTop: 2 }}>

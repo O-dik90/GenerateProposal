@@ -1,4 +1,4 @@
-import { Button, Grid, MenuItem, Select, Stack, Typography } from '@mui/material';
+import { Box, Button, Grid, List, ListItem, MenuItem, Select, Stack, Typography } from '@mui/material';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { getLampiranProposalDetail, lampiranIdentitasAsync, updateLampiranProposalDetail } from 'store/slices/proposal';
 import { masterGender, masterLampiranRole } from 'store/slices/master-data';
@@ -104,8 +104,33 @@ const Identitas = () => {
 
     detail: (item) => {
       console.log(item);
-      if (!item?.no === '') return null;
-      return <DetailIdentitas data={item} />;
+      if (!item || item.no === '') return null;
+
+      const itemData = [
+        { label: 'Program Studi', value: item.major },
+        { label: 'Jenis Kelamin', value: item.gender },
+        { label: 'No HP', value: item.phone },
+        { label: 'Tanggal Lahir', value: item.birth_date },
+        { label: 'Kota/Tempat Kelahiran', value: item.birth_place }
+      ];
+
+      return (
+        <>
+          <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+            {itemData.map((item, index) => (
+              <ListItem key={`${item.label}-${index}`} disableGutters>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                  <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                    {item.label}:
+                  </Typography>
+                  <Typography variant="body1">{item.value || 'Data tidak tersedia'}</Typography>
+                </Box>
+              </ListItem>
+            ))}
+          </List>
+          <DetailIdentitas data={item} />
+        </>
+      );
     }
   };
 

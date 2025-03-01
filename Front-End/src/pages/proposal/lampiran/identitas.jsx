@@ -4,6 +4,7 @@ import { getLampiranProposalDetail, lampiranIdentitasAsync, updateLampiranPropos
 import { masterGender, masterLampiranRole } from 'store/slices/master-data';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { DetailIdentitas } from './detail-identitas';
 import GenForm from 'components/general-form';
 import { ID_INIT } from './initial-data';
 import { TableForm } from 'components/table-form';
@@ -20,7 +21,7 @@ const Identitas = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   const { gender, role } = useSelector((state) => state.app.masterData);
-  const lampiran = useSelector((state) => state.app.proposal.lampiran);
+  const { lampiran, identitas } = useSelector((state) => state.app.proposal);
 
   const [object, setObject] = useState(ID_INIT);
   const [data, setData] = useState([]);
@@ -28,6 +29,10 @@ const Identitas = () => {
 
   // Memoized role options for better performance
   const roleOptions = useMemo(() => role || [], [role]);
+
+  useEffect(() => {
+    setData(identitas ?? []);
+  }, [identitas]);
 
   useEffect(() => {
     const fetchMasterData = async () => {
@@ -49,63 +54,78 @@ const Identitas = () => {
     try {
       const parsedData = JSON.parse(lampiran[0]?.json_data || '{}');
       if (Array.isArray(parsedData.identitas)) {
-        setData((prev) => (JSON.stringify(prev) !== JSON.stringify(parsedData.identitas) ? parsedData.identitas : prev));
+        dispatch(lampiranIdentitasAsync(parsedData.identitas));
       }
     } catch (error) {
       console.error('Error parsing JSON data:', error.message);
     }
-  }, [lampiran]);
+  }, [dispatch, lampiran]);
 
   const handlePersonal = {
-    edit: (item) => setObject({ ...item, status: true }),
+    edit: (item) => {
+      if (!item) return;
+      setObject({ ...item, status: true });
+    },
+
     reset: () => {
       setOpen(false);
       setObject(ID_INIT);
     },
+
     delete: (item) => {
-      setData((prevData) => prevData.filter((entry) => entry.no !== item.no).map((entry, index) => ({ ...entry, no: index + 1 })));
+      setData((prevData) => {
+        const updatedData = prevData.filter((entry) => entry.no !== item.no).map((entry, index) => ({ ...entry, no: index + 1 }));
+        return updatedData;
+      });
     },
+
     save: async () => {
-      const jsonData = lampiran[0]?.json_data ? JSON.parse(lampiran[0]?.json_data) : {};
-      const payload = {
-        bab_title: BAB_TITLE6,
-        json_data: { ...jsonData, identitas: data }
-      };
+      console.log('data', data);
 
       try {
+        const jsonData = lampiran[0]?.json_data ? JSON.parse(lampiran[0]?.json_data) : {};
+        const payload = {
+          bab_title: BAB_TITLE6,
+          json_data: { ...jsonData, identitas: data }
+        };
+
         const res = await dispatch(updateLampiranProposalDetail({ id: Number(id), data: payload }));
-        enqueueSnackbar(res?.error ? 'Gagal menyimpan' : 'Berhasil menyimpan', {
-          variant: res?.error ? 'error' : 'success'
-        });
+
+        if (res?.error) {
+          enqueueSnackbar('Gagal menyimpan', { variant: 'error' });
+        } else {
+          enqueueSnackbar('Berhasil menyimpan', { variant: 'success' });
+        }
       } catch (error) {
         enqueueSnackbar('Terjadi kesalahan saat menyimpan data', { variant: 'error' });
+        console.error('Save Error:', error);
       }
     },
-    detail: (item) => <p>{item.no}</p>
+
+    detail: (item) => {
+      if (!item) return null;
+      return <DetailIdentitas data={item} />;
+    }
   };
 
   const handleForm = useCallback(
     (values) => {
-      setData((prevData) => {
-        if (!Array.isArray(prevData)) return [];
+      if (!Array.isArray(data)) return [];
 
-        if (object?.status) {
-          const updatedEntries = prevData.map((entry) => (entry.no === object.no ? { ...entry, ...values, status: false } : entry));
+      if (object?.status) {
+        const updatedEntries = data.map((entry) => (entry.no === object.no ? { ...entry, ...values, status: false } : entry));
 
-          dispatch(lampiranIdentitasAsync(updatedEntries));
-          return updatedEntries;
-        } else {
-          const newEntry = { ...values, no: prevData.length + 1 };
-          const newEntries = [...prevData, newEntry];
+        dispatch(lampiranIdentitasAsync(updatedEntries));
+      } else {
+        const newEntry = { ...values, no: data.length + 1 };
+        const newEntries = [...data, newEntry];
 
-          dispatch(lampiranIdentitasAsync(newEntries));
-          return newEntries;
-        }
-      });
-
+        dispatch(lampiranIdentitasAsync(newEntries));
+        return newEntries;
+      }
       setObject(ID_INIT);
     },
-    [dispatch, object]
+    [data, dispatch, object.no, object?.status]
   );
 
   return (
@@ -142,13 +162,7 @@ const Identitas = () => {
         )}
       </Grid>
       <TableForm
-        columns={lampiranColumns.personal(
-          handlePersonal.edit,
-          handlePersonal.delete,
-          handlePersonal.reset,
-          handlePersonal.detail,
-          object.no
-        )}
+        columns={lampiranColumns.personal(handlePersonal.edit, handlePersonal.delete, handlePersonal.reset, object.no)}
         rows={data}
         expand
         detail={handlePersonal.detail}

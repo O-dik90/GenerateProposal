@@ -9,39 +9,56 @@ const axiosInstance = axios.create({
   withCredentials: true
 });
 
+// Request Interceptor
 axiosInstance.interceptors.request.use(
   (config) => {
-    const user = sessionStorage.getItem('user');
-    const token = user ? JSON.parse(user)?.token : null;
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    try {
+      const user = sessionStorage.getItem('user');
+      const token = user ? JSON.parse(user)?.token : null;
+
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    } catch (error) {
+      console.error('Error parsing user token:', error);
     }
+
     return config;
   },
   (error) => {
     if (error.code === 'ECONNABORTED') {
-      enqueueSnackbar(`Error, ${error.code}}`, { variant: 'error' });
+      enqueueSnackbar(`Request Timeout: ${error.code}`, { variant: 'error' });
+    } else {
+      enqueueSnackbar('Request error: ' + error.message, { variant: 'error' });
     }
-    enqueueSnackbar('Request error: ' + error.message, { variant: 'error' });
     return Promise.reject(error);
   }
 );
 
+// Response Interceptor
 axiosInstance.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  (error) => {
-    if (error.response.status === 401) {
-      if (window.location.pathname !== '/login') {
-        sessionStorage.removeItem('user');
-        localStorage.removeItem('user');
-        window.location.href = '/login';
+  (response) => response,
+  async (error) => {
+    if (error.response?.status === 401) {
+      console.warn('🔄 Attempting token refresh...');
+
+      try {
+        const res = await axios.get('/refresh-token', { withCredentials: true });
+
+        if (res.data?.newToken) {
+          console.log('✅ Token refreshed!');
+          sessionStorage.setItem('user', JSON.stringify({ token: res.data.newToken }));
+          error.config.headers.Authorization = `Bearer ${res.data.newToken}`;
+          return axiosInstance(error.config);
+        }
+      } catch (refreshError) {
+        console.error('🔴 Token refresh failed:', refreshError);
       }
+
+      sessionStorage.removeItem('user');
+      window.location.href = '/login';
     }
-    if (error.response) {
-      enqueueSnackbar(error.response.data.msg || error.response.data.message || error.message, { variant: 'error' });
-    }
+
     return Promise.reject(error);
   }
 );

@@ -1,17 +1,25 @@
+import { ACT_INIT, AWARD_INIT, COMMUNITY_INIT, COURSE_INIT, EDUCATION_INIT, RESEARCH_INIT } from './initial-data';
 import { Grid, Stack, Typography } from '@mui/material';
+import { useCallback, useMemo, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import GenForm from 'components/general-form';
+import PropTypes from 'prop-types';
 import { TableForm } from 'components/table-form';
+import { initialFields } from './initial-form';
 import { lampiranColumns } from './initial-column';
+import { lampiranIdentitasAsync } from 'store/slices/proposal';
 
 const DetailIdentitas = ({ data }) => {
+  const dispatch = useDispatch();
+  const { identitas } = useSelector((state) => state.app.proposal);
   const [detail, setDetail] = useState({
-    act: object.act || [],
-    award: object.award || [],
-    community_service: object.community_service || [],
-    course: object.course || [],
-    education: object.education || [],
-    research: object.research || []
+    act: data.act || [],
+    award: data.award || [],
+    community_service: data.community_service || [],
+    course: data.course || [],
+    education: data.education || [],
+    research: data.research || []
   });
   const [detailObject, setDetailObject] = useState({
     act: ACT_INIT,
@@ -22,9 +30,17 @@ const DetailIdentitas = ({ data }) => {
     research: RESEARCH_INIT
   });
 
-  useState(() => {
-    console.log('detail', data);
-  }, [data]);
+  const resetDetailObject = useCallback((key) => {
+    const initialStates = {
+      act: ACT_INIT,
+      award: AWARD_INIT,
+      education: EDUCATION_INIT,
+      course: COURSE_INIT,
+      research: RESEARCH_INIT,
+      community_service: COMMUNITY_INIT
+    };
+    setDetailObject((prev) => ({ ...prev, [key]: initialStates[key] || {} }));
+  }, []);
 
   const roleMHS = [
     { key: 'act', role: 'MHS', label: 'Kegiatan' },
@@ -33,22 +49,29 @@ const DetailIdentitas = ({ data }) => {
 
   const handleFormDetail = useCallback(
     (values, key) => {
-      if (detailObject[key]?.status) {
-        setDetail((prev) => ({
+      setDetail((prev) => {
+        const updatedDetail = {
           ...prev,
-          [key]: prev[key]?.map((item) => (item.no === detailObject[key]?.no ? { ...item, ...values, status: false } : item))
-        }));
+          [key]: detailObject[key]?.status
+            ? prev[key]?.map((item) => (item.no === detailObject[key]?.no ? { ...item, ...values, status: false } : item))
+            : [...(prev[key] || []), { ...values, no: (prev[key]?.length || 0) + 1 }]
+        };
 
-        resetDetailObject(key);
-      } else {
-        setDetail((prev) => ({
-          ...prev,
-          [key]: [...(prev[key] || []), { ...values, no: (detail[key]?.length || 0) + 1 }]
-        }));
-      }
+        // Update Redux state after ensuring the new state is correct
+        if (identitas && Array.isArray(identitas)) {
+          const updateDetails = identitas.map((item) => (item.no === data.no ? { ...item, ...updatedDetail } : item));
+
+          dispatch(lampiranIdentitasAsync(updateDetails));
+        }
+
+        return updatedDetail; // Ensure state update reflects new values
+      });
+
+      resetDetailObject(key);
     },
-    [detail, detailObject, resetDetailObject]
+    [detailObject, resetDetailObject, dispatch, identitas, data.no]
   );
+
   const handleDetailActions = useMemo(
     () => ({
       edit: (key) => (param) => setDetailObject((prev) => ({ ...prev, [key]: { ...param, status: true } })),
@@ -89,7 +112,7 @@ const DetailIdentitas = ({ data }) => {
                     handleDetailActions.edit(key),
                     handleDetailActions.delete(key),
                     handleDetailActions.reset(key),
-                    object[key]?.status
+                    detailObject[key]?.no
                   )}
                   rows={detailData}
                   expand={false}
@@ -101,6 +124,10 @@ const DetailIdentitas = ({ data }) => {
       </Stack>
     </Grid>
   );
+};
+
+DetailIdentitas.propTypes = {
+  data: PropTypes.object.isRequired
 };
 
 export { DetailIdentitas };

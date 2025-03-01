@@ -103,7 +103,8 @@ const Identitas = () => {
     },
 
     detail: (item) => {
-      if (!item) return null;
+      console.log(item);
+      if (!item?.no === '') return null;
       return <DetailIdentitas data={item} />;
     }
   };

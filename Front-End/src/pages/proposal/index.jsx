@@ -374,7 +374,7 @@ const ProposalTable = () => {
                 <MenuItem disabled value="">
                   <em>Pilih Lomba</em>
                 </MenuItem>
-                {lomba.map((item) => (
+                {lomba?.map((item) => (
                   <MenuItem key={`${item.code}-${item.id}`} value={item.init}>
                     {item.description}
                   </MenuItem>
@@ -396,7 +396,7 @@ const ProposalTable = () => {
                 <MenuItem disabled value="">
                   <em>Pilih PKM</em>
                 </MenuItem>
-                {pkm.map((item) => (
+                {pkm?.map((item) => (
                   <MenuItem key={`${item.init}-${item.id}`} value={item.init}>
                     {item.description}
                   </MenuItem>

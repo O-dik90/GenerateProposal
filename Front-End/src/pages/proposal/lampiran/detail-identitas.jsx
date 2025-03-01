@@ -47,6 +47,13 @@ const DetailIdentitas = ({ data }) => {
     { key: 'award', role: 'MHS', label: 'Penghargaan' }
   ];
 
+  const roleDosen = [
+    { key: 'education', role: 'DOSEN', label: 'Pendidikan' },
+    { key: 'course', role: 'DOSEN', label: 'Pendidikan' },
+    { key: 'research', role: 'DOSEN', label: 'Penelitian' },
+    { key: 'community_service', role: 'DOSEN', label: 'Pengabdian' }
+  ];
+
   const handleFormDetail = useCallback(
     (values, key) => {
       setDetail((prev) => {
@@ -89,38 +96,74 @@ const DetailIdentitas = ({ data }) => {
   return (
     <Grid item xs={12}>
       <Stack direction="column" sx={{ marginTop: 5 }}>
-        {roleMHS.map(({ key, label }, index) => {
-          const detailData = detail[key] || [];
-          const detailStatus = detailObject[key]?.status;
-          const detailFieldsData = initialFields[key];
+        {data?.role_person !== 'DOSEN' &&
+          roleMHS.map(({ key, label }, index) => {
+            const detailData = detail[key] || [];
+            const detailStatus = detailObject[key]?.status;
+            const detailFieldsData = initialFields[key];
 
-          return (
-            <Grid item xs={12} key={`${key}-${index}`} sx={{ marginBottom: 15 }}>
-              <Typography variant="h5" gutterBottom>
-                Detail {label}
-              </Typography>
-              <Stack direction="column" spacing={5}>
-                <GenForm
-                  formFields={detailFieldsData}
-                  buttonDisable={false}
-                  onSubmit={(values) => handleFormDetail(values, key)}
-                  titleButton={detailStatus ? `Update Data ${label}` : `Tambah Data ${label}`}
-                  initialValuesUpdate={detailObject[key]}
-                />
-                <TableForm
-                  columns={lampiranColumns[key](
-                    handleDetailActions.edit(key),
-                    handleDetailActions.delete(key),
-                    handleDetailActions.reset(key),
-                    detailObject[key]?.no
-                  )}
-                  rows={detailData}
-                  expand={false}
-                />
-              </Stack>
-            </Grid>
-          );
-        })}
+            return (
+              <Grid item xs={12} key={`${key}-${index}`} sx={{ marginBottom: 15 }}>
+                <Typography variant="h5" gutterBottom>
+                  Detail {label}
+                </Typography>
+                <Stack direction="column" spacing={5}>
+                  <GenForm
+                    formFields={detailFieldsData}
+                    buttonDisable={false}
+                    onSubmit={(values) => handleFormDetail(values, key)}
+                    titleButton={detailStatus ? `Update Data ${label}` : `Tambah Data ${label}`}
+                    initialValuesUpdate={detailObject[key]}
+                  />
+                  <TableForm
+                    columns={lampiranColumns[key](
+                      handleDetailActions.edit(key),
+                      handleDetailActions.delete(key),
+                      handleDetailActions.reset(key),
+                      detailObject[key]?.no
+                    )}
+                    rows={detailData}
+                    expand={false}
+                  />
+                </Stack>
+              </Grid>
+            );
+          })}
+        {data?.role_person === 'DOSEN' &&
+          roleDosen.map(({ key, label }, index) => {
+            const detailData = detail[key] || [];
+            const detailStatus = detailObject[key]?.status;
+            const detailFieldsData = initialFields[key];
+            const title = key !== 'education' ? `Tri Dharma ${label}` : label;
+
+            return (
+              <Grid item xs={12} key={`${key}-${index}`} sx={{ marginBottom: 15 }}>
+                <Typography variant="h5" gutterBottom>
+                  Detail {title}
+                </Typography>
+                <Stack direction="column" spacing={5}>
+                  <GenForm
+                    formFields={detailFieldsData}
+                    buttonDisable={false}
+                    onSubmit={(values) => handleFormDetail(values, key)}
+                    titleButton={detailStatus ? `Update Data ${title}` : `Tambah Data ${title}`}
+                    initialValuesUpdate={detailObject[key]}
+                  />
+                  <TableForm
+                    columns={lampiranColumns[key](
+                      handleDetailActions.edit(key),
+                      handleDetailActions.delete(key),
+                      handleDetailActions.reset(key),
+                      detailObject[key]?.no
+                    )}
+                    rows={detailData}
+                    expand={false}
+                    detail=""
+                  />
+                </Stack>
+              </Grid>
+            );
+          })}
       </Stack>
     </Grid>
   );

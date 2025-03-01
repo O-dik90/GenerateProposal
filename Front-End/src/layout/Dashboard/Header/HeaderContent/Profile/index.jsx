@@ -16,7 +16,7 @@ import Stack from '@mui/material/Stack';
 import Tooltip from '@mui/material/Tooltip';
 import Transitions from 'components/@extended/Transitions';
 import Typography from '@mui/material/Typography';
-import avatar1 from 'assets/images/users/avatar-1.png';
+import avatar1 from 'assets/images/users/user-profil.png';
 import { useAuth } from 'pages/protect/authProvider';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
@@ -97,7 +97,7 @@ export default function Profile() {
         <Stack direction="row" spacing={1.25} alignItems="center" sx={{ p: 0.5 }}>
           <Avatar alt="profile user" src={avatar1} size="sm" />
           <Typography variant="subtitle1" sx={{ textTransform: 'capitalize' }}>
-            {user?.name || 'Name'}
+            {user?.name.toUpperCase() || 'USER'}
           </Typography>
         </Stack>
       </ButtonBase>
@@ -130,7 +130,7 @@ export default function Profile() {
                         <Stack direction="row" spacing={1.25} alignItems="center">
                           <Avatar alt="profile user" src={avatar1} sx={{ width: 32, height: 32 }} />
                           <Stack>
-                            <Typography variant="h6">{user?.name || ''}</Typography>
+                            <Typography variant="h6">{user?.name.toUpperCase() || 'USER'}</Typography>
                             {/* <Typography variant="body2" color="text.secondary">
                               UI/UX Designer
                             </Typography> */}

@@ -1,7 +1,7 @@
-import PropTypes from 'prop-types';
-import { useTheme } from '@mui/material/styles';
 import DrawerHeaderStyled from './DrawerHeaderStyled';
 import Logo from 'components/logo';
+import PropTypes from 'prop-types';
+import { useTheme } from '@mui/material/styles';
 
 // ==============================|| DRAWER HEADER ||============================== //
 

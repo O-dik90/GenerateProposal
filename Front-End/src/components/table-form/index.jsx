@@ -1,6 +1,7 @@
 import { ArrowDownOutlined, ArrowRightOutlined } from '@ant-design/icons';
 import { Collapse, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
+
 import PropTypes from 'prop-types';
 
 const TableForm = ({ columns, rows, expand, action, detail }) => {
@@ -45,7 +46,15 @@ const TableForm = ({ columns, rows, expand, action, detail }) => {
         </TableHead>
         <TableBody>
           {memoizedRows?.map((row, index) => (
-            <CollapsibleRow key={index} row={row} columns={columns} expand={expand} action={action} detail={detail} />
+            <CollapsibleRow
+              key={index}
+              row={row}
+              columns={columns}
+              expand={expand}
+              action={action}
+              detail={detail}
+              defaultOpen={index === memoizedRows.length - 1}
+            />
           ))}
         </TableBody>
       </Table>
@@ -53,8 +62,8 @@ const TableForm = ({ columns, rows, expand, action, detail }) => {
   );
 };
 
-const CollapsibleRow = ({ row, columns, expand, detail }) => {
-  const [open, setOpen] = useState(false);
+const CollapsibleRow = ({ row, columns, expand, detail, defaultOpen = false }) => {
+  const [open, setOpen] = useState(defaultOpen);
 
   const toggleRow = useCallback(() => {
     setOpen((prev) => !prev);
@@ -131,6 +140,7 @@ CollapsibleRow.propTypes = {
   ).isRequired,
   expand: PropTypes.bool.isRequired,
   action: PropTypes.bool,
+  defaultOpen: PropTypes.bool,
   detail: PropTypes.oneOfType([PropTypes.func, PropTypes.node])
 };
 

@@ -40,23 +40,29 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response?.status === 401) {
-      console.warn('🔄 Attempting token refresh...');
+      if (error.response.data?.msg === 'Invalid credentials' && window.location.pathname === '/login') {
+        enqueueSnackbar('Email/kata sandi tidak cocok', { variant: 'error' });
+      } else {
+        try {
+          const res = await axios.get('/refresh-token', { withCredentials: true });
 
-      try {
-        const res = await axios.get('/refresh-token', { withCredentials: true });
-
-        if (res.data?.newToken) {
-          console.log('✅ Token refreshed!');
-          sessionStorage.setItem('user', JSON.stringify({ token: res.data.newToken }));
-          error.config.headers.Authorization = `Bearer ${res.data.newToken}`;
-          return axiosInstance(error.config);
+          if (res.data?.newToken) {
+            console.log('✅ Token refreshed!');
+            sessionStorage.setItem('user', JSON.stringify({ token: res.data.newToken }));
+            error.config.headers.Authorization = `Bearer ${res.data.newToken}`;
+            return axiosInstance(error.config);
+          }
+        } catch (refreshError) {
+          console.error('🔴 Token refresh failed:', refreshError);
         }
-      } catch (refreshError) {
-        console.error('🔴 Token refresh failed:', refreshError);
-      }
 
-      sessionStorage.removeItem('user');
-      window.location.href = '/login';
+        sessionStorage.removeItem('user');
+        window.location.href = '/login';
+      }
+    } else if (error.response?.status === 404) {
+      enqueueSnackbar('User tidak ditemukan', { variant: 'error' });
+    } else {
+      enqueueSnackbar(error.message, { variant: 'error' });
     }
 
     return Promise.reject(error);

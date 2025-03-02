@@ -45,6 +45,7 @@ export default function AuthLogin() {
       }
     } catch (error) {
       setErrors({ submit: error.message });
+      enqueueSnackbar(`${error.message}`, { variant: 'error' });
     }
     setSubmitting(false);
   };

@@ -9,6 +9,11 @@ import TableGrid from 'components/table/TableGrid';
 import { useParams } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 
+const INIT_LUARAN = [
+  { no: 1, data: 'Laporan kemajuan', status: false },
+  { no: 2, data: 'Laporan akhir', status: false }
+];
+
 const Pendahuluan = () => {
   const BAB_TITLE = 'BAB 1 PENDAHULUAN';
   const { id } = useParams(),
@@ -25,11 +30,11 @@ const Pendahuluan = () => {
       data: '',
       status: false
     }),
-    [luaran, setLuaran] = useState({
-      no: 1,
-      data: '',
-      status: false
-    }),
+    // [luaran, setLuaran] = useState({
+    //   no: 1,
+    //   data: '',
+    //   status: false
+    // }),
     [manfaat, setManfaat] = useState({
       no: 1,
       data: '',
@@ -39,7 +44,7 @@ const Pendahuluan = () => {
       latar_belakang: '',
       rumusan_masalah: [],
       tujuan: [],
-      luaran: [],
+      luaran: INIT_LUARAN,
       manfaat: []
     });
 
@@ -62,7 +67,7 @@ const Pendahuluan = () => {
           latar_belakang: bab1.latar_belakang,
           rumusan_masalah: bab1.rumusan_masalah === null ? [] : bab1.rumusan_masalah,
           tujuan: bab1.tujuan === null ? [] : bab1.tujuan,
-          luaran: bab1.luaran === null ? [] : bab1.luaran,
+          luaran: bab1.luaran === null ? INIT_LUARAN : bab1.luaran,
           manfaat: bab1.manfaat === null ? [] : bab1.manfaat
         });
       }
@@ -72,7 +77,7 @@ const Pendahuluan = () => {
         latar_belakang: '',
         rumusan_masalah: [],
         tujuan: [],
-        luaran: [],
+        luaran: INIT_LUARAN,
         manfaat: []
       });
     };
@@ -161,46 +166,46 @@ const Pendahuluan = () => {
     }
   };
 
-  const handleLuaran = {
-    onchange: (e) => {
-      setLuaran({ ...luaran, data: e.target.value });
-    },
-    tambah: (e) => {
-      e.preventDefault();
-      setData({
-        ...data,
-        luaran: [...data.luaran, { no: data.luaran.length + 1, data: luaran.data }]
-      });
-      setLuaran({ ...luaran, no: luaran.no + 1, data: '', status: false });
-    },
-    edit: (params) => {
-      setLuaran({ ...luaran, no: params.no, data: params.data, status: true });
-    },
-    update: () => {
-      setData({
-        ...data,
-        luaran: data.luaran.map((item) => {
-          if (item.no === luaran.no) {
-            return { ...item, data: luaran.data };
-          }
-          return item;
-        })
-      });
-      setLuaran({ ...luaran, no: luaran.no + 1, data: '', status: false });
-    },
-    delete: (params) => {
-      const filteredData = data.luaran.filter((item) => item.no !== params.no);
-      const reindexedData = filteredData.map((item, index) => ({
-        ...item,
-        no: index + 1
-      }));
-      setData({
-        ...data,
+  // const handleLuaran = {
+  //   onchange: (e) => {
+  //     setLuaran({ ...luaran, data: e.target.value });
+  //   },
+  //   tambah: (e) => {
+  //     e.preventDefault();
+  //     setData({
+  //       ...data,
+  //       luaran: [...data.luaran, { no: data.luaran.length + 1, data: luaran.data }]
+  //     });
+  //     setLuaran({ ...luaran, no: luaran.no + 1, data: '', status: false });
+  //   },
+  //   edit: (params) => {
+  //     setLuaran({ ...luaran, no: params.no, data: params.data, status: true });
+  //   },
+  //   update: () => {
+  //     setData({
+  //       ...data,
+  //       luaran: data.luaran.map((item) => {
+  //         if (item.no === luaran.no) {
+  //           return { ...item, data: luaran.data };
+  //         }
+  //         return item;
+  //       })
+  //     });
+  //     setLuaran({ ...luaran, no: luaran.no + 1, data: '', status: false });
+  //   },
+  //   delete: (params) => {
+  //     const filteredData = data.luaran.filter((item) => item.no !== params.no);
+  //     const reindexedData = filteredData.map((item, index) => ({
+  //       ...item,
+  //       no: index + 1
+  //     }));
+  //     setData({
+  //       ...data,
 
-        luaran: reindexedData
-      });
-    }
-  };
+  //       luaran: reindexedData
+  //     });
+  //   }
+  // };
 
   const handleManfaat = {
     onchange: (e) => {
@@ -346,7 +351,7 @@ const Pendahuluan = () => {
           <Typography variant="body1" gutterBottom>
             Luaran-luaran yang diperlukan pada program ini antara lain:
           </Typography>
-          <TextField label="Luaran" variant="outlined" value={luaran.data} onChange={handleLuaran.onchange} fullWidth />
+          {/* <TextField label="Luaran" variant="outlined" value={luaran.data} onChange={handleLuaran.onchange} fullWidth />
           <Button
             variant="contained"
             color="primary"
@@ -355,7 +360,7 @@ const Pendahuluan = () => {
             disabled={luaran.status || !luaran.data}
           >
             Tambah Luaran
-          </Button>
+          </Button> */}
           <TableGrid
             key="grid-luaran"
             columns={[
@@ -364,11 +369,11 @@ const Pendahuluan = () => {
             ]}
             rows={data.luaran ?? []}
             expand={false}
-            action
-            onEdit={handleLuaran.edit}
-            onDelete={handleLuaran.delete}
-            onUpdate={handleLuaran.update}
-            actionedit={luaran.status}
+            // action
+            // onEdit={handleLuaran.edit}
+            // onDelete={handleLuaran.delete}
+            // onUpdate={handleLuaran.update}
+            // actionedit={luaran.status}
           />
         </Grid>
         <Grid item xs={12} sx={{ marginTop: 2 }}>

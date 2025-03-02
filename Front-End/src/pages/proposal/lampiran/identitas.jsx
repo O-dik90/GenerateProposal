@@ -27,7 +27,6 @@ const Identitas = () => {
   const [data, setData] = useState([]);
   const [open, setOpen] = useState(false);
 
-  // Memoized role options for better performance
   const roleOptions = useMemo(() => role || [], [role]);
 
   useEffect(() => {
@@ -80,8 +79,6 @@ const Identitas = () => {
     },
 
     save: async () => {
-      console.log('data', data);
-
       try {
         const jsonData = lampiran[0]?.json_data ? JSON.parse(lampiran[0]?.json_data) : {};
         const payload = {
@@ -103,7 +100,6 @@ const Identitas = () => {
     },
 
     detail: (item) => {
-      console.log(item);
       if (!item || item.no === '') return null;
 
       const itemData = [

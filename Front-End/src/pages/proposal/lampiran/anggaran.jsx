@@ -1,6 +1,6 @@
 import { BUDGET_INIT, DETAIL_BUDGET_INIT } from './initial-data';
 import { Button, Grid, Stack, Typography } from '@mui/material';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { BAB_TITLE6 } from './identitas';
@@ -15,6 +15,10 @@ import { useSnackbar } from 'notistack';
 const Anggaran = () => {
   const { id } = useParams();
   const [data, setData] = useState(BUDGET_INIT),
+    [budgetData, setBudgetData] = useState({
+      belmawa: 0,
+      perguruan: 0
+    }),
     [object, setObject] = useState({
       materials: DETAIL_BUDGET_INIT,
       services: DETAIL_BUDGET_INIT,
@@ -23,14 +27,17 @@ const Anggaran = () => {
     }),
     dispatch = useDispatch(),
     { enqueueSnackbar } = useSnackbar(),
-    { lampiran } = useSelector((state) => state.app.proposal);
+    { lampiran, data: rawBudget } = useSelector((state) => state.app.proposal);
 
-  const budget = [
-    { key: 'materials', label: 'Bahan Material', limit: '60' },
-    { key: 'services', label: 'Sewa dan Jasa', limit: '15' },
-    { key: 'transports', label: 'Transportasi', limit: '30' },
-    { key: 'others', label: 'lain - lain', limit: '15' }
-  ];
+  const budget = useMemo(
+    () => [
+      { key: 'materials', label: 'Bahan Material', limit: 60 },
+      { key: 'services', label: 'Sewa dan Jasa', limit: 15 },
+      { key: 'transports', label: 'Transportasi', limit: 30 },
+      { key: 'others', label: 'lain - lain', limit: 15 }
+    ],
+    []
+  );
 
   const calculateTotalCosts = () => {
     const calculateCostByCategory = (categoryData, budgetSource) =>
@@ -53,6 +60,50 @@ const Anggaran = () => {
       };
     });
   };
+  const calculateTotalPrice = (unitPrice, volume) => Number(unitPrice) * Number(volume);
+  const validateBudget = useCallback(
+    (values, key) => {
+      const category = budget.find((item) => item.key === key);
+      const limitPercentage = category ? category.limit : 100;
+
+      const belmawaLimit = (limitPercentage / 100) * budgetData.belmawa;
+      const perguruanLimit = (limitPercentage / 100) * budgetData.perguruan;
+
+      const newItemTotal = calculateTotalPrice(values.unit_price, values.volume);
+
+      const currentBelmawaTotal = data.cost?.[key]?.belmawa || 0;
+      const currentPerguruanTotal = data.cost?.[key]?.perguruan || 0;
+
+      const newBelmawaTotal = values.budget_source === 'belmawa' ? currentBelmawaTotal + newItemTotal : currentBelmawaTotal;
+      const newPerguruanTotal = values.budget_source === 'perguruan' ? currentPerguruanTotal + newItemTotal : currentPerguruanTotal;
+
+      if (values.budget_source === 'belmawa' && newBelmawaTotal > belmawaLimit) {
+        enqueueSnackbar(`Anggaran Belmawa untuk ${category.label} melebihi batas ${limitPercentage}%`, { variant: 'warning' });
+        return;
+      }
+
+      if (values.budget_source === 'perguruan' && newPerguruanTotal > perguruanLimit) {
+        enqueueSnackbar(`Anggaran Perguruan untuk ${category.label} melebihi batas ${limitPercentage}%`, { variant: 'warning' });
+        return;
+      }
+
+      // If valid, add item to the list
+      const newItem = {
+        ...values,
+        no: (data[key]?.length || 0) + 1,
+        total_price: newItemTotal,
+        status: false
+      };
+
+      setData((prevData) => ({
+        ...prevData,
+        [key]: [...(prevData[key] || []), newItem]
+      }));
+
+      calculateTotalCosts();
+    },
+    [budget, budgetData.belmawa, budgetData.perguruan, data, enqueueSnackbar]
+  );
 
   const reset = useCallback((key) => {
     setObject((prev) => ({ ...prev, [key]: initialStateForKey(key) }));
@@ -127,20 +178,11 @@ const Anggaran = () => {
         }));
         reset(key);
       } else {
-        const newItem = {
-          ...values,
-          no: (data[key]?.length || 0) + 1,
-          total_price: calculateTotalPrice(values.unit_price, values.volume),
-          status: false
-        };
-        setData((prevData) => ({
-          ...prevData,
-          [key]: [...(prevData[key] || []), newItem]
-        }));
+        validateBudget(values, key);
       }
       calculateTotalCosts();
     },
-    [data, object, reset]
+    [object, reset, validateBudget]
   );
 
   useEffect(() => {
@@ -164,6 +206,21 @@ const Anggaran = () => {
 
     return () => setData(BUDGET_INIT);
   }, [lampiran]);
+
+  useEffect(() => {
+    if (rawBudget) {
+      const metaData = rawBudget.find((item) => item.id === Number(id));
+
+      setBudgetData({
+        belmawa: Number(metaData?.pkm_belmawa),
+        perguruan: Number(metaData?.pkm_perguruan)
+      });
+    }
+  }, [id, rawBudget]);
+
+  useEffect(() => {
+    console.log(budgetData);
+  }, [budgetData]);
 
   return (
     <>

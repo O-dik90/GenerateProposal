@@ -6,7 +6,7 @@ export const API_URL = import.meta.env.VITE_API_BASE_URL;
 const axiosInstance = axios.create({
   baseURL: API_URL,
   timeout: 10000,
-  withCredentials: true
+  withCredentials: true, // Important for cookies
 });
 
 // Request Interceptor
@@ -44,20 +44,25 @@ axiosInstance.interceptors.response.use(
         enqueueSnackbar('Email/kata sandi tidak cocok', { variant: 'error' });
       } else {
         try {
-          const res = await axios.get('/refresh-token', { withCredentials: true });
+          console.log('🔄 Attempting token refresh...');
+          const res = await axiosInstance.get('/refresh-token');
 
           if (res.data?.newToken) {
-            console.log('✅ Token refreshed!');
+            console.log('✅ Token refreshed successfully!');
             sessionStorage.setItem('user', JSON.stringify({ token: res.data.newToken }));
+
+            // Retry the original request with the new token
             error.config.headers.Authorization = `Bearer ${res.data.newToken}`;
             return axiosInstance(error.config);
           }
         } catch (refreshError) {
           console.error('🔴 Token refresh failed:', refreshError);
-        }
+          enqueueSnackbar('Session expired, please log in again.', { variant: 'warning' });
 
-        sessionStorage.removeItem('user');
-        window.location.href = '/login';
+          // Clear user session and redirect to login
+          sessionStorage.removeItem('user');
+          window.location.href = '/login';
+        }
       }
     } else if (error.response?.status === 404) {
       enqueueSnackbar('User tidak ditemukan', { variant: 'error' });

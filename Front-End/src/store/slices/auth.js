@@ -19,7 +19,10 @@ export const userLogin = createAsyncThunk('user/login', async (params, { rejectW
 });
 export const getMe = createAsyncThunk('user/getMe', async (_, thunkAPI) => {
   try {
-    const res = sessionStorage.getItem('user');
+    const res = await axiosInstance.get(`/refresh-token`);
+    if (res) {
+      sessionStorage.setItem('user', JSON.stringify(res.data));
+    }
 
     const data = JSON.parse(res);
     return data;

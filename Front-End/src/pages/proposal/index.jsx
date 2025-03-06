@@ -24,6 +24,7 @@ import GenerateDocx from 'utils/generate';
 import MainCard from 'components/MainCard';
 import { detailProposal } from 'store/slices/proposal';
 import { format } from 'date-fns';
+import { getMe } from 'store/slices/auth';
 import { useAuth } from 'pages/protect/authProvider';
 import { useNavigate } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
@@ -57,10 +58,18 @@ const ProposalTable = () => {
     { pkm, lomba, tahunLomba } = useSelector((state) => state.app.masterData);
 
   useEffect(() => {
-    if (!user) {
-      navigate('/login');
-    }
-  }, [navigate, user]);
+    const getUser = async () => {
+      if (!user) {
+        const rest = await dispatch(getMe());
+
+        if (getMe.rejected.match(rest)) {
+          navigate('/login');
+        }
+      }
+    };
+
+    getUser();
+  }, [dispatch, navigate, user]);
 
   useEffect(() => {
     if (user) {

@@ -16,6 +16,7 @@ import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import PropTypes from 'prop-types';
 import Stack from '@mui/material/Stack';
+import { useAuth } from 'pages/protect/authProvider';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { useSnackbar } from 'notistack';
@@ -26,6 +27,7 @@ export default function AuthLogin() {
     dispatch = useDispatch(),
     { enqueueSnackbar } = useSnackbar(),
     navigate = useNavigate();
+  const { user } = useAuth();
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -51,8 +53,18 @@ export default function AuthLogin() {
   };
 
   useEffect(() => {
-    dispatch(getMe());
-  }, [dispatch]);
+    const getUser = async () => {
+      if (!user) {
+        const rest = await dispatch(getMe());
+
+        if (getMe.fulfilled.match(rest)) {
+          navigate('/');
+        }
+      }
+    };
+
+    getUser();
+  }, [dispatch, navigate, user]);
 
   return (
     <Formik

@@ -170,7 +170,7 @@ const GenerateDocx = ({ data }) => {
       text: `4.1 Biaya`,
       heading: HeadingLevel.HEADING_2
     }),
-    tableBiaya(lampiran?.anggaran),
+    tableBiaya(lampiran?.anggaran !== null ? lampiran?.anggaran : []),
     new Paragraph({
       text: `4.2 Jadwal Kegiatan`,
       heading: HeadingLevel.HEADING_2

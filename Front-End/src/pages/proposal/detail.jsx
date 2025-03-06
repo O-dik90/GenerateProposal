@@ -10,20 +10,31 @@ import Pendahuluan from './bab-pendahuluan/pendahuluan';
 import TabContext from '@mui/lab/TabContext';
 import TabPanel from '@mui/lab/TabPanel';
 import Tinjauan from './bab-tinjauan-pustaka';
+import { getMe } from 'store/slices/auth';
 import { useAuth } from 'pages/protect/authProvider';
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 const ProposalDetail = () => {
   const { user } = useAuth();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [value, setValue] = useState('1');
 
   useEffect(() => {
-    if (!user) {
-      navigate('/login');
-    }
-  }, [navigate, user]);
+    const getUser = async () => {
+      if (!user) {
+        const rest = await dispatch(getMe());
+
+        if (getMe.rejected.match(rest)) {
+          navigate('/login');
+        }
+      }
+    };
+
+    getUser();
+  }, [dispatch, navigate, user]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);

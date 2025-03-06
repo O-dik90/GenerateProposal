@@ -20,16 +20,18 @@ export const userLogin = createAsyncThunk('user/login', async (params, { rejectW
 export const getMe = createAsyncThunk('user/getMe', async (_, thunkAPI) => {
   try {
     const res = await axiosInstance.get(`/refresh-token`);
-    if (res) {
+
+    if (res.data) {
       sessionStorage.setItem('user', JSON.stringify(res.data));
+      return res.data;
     }
 
-    const data = JSON.parse(res);
-    return data;
+    return thunkAPI.rejectWithValue('No data received');
   } catch (error) {
-    return thunkAPI.rejectWithValue(error);
+    return thunkAPI.rejectWithValue(error.response?.data || error.message);
   }
 });
+
 export const userLogout = createAsyncThunk('user/logout', async () => {
   try {
     const res = await axiosInstance.delete(`/logout`);

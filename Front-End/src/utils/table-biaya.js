@@ -1,54 +1,5 @@
 import { AlignmentType, Paragraph, Table, TableCell, TableRow, TextRun, VerticalAlign, WidthType } from 'docx';
 
-export const rows = [
-  {
-    no: '1',
-    jenis: 'Bahan habis pakai',
-    ref: 'materials',
-    sumber: [
-      { type: 'belmawa', label: 'Belmawa', besaran: 'Rp4.505.714,00' },
-      { type: 'perguruan', label: 'Perguruan Tinggi', besaran: 'Rp556.886,00' }
-    ]
-  },
-  {
-    no: '2',
-    jenis: 'Sewa dan Jasa',
-    ref: 'services',
-    sumber: [
-      { type: 'belmawa', label: 'Belmawa', besaran: 'Rp1.130.300,00' },
-      { type: 'perguruan', label: 'Perguruan Tinggi', besaran: 'Rp139.700,00' }
-    ]
-  },
-  {
-    no: '3',
-    jenis: 'Transportasi lokal',
-    ref: 'transports',
-    sumber: [
-      { type: 'belmawa', label: 'Belmawa', besaran: 'Rp1.335.000,00' },
-      { type: 'perguruan', label: 'Perguruan Tinggi', besaran: 'Rp165.000,00' }
-    ]
-  },
-  {
-    no: '4',
-    jenis: 'Lain - lain',
-    ref: 'others',
-    sumber: [
-      { type: 'belmawa', label: 'Belmawa', besaran: 'Rp1.068.000,00' },
-      { type: 'perguruan', label: 'Perguruan Tinggi', besaran: 'Rp132.000,00' }
-    ]
-  }
-];
-export const finals = {
-  text: 'Jumlah',
-  total: 'Rp9.042.600,00',
-  jenis: 'Rekap Sumber Dana',
-  sumber: [
-    { type: 'Belmawa', besaran: 'Rp4.505.714,00' },
-    { type: 'Perguruan Tinggi', besaran: 'Rp556.886,00' },
-    { type: 'Jumlah', besaran: 'Rp5.062.600,00' }
-  ]
-};
-
 export const tableBiaya = (data) => {
   const headers = [
     { text: 'No', width: 10 },
@@ -57,74 +8,113 @@ export const tableBiaya = (data) => {
     { text: 'Besaran Dana (Rp)', width: 25 }
   ];
 
-  const updatedData = rows.map((item) => {
-    const ref = item.ref;
-    if (data.cost[ref]) {
-      return {
-        ...item,
-        sub_total: data.cost[ref]['belmawa'] + data.cost[ref]['perguruan'],
-        sumber: item.sumber.map((sumberItem) => {
-          return {
-            ...sumberItem,
-            besaran: data.cost[ref][sumberItem.type].toString()
-          };
-        })
-      };
+  const rows = [
+    {
+      no: '1',
+      jenis: 'Bahan habis pakai',
+      sumber: [
+        { type: 'Belmawa', besaran: 'Rp 0' },
+        { type: 'Perguruan Tinggi', besaran: 'Rp 0' }
+      ]
+    },
+    {
+      no: '2',
+      jenis: 'Sewa dan jasa',
+      sumber: [
+        { type: 'Belmawa', besaran: 'Rp 0' },
+        { type: 'Perguruan Tinggi', besaran: 'Rp 0' }
+      ]
+    },
+    {
+      no: '3',
+      jenis: 'Transportasi lokal',
+      sumber: [
+        { type: 'Belmawa', besaran: 'Rp 0' },
+        { type: 'Perguruan Tinggi', besaran: 'Rp 0' }
+      ]
+    },
+    {
+      no: '4',
+      jenis: 'Lain - lain',
+      sumber: [
+        { type: 'Belmawa', besaran: 'Rp 0' },
+        { type: 'Perguruan Tinggi', besaran: 'Rp 0' }
+      ]
     }
-    return item;
-  });
+  ];
+
+  const finals = {
+    text: 'Jumlah',
+    total: 'Rp 0',
+    jenis: 'Rekap Sumber Dana',
+    sumber: [
+      { type: 'Belmawa', besaran: 'Rp 0' },
+      { type: 'Perguruan Tinggi', besaran: 'Rp 0' },
+      { type: 'Jumlah', besaran: 'Rp 0' }
+    ]
+  };
+
+  const updatedData = () => {
+    if (!data || !data.cost) {
+      return rows;
+    }
+    return rows.map((item) => {
+      const ref = item.ref;
+      if (data.cost[ref]) {
+        return {
+          ...item,
+          sub_total: (data.cost[ref]['belmawa'] || 0) + (data.cost[ref]['perguruan'] || 0),
+          sumber: item.sumber.map((sumberItem) => {
+            return {
+              ...sumberItem,
+              besaran: data.cost[ref][sumberItem.type]?.toString() || 'Rp 0,00'
+            };
+          })
+        };
+      }
+      return item;
+    });
+  };
+
+  const getSafeValue = (obj, path, defaultValue = 0) => {
+    return path.reduce((acc, key) => acc?.[key] ?? defaultValue, obj);
+  };
 
   const updateFinals = {
     ...finals,
-    total:
-      data.cost['materials']['belmawa'] +
-      data.cost['services']['belmawa'] +
-      data.cost['transports']['belmawa'] +
-      data.cost['others']['belmawa'] +
-      data.cost['materials']['perguruan'] +
-      data.cost['services']['perguruan'] +
-      data.cost['transports']['perguruan'] +
-      data.cost['others']['perguruan'],
+    total: ['materials', 'services', 'transports', 'others'].reduce(
+      (sum, key) => sum + getSafeValue(data?.cost, [key, 'belmawa']) + getSafeValue(data?.cost, [key, 'perguruan']),
+      0
+    ),
     sumber: [
       {
         type: 'belmawa',
         label: 'Belmawa',
-        besaran:
-          data.cost['materials']['belmawa'] +
-          data.cost['services']['belmawa'] +
-          data.cost['transports']['belmawa'] +
-          data.cost['others']['belmawa']
+        besaran: ['materials', 'services', 'transports', 'others'].reduce((sum, key) => sum + getSafeValue(data?.cost, [key, 'belmawa']), 0)
       },
       {
         type: 'perguruan',
         label: 'Perguruan Tinggi',
-        besaran:
-          data.cost['materials']['perguruan'] +
-          data.cost['services']['perguruan'] +
-          data.cost['transports']['perguruan'] +
-          data.cost['others']['perguruan']
+        besaran: ['materials', 'services', 'transports', 'others'].reduce(
+          (sum, key) => sum + getSafeValue(data?.cost, [key, 'perguruan']),
+          0
+        )
       },
       {
         type: 'jumlah',
         label: 'Jumlah',
-        besaran:
-          data.cost['materials']['belmawa'] +
-          data.cost['services']['belmawa'] +
-          data.cost['transports']['belmawa'] +
-          data.cost['others']['belmawa'] +
-          data.cost['materials']['perguruan'] +
-          data.cost['services']['perguruan'] +
-          data.cost['transports']['perguruan'] +
-          data.cost['others']['perguruan']
+        besaran: ['materials', 'services', 'transports', 'others'].reduce(
+          (sum, key) => sum + getSafeValue(data?.cost, [key, 'belmawa']) + getSafeValue(data?.cost, [key, 'perguruan']),
+          0
+        )
       }
     ]
   };
 
-  const createHeaderRow = () => {
-    return new TableRow({
+  const createHeaderRow = () =>
+    new TableRow({
       children: headers.map((header) => createCell(header.text, { width: header.width, bold: true, align: AlignmentType.CENTER }))
     });
-  };
 
   const createDataRows = (row) => {
     const firstRow = new TableRow({
@@ -146,14 +136,13 @@ export const tableBiaya = (data) => {
     return [firstRow, ...sumberRows];
   };
 
-  const createSummaryRow = () => {
-    return new TableRow({
+  const createSummaryRow = () =>
+    new TableRow({
       children: [
         createCell(updateFinals.text, { colSpan: 3, bold: true, align: AlignmentType.CENTER }),
-        createCell(updateFinals.total, { bold: true, align: AlignmentType.RIGHT })
+        createCell(updateFinals.total.toString(), { bold: true, align: AlignmentType.RIGHT })
       ]
     });
-  };
 
   const createFinalDataRows = () => {
     const firstRow = new TableRow({
@@ -186,21 +175,12 @@ export const tableBiaya = (data) => {
           alignment: align
         })
       ],
-      width: width
-        ? {
-            size: width,
-            type: WidthType.PERCENTAGE
-          }
-        : undefined
+      width: width ? { size: width, type: WidthType.PERCENTAGE } : undefined
     });
   };
 
-  // Return the full table
   return new Table({
-    rows: [createHeaderRow(), ...updatedData.flatMap(createDataRows), createSummaryRow(), ...createFinalDataRows()],
-    width: {
-      size: 100,
-      type: WidthType.PERCENTAGE
-    }
+    rows: [createHeaderRow(), ...updatedData().flatMap(createDataRows), createSummaryRow(), ...createFinalDataRows()],
+    width: { size: 100, type: WidthType.PERCENTAGE }
   });
 };

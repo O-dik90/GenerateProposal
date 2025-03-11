@@ -9,6 +9,7 @@ const createRow = (cells, columnSizes = [], isHeader = false) => {
       (cell, index) =>
         new TableCell({
           width: { size: finalColumnSizes[index], type: WidthType.PERCENTAGE },
+          verticalAlignment: AlignmentType.CENTER,
           children: [
             new Paragraph({
               alignment: AlignmentType.CENTER,
@@ -32,6 +33,7 @@ const createRowIdentitas = (cells, isHeader = false) =>
       (cell, index) =>
         new TableCell({
           width: { size: [10, 45, 45][index], type: WidthType.PERCENTAGE },
+          verticalAlignment: AlignmentType.CENTER,
           children: [
             new Paragraph({
               alignment: AlignmentType.CENTER,

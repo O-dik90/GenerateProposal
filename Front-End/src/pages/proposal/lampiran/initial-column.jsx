@@ -262,7 +262,7 @@ export const structureColumns = (handleEdit, handleDelete, handleReset, data) =>
   { name: 'NIM / NIDM', field: 'id_no' },
   { name: 'Bidang Ilmu', field: 'major' },
   { name: 'Alokasi Waktu (jam/minggu)', field: 'time_allocation' },
-  { name: 'Uraian Tugas', field: 'tas_description' },
+  { name: 'Uraian Tugas', field: 'task_description' },
   {
     name: 'Aksi',
     field: 'action',

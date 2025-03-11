@@ -454,7 +454,7 @@ export const structureFields = [
     validation: Yup.string().required('Wajib diisi')
   },
   {
-    name: 'tas_description',
+    name: 'task_description',
     label: 'Uraian Tugas',
     type: 'textarea',
     placeholder: '',

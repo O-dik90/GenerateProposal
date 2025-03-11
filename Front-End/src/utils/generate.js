@@ -13,6 +13,7 @@ import {
   convertMillimetersToTwip
 } from 'docx';
 
+import { LampiranOrganisasi } from './table-organisasi';
 import { enqueueSnackbar } from 'notistack';
 import { lampiranIdentitas } from './lampiran-identitas';
 import { saveAs } from 'file-saver';
@@ -73,7 +74,7 @@ const GenerateDocx = ({ data }) => {
     ]
   });
 
-  //lampiran identitas Divider
+  //lampiran identitas
   const createTableIdentitas = (dataIdentitas) =>
     Array.isArray(dataIdentitas) ? dataIdentitas.flatMap((item) => lampiranIdentitas(item)) : [];
 
@@ -193,7 +194,28 @@ const GenerateDocx = ({ data }) => {
       heading: HeadingLevel.HEADING_2,
       alignment: AlignmentType.START
     }),
-    ...createTableIdentitas(lampiran?.identitas)
+    ...createTableIdentitas(lampiran?.identitas),
+    new Paragraph({
+      text: `Lampiran 2.  Justifikasi Anggaran Kegiatan`,
+      heading: HeadingLevel.HEADING_2,
+      alignment: AlignmentType.START
+    }),
+    new Paragraph({
+      text: `Lampiran 3.  Susunan Tim Pengusul dan Pembagian Tugas`,
+      heading: HeadingLevel.HEADING_2,
+      alignment: AlignmentType.START
+    }),
+    LampiranOrganisasi(lampiran?.organisasi)
+    // new Paragraph({
+    //   text: `Lampiran 4.  Surat Pernyataan Penyusun`,
+    //   heading: HeadingLevel.HEADING_2,
+    //   alignment: AlignmentType.START
+    // }),
+    // new Paragraph({
+    //   text: `Lampiran 5.  Gambaran Konsep Karya Inovatif yang Akan Dihasilkan`,
+    //   heading: HeadingLevel.HEADING_2,
+    //   alignment: AlignmentType.START
+    // })
   ];
 
   // Document configuration

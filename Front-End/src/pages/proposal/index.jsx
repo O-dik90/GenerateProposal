@@ -19,7 +19,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 
 import { DataGrid } from '@mui/x-data-grid';
-// import ExportToDocx from 'utils/table-gambar';
+import ExportToDocx from 'utils/table-gambar';
 import GenerateDocx from 'utils/generate';
 import MainCard from 'components/MainCard';
 import { detailProposal } from 'store/slices/proposal';
@@ -364,7 +364,7 @@ const ProposalTable = () => {
             disableRowSelectionOnClick
           />
         </Box>
-        {/* <ExportToDocx /> */}
+        <ExportToDocx />
       </MainCard>
       <Dialog
         open={open}

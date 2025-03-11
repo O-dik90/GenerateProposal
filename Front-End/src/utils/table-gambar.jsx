@@ -5,15 +5,20 @@ import { saveAs } from 'file-saver';
 
 const ExportToDocx = () => {
   const exportDocx = async () => {
-    const blob = await fetch('https://ubaicorner.com/api-genpro/public/15/fd04508c63e2234643233c1aea1d2593_15_.png')
-      .then((r) => {
-        if (!r.ok) throw new Error(`HTTP error! status: ${r.status}`);
-        return r.blob();
-      })
-      .catch((error) => {
-        console.error('Failed to fetch image:', error);
-      });
-    if (!blob) return;
+    const response = await fetch('http://localhost:3000/proxy-image');
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const imageBuffer = await response.arrayBuffer();
+
+    console.log('Image fetched:', imageBuffer.byteLength, 'bytes'); // Debugging
+
+    if (!imageBuffer || imageBuffer.byteLength === 0) {
+      console.error('Failed to fetch image data');
+      return;
+    }
 
     const doc = new Document({
       sections: [
@@ -23,7 +28,7 @@ const ExportToDocx = () => {
             new Paragraph({
               children: [
                 new ImageRun({
-                  data: blob,
+                  data: imageBuffer,
                   transformation: {
                     width: 100,
                     height: 100

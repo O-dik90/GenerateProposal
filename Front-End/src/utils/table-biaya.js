@@ -10,70 +10,23 @@ export const tableBiaya = (data) => {
   ];
 
   const rows = [
-    {
-      no: '1',
-      jenis: 'Bahan habis pakai',
-      sumber: [
-        { type: 'Belmawa', besaran: 'Rp 0' },
-        { type: 'Perguruan Tinggi', besaran: 'Rp 0' }
-      ]
-    },
-    {
-      no: '2',
-      jenis: 'Sewa dan jasa',
-      sumber: [
-        { type: 'Belmawa', besaran: 'Rp 0' },
-        { type: 'Perguruan Tinggi', besaran: 'Rp 0' }
-      ]
-    },
-    {
-      no: '3',
-      jenis: 'Transportasi lokal',
-      sumber: [
-        { type: 'Belmawa', besaran: 'Rp 0' },
-        { type: 'Perguruan Tinggi', besaran: 'Rp 0' }
-      ]
-    },
-    {
-      no: '4',
-      jenis: 'Lain - lain',
-      sumber: [
-        { type: 'Belmawa', besaran: 'Rp 0' },
-        { type: 'Perguruan Tinggi', besaran: 'Rp 0' }
-      ]
-    }
+    { no: '1', jenis: 'Bahan habis pakai', ref: 'materials' },
+    { no: '2', jenis: 'Sewa dan jasa', ref: 'services' },
+    { no: '3', jenis: 'Transportasi lokal', ref: 'transports' },
+    { no: '4', jenis: 'Lain - lain', ref: 'others' }
   ];
 
-  const finals = {
-    text: 'Jumlah',
-    total: 'Rp 0',
-    jenis: 'Rekap Sumber Dana',
-    sumber: [
-      { type: 'Belmawa', besaran: 'Rp 0' },
-      { type: 'Perguruan Tinggi', besaran: 'Rp 0' },
-      { type: 'Jumlah', besaran: 'Rp 0' }
-    ]
-  };
+  const updatedData = (data, rows) => {
+    if (!data?.cost) return rows;
 
-  const updatedData = () => {
-    if (!data || !data.cost) {
-      return rows;
-    }
     return rows.map((item) => {
       const ref = item.ref;
-      if (data.cost[ref]) {
-        return {
-          ...item,
-          sub_total: (data.cost[ref]['belmawa'] ?? 0) + (data.cost[ref]['perguruan'] ?? 0),
-          sumber: item.sumber.map((sumberItem) => {
-            return {
-              ...sumberItem,
-              besaran: data.cost[ref][sumberItem.type]?.toString() || 'Rp 0,00'
-            };
-          })
-        };
-      }
-      return item;
+      const sumber = [
+        { label: 'Belmawa', besaran: `Rp ${data.cost?.[ref]?.belmawa?.toLocaleString('id-ID') || '0'}` },
+        { label: 'Perguruan Tinggi', besaran: `Rp ${data.cost?.[ref]?.perguruan?.toLocaleString('id-ID') || '0'}` }
+      ];
+
+      return { ...item, sumber };
     });
   };
 
@@ -82,32 +35,29 @@ export const tableBiaya = (data) => {
   };
 
   const updateFinals = {
-    ...finals,
-    total: ['materials', 'services', 'transports', 'others'].reduce(
-      (sum, key) => sum + getSafeValue(data?.cost, [key, 'belmawa']) + getSafeValue(data?.cost, [key, 'perguruan']),
-      0
-    ),
+    text: 'Jumlah',
+    total: `Rp ${['materials', 'services', 'transports', 'others']
+      .reduce((sum, key) => sum + getSafeValue(data?.cost, [key, 'belmawa']) + getSafeValue(data?.cost, [key, 'perguruan']), 0)
+      .toLocaleString('id-ID')}`,
+    jenis: 'Rekap Sumber Dana',
     sumber: [
       {
-        type: 'belmawa',
         label: 'Belmawa',
-        besaran: ['materials', 'services', 'transports', 'others'].reduce((sum, key) => sum + getSafeValue(data?.cost, [key, 'belmawa']), 0)
+        besaran: `Rp ${['materials', 'services', 'transports', 'others']
+          .reduce((sum, key) => sum + getSafeValue(data?.cost, [key, 'belmawa']), 0)
+          .toLocaleString('id-ID')}`
       },
       {
-        type: 'perguruan',
         label: 'Perguruan Tinggi',
-        besaran: ['materials', 'services', 'transports', 'others'].reduce(
-          (sum, key) => sum + getSafeValue(data?.cost, [key, 'perguruan']),
-          0
-        )
+        besaran: `Rp ${['materials', 'services', 'transports', 'others']
+          .reduce((sum, key) => sum + getSafeValue(data?.cost, [key, 'perguruan']), 0)
+          .toLocaleString('id-ID')}`
       },
       {
-        type: 'jumlah',
         label: 'Jumlah',
-        besaran: ['materials', 'services', 'transports', 'others'].reduce(
-          (sum, key) => sum + getSafeValue(data?.cost, [key, 'belmawa']) + getSafeValue(data?.cost, [key, 'perguruan']),
-          0
-        )
+        besaran: `Rp ${['materials', 'services', 'transports', 'others']
+          .reduce((sum, key) => sum + getSafeValue(data?.cost, [key, 'belmawa']) + getSafeValue(data?.cost, [key, 'perguruan']), 0)
+          .toLocaleString('id-ID')}`
       }
     ]
   };
@@ -123,7 +73,7 @@ export const tableBiaya = (data) => {
         createCell(row.no, { rowSpan: row.sumber.length, align: AlignmentType.CENTER }),
         createCell(row.jenis, { rowSpan: row.sumber.length, align: AlignmentType.LEFT }),
         createCell(row.sumber[0]?.label),
-        createCell(row.sumber[0]?.besaran.toString(), { align: AlignmentType.RIGHT })
+        createCell(row.sumber[0]?.besaran, { align: AlignmentType.RIGHT })
       ]
     });
 
@@ -141,7 +91,7 @@ export const tableBiaya = (data) => {
     new TableRow({
       children: [
         createCell(updateFinals.text, { colSpan: 3, bold: true, align: AlignmentType.CENTER }),
-        createCell(updateFinals.total.toString(), { bold: true, align: AlignmentType.RIGHT })
+        createCell(updateFinals.total, { bold: true, align: AlignmentType.RIGHT })
       ]
     });
 
@@ -149,15 +99,15 @@ export const tableBiaya = (data) => {
     const firstRow = new TableRow({
       children: [
         createCell(updateFinals.jenis, { rowSpan: updateFinals.sumber.length, colSpan: 2, bold: true, align: AlignmentType.CENTER }),
-        createCell(updateFinals.sumber[0]?.label),
-        createCell(updateFinals.sumber[0]?.besaran.toString(), { align: AlignmentType.RIGHT })
+        createCell(updateFinals.sumber[0]?.label, { bold: true }),
+        createCell(updateFinals.sumber[0]?.besaran, { align: AlignmentType.RIGHT, bold: true })
       ]
     });
 
     const sumberRows = updateFinals.sumber.slice(1).map(
       (sumber) =>
         new TableRow({
-          children: [createCell(sumber.label), createCell(sumber.besaran.toString(), { align: AlignmentType.RIGHT })]
+          children: [createCell(sumber.label, { bold: true }), createCell(sumber.besaran, { align: AlignmentType.RIGHT, bold: true })]
         })
     );
 
@@ -181,7 +131,7 @@ export const tableBiaya = (data) => {
   };
 
   return new Table({
-    rows: [createHeaderRow(), ...updatedData().flatMap(createDataRows), createSummaryRow(), ...createFinalDataRows()],
+    rows: [createHeaderRow(), ...updatedData(data, rows).flatMap(createDataRows), createSummaryRow(), ...createFinalDataRows()],
     width: { size: 100, type: WidthType.PERCENTAGE }
   });
 };

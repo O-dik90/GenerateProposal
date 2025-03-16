@@ -2,30 +2,32 @@ import { AlignmentType, Paragraph, Table, TableCell, TableRow, TextRun, Vertical
 
 export const tableAnggaran = (data) => {
   console.log('anggaran', data);
+
   const newData = [
     {
-      data: data.materials,
-      subtotal: data.cost.materials.belmawa + data.cost.materials.perguruan ?? 0,
+      data: data.materials || [],
+      subtotal: (data?.cost?.materials?.belmawa || 0) + (data?.cost?.materials?.perguruan || 0),
       title: 'Belanja material (maksimal 60%)'
     },
     {
-      data: data.transports,
-      subtotal: data.cost.transports.belmawa + data.cost.transports.perguruan ?? 0,
-      title: 'Belanja material (maksimal 15%)'
+      data: data.transports || [],
+      subtotal: (data?.cost?.transports?.belmawa || 0) + (data?.cost?.transports?.perguruan || 0),
+      title: 'Belanja transportasi (maksimal 15%)'
     },
     {
-      data: data.services,
-      subtotal: data.cost.services.belmawa + data.cost.services.perguruan ?? 0,
-      title: 'Belanja material (maksimal 30%)'
+      data: data.services || [],
+      subtotal: (data?.cost?.services?.belmawa || 0) + (data?.cost?.services?.perguruan || 0),
+      title: 'Belanja jasa (maksimal 30%)'
     },
     {
-      data: data.others,
-      subtotal: data.cost.others.belmawa + data.cost.others.perguruan ?? 0,
-      title: 'Belanja material (maksimal 15%)'
+      data: data.others || [],
+      subtotal: (data?.cost?.others?.belmawa || 0) + (data?.cost?.others?.perguruan || 0),
+      title: 'Belanja lainnya (maksimal 15%)'
     }
   ];
 
   const GrandTotal = newData.reduce((acc, item) => acc + item.subtotal, 0);
+
   const rows = [
     new TableRow({
       children: ['No', 'Jenis Pengeluaran', 'Volume', 'Harga Satuan (Rp)', 'Total (Rp)'].map(
@@ -48,14 +50,14 @@ export const tableAnggaran = (data) => {
           new TableRow({
             children: [
               new TableCell({
-                children: [new Paragraph({ alignment: AlignmentType.CENTER, text: `${index + 1}` })]
+                children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: `${index + 1}` })] })]
               }),
               new TableCell({
                 columnSpan: 4,
                 children: [
                   new Paragraph({
                     alignment: AlignmentType.CENTER,
-                    children: [new TextRun({ text: `${item.title}` })]
+                    children: [new TextRun({ text: item.title })]
                   })
                 ]
               })
@@ -68,7 +70,7 @@ export const tableAnggaran = (data) => {
         new TableRow({
           children: [
             new TableCell({
-              children: [new Paragraph({ alignment: AlignmentType.CENTER, text: `${index + 1}` })]
+              children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: `${index + 1}` })] })]
             }),
             new TableCell({
               columnSpan: 4,
@@ -83,72 +85,63 @@ export const tableAnggaran = (data) => {
         })
       ];
 
-      if (item.data.length > 0) {
-        sectionRows.push(
-          new TableRow({
-            children: [
-              new TableCell({
-                rowSpan: item.data.length,
-                children: [new Paragraph('')]
-              }),
-              ...['output_type', 'volume', 'unit_price', 'total_price'].map(
-                (key) =>
-                  new TableCell({
-                    children: [
-                      new Paragraph({
-                        alignment: key === 'unit_price' || key === 'total_price' ? AlignmentType.RIGHT : AlignmentType.CENTER,
-                        children: [new TextRun({ text: item.data[0][key].toString() })]
-                      })
-                    ]
-                  })
-              )
-            ]
-          })
-        );
-
-        sectionRows.push(
-          ...item.data.slice(1).map(
-            (row) =>
-              new TableRow({
-                children: ['output_type', 'volume', 'unit_price', 'total_price'].map(
+      sectionRows.push(
+        ...item.data.map(
+          (row, rowIndex) =>
+            new TableRow({
+              children: [
+                rowIndex === 0
+                  ? new TableCell({
+                      rowSpan: item.data.length,
+                      children: [new Paragraph('')]
+                    })
+                  : null,
+                ...['output_type', 'volume', 'unit_price', 'total_price'].map(
                   (key) =>
                     new TableCell({
                       children: [
                         new Paragraph({
                           alignment: key === 'unit_price' || key === 'total_price' ? AlignmentType.RIGHT : AlignmentType.CENTER,
-                          children: [new TextRun({ text: `${row[key]}` })]
+                          children: [
+                            new TextRun({
+                              text:
+                                key === 'unit_price' || key === 'total_price'
+                                  ? `Rp. ${new Intl.NumberFormat('id-ID').format(row[key])}`
+                                  : row[key].toString()
+                            })
+                          ]
                         })
                       ]
                     })
                 )
-              })
-          )
-        );
+              ].filter(Boolean)
+            })
+        )
+      );
 
-        sectionRows.push(
-          new TableRow({
-            children: [
-              new TableCell({
-                columnSpan: 4,
-                children: [
-                  new Paragraph({
-                    alignment: AlignmentType.CENTER,
-                    children: [new TextRun({ text: 'SUB TOTAL' })]
-                  })
-                ]
-              }),
-              new TableCell({
-                children: [
-                  new Paragraph({
-                    alignment: AlignmentType.RIGHT,
-                    children: [new TextRun({ text: `Rp. ${item.subtotal}` })]
-                  })
-                ]
-              })
-            ]
-          })
-        );
-      }
+      sectionRows.push(
+        new TableRow({
+          children: [
+            new TableCell({
+              columnSpan: 4,
+              children: [
+                new Paragraph({
+                  alignment: AlignmentType.CENTER,
+                  children: [new TextRun({ text: 'SUB TOTAL' })]
+                })
+              ]
+            }),
+            new TableCell({
+              children: [
+                new Paragraph({
+                  alignment: AlignmentType.RIGHT,
+                  children: [new TextRun({ text: `Rp. ${new Intl.NumberFormat('id-ID').format(item.subtotal)}` })]
+                })
+              ]
+            })
+          ]
+        })
+      );
 
       return sectionRows;
     }),
@@ -156,7 +149,6 @@ export const tableAnggaran = (data) => {
     new TableRow({
       children: [
         new TableCell({
-          alignment: AlignmentType.CENTER,
           columnSpan: 4,
           children: [
             new Paragraph({
@@ -169,7 +161,7 @@ export const tableAnggaran = (data) => {
           children: [
             new Paragraph({
               alignment: AlignmentType.RIGHT,
-              children: [new TextRun({ text: `Rp. ${GrandTotal}` })]
+              children: [new TextRun({ text: `Rp. ${new Intl.NumberFormat('id-ID').format(GrandTotal)}` })]
             })
           ]
         })
@@ -179,7 +171,6 @@ export const tableAnggaran = (data) => {
     new TableRow({
       children: [
         new TableCell({
-          alignment: AlignmentType.CENTER,
           columnSpan: 5,
           children: [
             new Paragraph({

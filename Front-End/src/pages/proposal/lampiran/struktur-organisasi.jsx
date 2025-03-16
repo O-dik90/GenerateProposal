@@ -43,7 +43,8 @@ const StrukturOrganisasi = () => {
       setObject(STRUCTURE_INIT);
     },
     delete: (param) => {
-      setData((prevData) => prevData.filter((_, index) => index !== param));
+      console.log(param);
+      setData((prevData) => prevData.filter((item) => item.no !== param.no));
     },
     cancel: () => {
       setObject(STRUCTURE_INIT);

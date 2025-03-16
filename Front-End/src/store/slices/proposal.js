@@ -308,9 +308,18 @@ const proposalSlice = createSlice({
         state.loading = false;
         state.error = action.error.message;
       })
+      .addCase(lampiranIdentitasAsync.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(lampiranIdentitasAsync.fulfilled, (state, action) => {
         state.loading = false;
         state.identitas = action.payload;
+        state.error = null;
+      })
+      .addCase(lampiranIdentitasAsync.rejected, (state) => {
+        state.loading = false;
+        state.identitas = [];
         state.error = null;
       });
   }

@@ -17,6 +17,7 @@ import { LampiranOrganisasi } from './table-organisasi';
 import { enqueueSnackbar } from 'notistack';
 import { lampiranIdentitas } from './lampiran-identitas';
 import { saveAs } from 'file-saver';
+import { tableAnggaran } from './table-anggaran';
 import { tableBiaya } from './table-biaya';
 import { tableKegiatan } from './table-kegiatan';
 
@@ -200,6 +201,7 @@ const GenerateDocx = ({ data }) => {
       heading: HeadingLevel.HEADING_2,
       alignment: AlignmentType.START
     }),
+    tableAnggaran(lampiran?.anggaran),
     new Paragraph({
       text: `Lampiran 3.  Susunan Tim Pengusul dan Pembagian Tugas`,
       heading: HeadingLevel.HEADING_2,

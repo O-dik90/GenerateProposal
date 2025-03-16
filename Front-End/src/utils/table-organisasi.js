@@ -39,7 +39,7 @@ export const LampiranOrganisasi = (listData) => {
       ),
       ...(listData || []).map((item, index) =>
         createRow(
-          [`${index + 1}`, item.name, item.program, item.major, item.time_allocation, item.task_description],
+          [`${index + 1}`, item.name, item.program, item.major, `${item.time_allocation}`, item.task_description],
           [10, 20, 20, 17.5, 17.5, 20]
         )
       )

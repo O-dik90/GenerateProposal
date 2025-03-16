@@ -6,7 +6,7 @@ export const API_URL = import.meta.env.VITE_API_BASE_URL;
 const axiosInstance = axios.create({
   baseURL: API_URL,
   timeout: 10000,
-  withCredentials: true, // Important for cookies
+  withCredentials: true
 });
 
 // Request Interceptor

@@ -166,7 +166,7 @@ const Identitas = () => {
         <MenuItem disabled value="">
           <em>Pilih Keanggotaan</em>
         </MenuItem>
-        {roleOptions.map((item) => (
+        {roleOptions?.map((item) => (
           <MenuItem key={item.id} value={item.init}>
             {item.init}
           </MenuItem>

@@ -1,6 +1,7 @@
 import { AlignmentType, Paragraph, Table, TableCell, TableRow, TextRun, VerticalAlign, WidthType } from 'docx';
 
 export const tableBiaya = (data) => {
+  console.log('biaya', data);
   const headers = [
     { text: 'No', width: 10 },
     { text: 'Jenis Pengeluaran', width: 40 },
@@ -63,7 +64,7 @@ export const tableBiaya = (data) => {
       if (data.cost[ref]) {
         return {
           ...item,
-          sub_total: (data.cost[ref]['belmawa'] || 0) + (data.cost[ref]['perguruan'] || 0),
+          sub_total: (data.cost[ref]['belmawa'] ?? 0) + (data.cost[ref]['perguruan'] ?? 0),
           sumber: item.sumber.map((sumberItem) => {
             return {
               ...sumberItem,

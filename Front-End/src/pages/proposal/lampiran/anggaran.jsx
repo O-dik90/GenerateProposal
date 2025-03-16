@@ -1,6 +1,7 @@
 import { BUDGET_INIT, DETAIL_BUDGET_INIT } from './initial-data';
 import { Button, Grid, Stack, Typography } from '@mui/material';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { getLampiranProposalDetail, updateLampiranProposalDetail } from 'store/slices/proposal';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { BAB_TITLE6 } from './identitas';
@@ -8,7 +9,6 @@ import GenForm from 'components/general-form';
 import { TableForm } from 'components/table-form';
 import { budgetColumns } from './initial-column';
 import { budgetFields } from './initial-form';
-import { updateLampiranProposalDetail } from 'store/slices/proposal';
 import { useParams } from 'react-router';
 import { useSnackbar } from 'notistack';
 
@@ -219,9 +219,10 @@ const Anggaran = () => {
   }, [id, rawBudget]);
 
   useEffect(() => {
-    console.log(budgetData);
-  }, [budgetData]);
-
+    if (id) {
+      dispatch(getLampiranProposalDetail({ id, bab_title: BAB_TITLE6 }));
+    }
+  }, [dispatch, id]);
   return (
     <>
       {budget.map(({ key, label, limit }, index) => {

@@ -305,6 +305,7 @@ const ProposalTable = () => {
       }
 
       if (proposal.generate_status) {
+        console.log(proposal.proposalAttachs);
         enqueueSnackbar('Memproses data...', { variant: 'success' });
         await GenerateDocx({
           data: {
@@ -313,7 +314,8 @@ const ProposalTable = () => {
             pelaksanaan: JSON.parse(proposal.proposalDetails[2]?.json_data),
             kegiatan: JSON.parse(proposal.proposalDetails[3]?.json_data),
             dapus: JSON.parse(proposal.proposalDetails[4]?.json_data),
-            lampiran: JSON.parse(proposal.proposalDetails[5]?.json_data)
+            lampiran: JSON.parse(proposal.proposalDetails[5]?.json_data),
+            images: proposal.proposalAttachs
           }
         });
       } else {

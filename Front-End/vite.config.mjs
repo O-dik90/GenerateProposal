@@ -39,7 +39,7 @@ export default defineConfig(({ mode }) => {
       outDir: 'dist',
       sourcemap: !isProduction,
       minify: isProduction ? 'esbuild' : false
-    },
+    }
     // esbuild: {
     //   drop: isProduction ? ['console', 'debugger'] : [] // Remove console/debugger in production
     // }

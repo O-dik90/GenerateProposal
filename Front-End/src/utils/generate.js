@@ -20,10 +20,14 @@ import { saveAs } from 'file-saver';
 import { tableAnggaran } from './table-anggaran';
 import { tableBiaya } from './table-biaya';
 import { tableKegiatan } from './table-kegiatan';
+import { LampiranGambar } from './table-gambar';
 
-const GenerateDocx = ({ data }) => {
-  const { pendahuluan, tinjauan, kegiatan, pelaksanaan, lampiran, dapus } = data;
-  console.log('testing data', lampiran);
+const GenerateDocx = async ({ data }) => {
+  const { pendahuluan, tinjauan, kegiatan, pelaksanaan, lampiran, dapus, images } = data;
+  
+  const ImageStatement = images.filter((image) => image.file_type === 'STATEMENT');
+  const ImageAttach = images.filter((image) => image.file_type === 'ATTACHMENT');
+  console.log('testing data', ImageStatement);
 
   // Helper to create paragraphs from an array
   const createParagraphsFromArray = (items, style = 'wellSpaced') =>
@@ -96,6 +100,9 @@ const GenerateDocx = ({ data }) => {
       })
     ]
   });
+
+  const lampiranStatement = await LampiranGambar(ImageStatement);
+  const lampiranAttach = await LampiranGambar(ImageAttach);
 
   // Main document content
   const mainContent = [
@@ -207,17 +214,19 @@ const GenerateDocx = ({ data }) => {
       heading: HeadingLevel.HEADING_2,
       alignment: AlignmentType.START
     }),
-    LampiranOrganisasi(lampiran?.organisasi)
-    // new Paragraph({
-    //   text: `Lampiran 4.  Surat Pernyataan Penyusun`,
-    //   heading: HeadingLevel.HEADING_2,
-    //   alignment: AlignmentType.START
-    // }),
-    // new Paragraph({
-    //   text: `Lampiran 5.  Gambaran Konsep Karya Inovatif yang Akan Dihasilkan`,
-    //   heading: HeadingLevel.HEADING_2,
-    //   alignment: AlignmentType.START
-    // })
+    LampiranOrganisasi(lampiran?.organisasi),
+    new Paragraph({
+      text: `Lampiran 4.  Surat Pernyataan Ketua`,
+      heading: HeadingLevel.HEADING_2,
+      alignment: AlignmentType.START
+    }),
+    ...lampiranStatement,
+    new Paragraph({
+      text: `Lampiran 5.  Gambaran Konsep Karya Inovatif yang Akan Dihasilkan `,
+      heading: HeadingLevel.HEADING_2,
+      alignment: AlignmentType.START
+    }),
+    ...lampiranAttach
   ];
 
   // Document configuration

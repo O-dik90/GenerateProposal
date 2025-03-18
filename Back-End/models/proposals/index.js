@@ -1,111 +1,125 @@
-const dbPool = require('../../config/db');
+const { DataTypes, Sequelize } = require('sequelize');
+const db = require('../../config/db');
+const { Users } = require('../users');
 
-const getAllProposals = (user_id) => {
-  const query = `SELECT * FROM proposals where user_id = ${user_id}`;
-  return dbPool.execute(query);
-};
+const Proposals = db.define('proposals', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
+  user_id: {
+    type: DataTypes.UUID,
+    allowNull: false,
+    references: {
+      model: Users,
+      key: 'uuid'
+    },
+    validate: {
+      notEmpty: { msg: "User ID is required" },
+      isUUID: 4
+    }
+  },
+  title: {
+    type: DataTypes.STRING(500),
+    allowNull: false,
+    validate: {
+      notEmpty: { msg: "Title cannot be empty" },
+      len: { args: [3, 512], msg: "Title must be between 3 and 500 characters" }
+    }
+  },
+  description: {
+    type: DataTypes.STRING(500),
+    allowNull: false,
+    validate: {
+      notEmpty: { msg: "Description cannot be empty" },
+      len: { args: [10, 512], msg: "Description must be between 3 and 500 characters" }
+    }
+  },
+  year: {
+    type: DataTypes.STRING(4),
+    allowNull: false,
+    validate: {
+      notEmpty: { msg: "Year cannot be empty" },
+    }
+  },
+  pkm_type: {
+    type: DataTypes.STRING(10),
+    allowNull: false,
+    validate: {
+      notEmpty: { msg: "PKM Type cannot be empty" },
+      len: { args: [1, 10], msg: "PKM Type must be between 3 and 500 characters" }
+    }
+  },
+  pkm_category: {
+    type: DataTypes.STRING(20),
+    allowNull: false,
+    validate: {
+      notEmpty: { msg: "PKM Category cannot be empty" },
+      len: { args: [1, 20], msg: "PKM Category must be between 3 and 500 characters" }
+    }
+  },
+  pkm_desc: {
+    type: DataTypes.STRING(500),
+    allowNull: true,
+    validate: {
+      len: { args: [1, 500], msg: "PKM Description must be between 3 and 500 characters" }
+    }
+  },
+  pkm_belmawa: {
+    type: DataTypes.DECIMAL(18, 2),
+    allowNull: false,
+    validate: {
+      min: 0
+    }
+  },
+  pkm_perguruan: {
+    type: DataTypes.DECIMAL(18, 2),
+    allowNull: false,
+    validate: {
+      min: 0
+    }
+  },
+  create_date: {
+    type: Sequelize.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW,
+  },
+  update_date: {
+    type: Sequelize.DATE,
+    defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+    allowNull: false,
+  },
+}, {
+  freezeTableName: true,
+  timestamps: true,
+  createdAt: 'create_date',
+  updatedAt: 'update_date',
+  paranoid: true,
+  indexes: [
+    { unique: true, fields: ['id'] },
+    { fields: ['user_id'] }
+  ]
+});
 
-const getProposalId = (id) => {
-  const query = 'SELECT * FROM proposals WHERE id = ?';
-  return dbPool.execute(query, [id]);
-};
+// ** Ensure Associations Exist Before Using `hasMany` **
+if (Users) {
+  Users.hasMany(Proposals, {
+    foreignKey: 'user_id',
+    as: 'proposals',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+  });
 
-const addProposal = (data) => {
-  console.log(data);
-  const query = `
-  INSERT INTO proposals (
-  user_id, title, description, year, type, category, belmawa, perguruan, creation_date
-  ) VALUES (?,?,?,?,?,?,?,?, NOW())`;
+  Proposals.belongsTo(Users, {
+    foreignKey: {
+      name: 'user_id',
+      allowNull: false
+    },
+    as: 'user',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+  });
+}
 
-  const params = [
-    data.user_id,
-    data.title,
-    data.description,
-    data.year,
-    data.type,
-    data.category,
-    data.belmawa,
-    data.perguruan,
-  ];
-  return dbPool.execute(query, params);
-};
-
-const deleteProposal = async (id) => {
-  await dbPool.execute(`DELETE FROM proposal_bab where proposals_id = ?`, [id]);
-  const query = `DELETE FROM proposals WHERE id = ?`;
-  return dbPool.execute(query, [id]);
-};
-
-const updateProposal = (id, data) => {
-  const query = `
-  UPDATE proposals 
-  SET title = '${data.title}', 
-  description = '${data.description}', 
-  year = ${data.year} ,  
-  type = '${data.type}', 
-  category = '${data.category}',
-  belmawa = '${data.belmawa}',
-  perguruan = '${data.perguruan}',
-  last_update = NOW()
-  WHERE id = ${id}
-  `;
-  return dbPool.execute(query);
-};
-
-const initProposal = (id) => {
-  const data = [
-    [`${id}`, 'BAB 1 PENDAHULUAN', 'Latar Belakang', 'latar_belakang', 1, null],
-    [
-      `${id}`,
-      'BAB 1 PENDAHULUAN',
-      'Rumusan Masalah',
-      'rumusan_masalah',
-      1,
-      null,
-    ],
-    [`${id}`, 'BAB 1 PENDAHULUAN', 'Luaran', 'luaran', 1, null],
-    [`${id}`, 'BAB 1 PENDAHULUAN', 'Tujuan', 'tujuan', 1, null],
-    [`${id}`, 'BAB 1 PENDAHULUAN', 'Manfaat', 'manfaat', 1, null],
-    [`${id}`, 'BAB 2 TINJAUAN PUSTAKA', '', '', 1, null],
-    [`${id}`, 'BAB 3 TAHAP PELAKSANAAN', '', '', 1, null],
-    [`${id}`, 'BAB 4 BIAYA DAN JADWAL KEGIATAN', '', '', 1, null],
-    [`${id}`, 'BAB 5 DAFTAR PUSTAKA', '', '', 1, null],
-    [`${id}`, 'BAB 6 LAMPIRAN', '', '', 1, null],
-  ];
-
-  const placeholders = data.map(() => '(?, ?, ?, ?, ?, ?)').join(', ');
-
-  const query = `
-    INSERT INTO proposal_bab (
-      proposals_id, bab_title, subbab_title, subbab_value, seq_no, json_data
-    ) VALUES ${placeholders};
-  `;
-
-  const flattenedData = data.flat();
-  return dbPool.execute(query, flattenedData);
-};
-
-const genStatusProposal = (id) => {
-  const query = `
-  select json_data from proposal_bab where proposals_id = ? and json_data is null
-  `;
-  return dbPool.execute(query, [id]);
-};
-
-const updateLatestProposal = (id) => {
-  const query = `
-  UPDATE proposals SET last_update = NOW() WHERE id = ?
-  `;
-  return dbPool.execute(query, [id]);
-};
-
-module.exports = {
-  getAllProposals,
-  getProposalId,
-  addProposal,
-  deleteProposal,
-  updateProposal,
-  initProposal,
-  updateLatestProposal,
-  genStatusProposal,
-};
+module.exports = {Proposals};

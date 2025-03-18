@@ -1,47 +1,55 @@
 {
-	"name": "back-end",
-	"version": "1.0.0",
-	"description": "REST API Gen Pro",
-	"main": "index.js",
-	"type": "commonjs",
-	"scripts": {
-		"lint": "eslint . --fix",
-		"start": "nodemon -w index.js --experimental-specifier-resolution=node",
-		"test": "echo \"Error: no test specified\" && exit 1"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+ssh://git@github.com/O-dik90/GenerateProposal.git"
-	},
-	"author": "odik y n",
-	"license": "ISC",
-	"bugs": {
-		"url": "https://github.com/O-dik90/GenerateProposal/issues"
-	},
-	"homepage": "https://github.com/O-dik90/GenerateProposal#readme",
-	"dependencies": {
-		"argon2": "^0.41.1",
-		"body-parser": "^1.20.3",
-		"citation-js": "^0.7.16",
-		"connect-session-sequelize": "^7.1.7",
-		"cors": "^2.8.5",
-		"date-fns": "^4.1.0",
-		"dotenv": "^16.4.5",
-		"express": "^4.21.1",
-		"express-fileupload": "^1.5.1",
-		"express-session": "^1.18.1",
-		"helmet": "^8.0.0",
-		"mysql": "^2.18.1",
-		"mysql2": "^3.11.4",
-		"nodemon": "^3.1.7",
-		"sequelize": "^6.37.5"
-	},
-	"devDependencies": {
-		"@eslint/js": "^9.15.0",
-		"eslint": "^9.15.0",
-		"eslint-config-prettier": "^9.1.0",
-		"eslint-plugin-prettier": "^5.2.1",
-		"globals": "^15.12.0",
-		"prettier": "^3.3.3"
-	}
+  "name": "api-genpro",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "description": "Backend for generating proposals",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js --watch . --ext js,json --ignore node_modules/",
+    "start": "node index.js",
+    "lint": "eslint .",
+    "prettier": "prettier --write ."
+  },
+  "author": "ODIK Y N",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.8.2",
+    "bcryptjs": "^2.4.3",
+    "citation-js": "^0.7.18",
+    "connect-session-sequelize": "^7.1.7",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "express-session": "^1.18.1",
+    "express-validator": "^7.2.1",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "moment-timezone": "^0.5.47",
+    "multer": "^1.4.5-lts.1",
+    "mysql2": "^3.12.0",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1",
+    "sequelize": "^6.37.5",
+    "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "eslint": "^9.20.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-node": "^11.1.0",
+    "nodemon": "^3.1.9",
+    "prettier": "^3.5.0"
+  },
+  "moduleAliases": {
+    "@models": "src/models",
+    "@controllers": "src/controllers",
+    "@middlewares": "src/middlewares",
+    "@routes": "src/routes",
+    "@config": "src/config",
+    "@utils": "src/utils",
+    "@services": "src/services"
+  }
 }

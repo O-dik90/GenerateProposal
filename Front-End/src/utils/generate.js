@@ -13,6 +13,7 @@ import {
   convertMillimetersToTwip
 } from 'docx';
 
+import { LampiranGambar } from './table-gambar';
 import { LampiranOrganisasi } from './table-organisasi';
 import { enqueueSnackbar } from 'notistack';
 import { lampiranIdentitas } from './lampiran-identitas';
@@ -20,11 +21,10 @@ import { saveAs } from 'file-saver';
 import { tableAnggaran } from './table-anggaran';
 import { tableBiaya } from './table-biaya';
 import { tableKegiatan } from './table-kegiatan';
-import { LampiranGambar } from './table-gambar';
 
 const GenerateDocx = async ({ data }) => {
   const { pendahuluan, tinjauan, kegiatan, pelaksanaan, lampiran, dapus, images } = data;
-  
+
   const ImageStatement = images.filter((image) => image.file_type === 'STATEMENT');
   const ImageAttach = images.filter((image) => image.file_type === 'ATTACHMENT');
   console.log('testing data', ImageStatement);

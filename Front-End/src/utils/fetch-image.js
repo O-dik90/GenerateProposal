@@ -1,5 +1,3 @@
-import { API_URL } from 'api/base-url';
-
 export const fetchImages = async (imageUrls) => {
   if (!imageUrls || imageUrls.length === 0) {
     console.warn('Image not found');
@@ -8,7 +6,7 @@ export const fetchImages = async (imageUrls) => {
 
   try {
     const imagePromises = imageUrls.map(async (url) => {
-      const response = await fetch(API_URL + '/public/' + url);
+      const response = await fetch('https://ubaicorner.com/api-genproposal/public' + url.file_path);
       if (!response.ok) {
         throw new Error(`HTTP error: ${response.status}`);
       }

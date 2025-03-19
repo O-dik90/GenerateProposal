@@ -33,7 +33,7 @@ const getProposal = async (req, res) => {
   try {
     const { user_id } = req.params;
     const { id: proposal_id } = req.body;
-    if (!user_id) {
+    if (!user_id || !proposal_id) {
       return res.status(400).json({ msg: "params is empty" });
     }
     const proposals = await Proposals.findAll({
@@ -46,6 +46,7 @@ const getProposal = async (req, res) => {
       }, {
         model: ProposalAttachs,
         as: 'proposalAttachs',
+        required: false,
         where: {
           proposal_id: proposal_id
         }

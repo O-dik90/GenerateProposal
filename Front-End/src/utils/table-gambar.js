@@ -1,4 +1,5 @@
 import { AlignmentType, ImageRun, Paragraph } from 'docx';
+
 import { fetchImages } from './fetch-image';
 
 const mapImagesToParagraphs = (imageBuffers) => {
@@ -21,7 +22,19 @@ const mapImagesToParagraphs = (imageBuffers) => {
     : [new Paragraph({ text: 'No images available', alignment: AlignmentType.CENTER })];
 };
 
-export const LampiranGambar = async (imageUrls) => {
+export const LampiranGambarState = async (imageUrls) => {
+  try {
+    const imageBuffers = await fetchImages(imageUrls);
+    if (imageBuffers.length === 0) throw new Error('No images found');
+
+    return mapImagesToParagraphs(imageBuffers);
+  } catch (error) {
+    console.warn('Error Generate Image:', error);
+    return [];
+  }
+};
+
+export const LampiranGambarAttach = async (imageUrls) => {
   try {
     const imageBuffers = await fetchImages(imageUrls);
     if (imageBuffers.length === 0) throw new Error('No images found');

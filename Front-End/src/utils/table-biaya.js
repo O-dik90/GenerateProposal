@@ -2,6 +2,10 @@ import { AlignmentType, Paragraph, Table, TableCell, TableRow, TextRun, Vertical
 
 export const tableBiaya = (data) => {
   console.log('biaya', data);
+
+  // Ensure data is at least an empty object
+  data = data || { cost: {} };
+
   const headers = [
     { text: 'No', width: 10 },
     { text: 'Jenis Pengeluaran', width: 40 },
@@ -24,9 +28,9 @@ export const tableBiaya = (data) => {
       const sumber = [
         { label: 'Belmawa', besaran: `Rp ${data.cost?.[ref]?.belmawa?.toLocaleString('id-ID') || '0'}` },
         { label: 'Perguruan Tinggi', besaran: `Rp ${data.cost?.[ref]?.perguruan?.toLocaleString('id-ID') || '0'}` }
-      ];
+      ].filter((s) => s.besaran !== 'Rp 0'); // Remove empty sources
 
-      return { ...item, sumber };
+      return { ...item, sumber: sumber.length ? sumber : [{ label: '-', besaran: 'Rp 0' }] };
     });
   };
 
@@ -34,31 +38,24 @@ export const tableBiaya = (data) => {
     return path.reduce((acc, key) => acc?.[key] ?? defaultValue, obj);
   };
 
+  const totalBelmawa = ['materials', 'services', 'transports', 'others'].reduce(
+    (sum, key) => sum + getSafeValue(data?.cost, [key, 'belmawa']),
+    0
+  );
+
+  const totalPerguruan = ['materials', 'services', 'transports', 'others'].reduce(
+    (sum, key) => sum + getSafeValue(data?.cost, [key, 'perguruan']),
+    0
+  );
+
   const updateFinals = {
     text: 'Jumlah',
-    total: `Rp ${['materials', 'services', 'transports', 'others']
-      .reduce((sum, key) => sum + getSafeValue(data?.cost, [key, 'belmawa']) + getSafeValue(data?.cost, [key, 'perguruan']), 0)
-      .toLocaleString('id-ID')}`,
+    total: `Rp ${(totalBelmawa + totalPerguruan).toLocaleString('id-ID')}`,
     jenis: 'Rekap Sumber Dana',
     sumber: [
-      {
-        label: 'Belmawa',
-        besaran: `Rp ${['materials', 'services', 'transports', 'others']
-          .reduce((sum, key) => sum + getSafeValue(data?.cost, [key, 'belmawa']), 0)
-          .toLocaleString('id-ID')}`
-      },
-      {
-        label: 'Perguruan Tinggi',
-        besaran: `Rp ${['materials', 'services', 'transports', 'others']
-          .reduce((sum, key) => sum + getSafeValue(data?.cost, [key, 'perguruan']), 0)
-          .toLocaleString('id-ID')}`
-      },
-      {
-        label: 'Jumlah',
-        besaran: `Rp ${['materials', 'services', 'transports', 'others']
-          .reduce((sum, key) => sum + getSafeValue(data?.cost, [key, 'belmawa']) + getSafeValue(data?.cost, [key, 'perguruan']), 0)
-          .toLocaleString('id-ID')}`
-      }
+      { label: 'Belmawa', besaran: `Rp ${totalBelmawa.toLocaleString('id-ID')}` },
+      { label: 'Perguruan Tinggi', besaran: `Rp ${totalPerguruan.toLocaleString('id-ID')}` },
+      { label: 'Jumlah', besaran: `Rp ${(totalBelmawa + totalPerguruan).toLocaleString('id-ID')}` }
     ]
   };
 
@@ -68,19 +65,23 @@ export const tableBiaya = (data) => {
     });
 
   const createDataRows = (row) => {
+    if (!row.sumber || row.sumber.length === 0) {
+      row.sumber = [{ label: '-', besaran: 'Rp 0' }];
+    }
+
     const firstRow = new TableRow({
       children: [
         createCell(row.no, { rowSpan: row.sumber.length, align: AlignmentType.CENTER }),
         createCell(row.jenis, { rowSpan: row.sumber.length, align: AlignmentType.LEFT }),
-        createCell(row.sumber[0]?.label),
-        createCell(row.sumber[0]?.besaran, { align: AlignmentType.RIGHT })
+        createCell(row.sumber[0]?.label || '-'),
+        createCell(row.sumber[0]?.besaran || 'Rp 0', { align: AlignmentType.RIGHT })
       ]
     });
 
     const sumberRows = row.sumber.slice(1).map(
       (sumber) =>
         new TableRow({
-          children: [createCell(sumber.label), createCell(sumber.besaran, { align: AlignmentType.RIGHT })]
+          children: [createCell(sumber.label || '-'), createCell(sumber.besaran || 'Rp 0', { align: AlignmentType.RIGHT })]
         })
     );
 
@@ -122,7 +123,7 @@ export const tableBiaya = (data) => {
       verticalAlign: VerticalAlign.CENTER,
       children: [
         new Paragraph({
-          children: [new TextRun({ text: text || '', bold })],
+          children: [new TextRun({ text: text || '-', bold })],
           alignment: align
         })
       ],

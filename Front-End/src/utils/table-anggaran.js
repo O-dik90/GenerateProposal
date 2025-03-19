@@ -1,32 +1,42 @@
 import { AlignmentType, Paragraph, Table, TableCell, TableRow, TextRun, VerticalAlign, WidthType } from 'docx';
 
-export const tableAnggaran = (data) => {
+const INIT_DATA = {
+  no: 1,
+  category: '',
+  budget_source: '',
+  output_type: '',
+  status: false,
+  total_price: 0,
+  unit_price: 0,
+  volume: 0
+};
+export const tableAnggaran = (data = {}) => {
   console.log('anggaran', data);
 
   const newData = [
     {
-      data: data.materials || [],
+      data: data?.materials || [INIT_DATA],
       subtotal: (data?.cost?.materials?.belmawa || 0) + (data?.cost?.materials?.perguruan || 0),
       title: 'Belanja material (maksimal 60%)'
     },
     {
-      data: data.transports || [],
+      data: data?.transports || [INIT_DATA],
       subtotal: (data?.cost?.transports?.belmawa || 0) + (data?.cost?.transports?.perguruan || 0),
       title: 'Belanja transportasi (maksimal 15%)'
     },
     {
-      data: data.services || [],
+      data: data?.services || [INIT_DATA],
       subtotal: (data?.cost?.services?.belmawa || 0) + (data?.cost?.services?.perguruan || 0),
       title: 'Belanja jasa (maksimal 30%)'
     },
     {
-      data: data.others || [],
+      data: data?.others || [INIT_DATA],
       subtotal: (data?.cost?.others?.belmawa || 0) + (data?.cost?.others?.perguruan || 0),
       title: 'Belanja lainnya (maksimal 15%)'
     }
   ];
 
-  const GrandTotal = newData.reduce((acc, item) => acc + item.subtotal, 0);
+  const GrandTotal = newData.reduce((acc, item) => acc + (item.subtotal || 0), 0);
 
   const rows = [
     new TableRow({
@@ -57,7 +67,7 @@ export const tableAnggaran = (data) => {
                 children: [
                   new Paragraph({
                     alignment: AlignmentType.CENTER,
-                    children: [new TextRun({ text: item.title })]
+                    children: [new TextRun({ text: `${item.title}` })]
                   })
                 ]
               })
@@ -106,15 +116,15 @@ export const tableAnggaran = (data) => {
                             new TextRun({
                               text:
                                 key === 'unit_price' || key === 'total_price'
-                                  ? `Rp. ${new Intl.NumberFormat('id-ID').format(row[key])}`
-                                  : row[key].toString()
+                                  ? `Rp. ${new Intl.NumberFormat('id-ID').format(row[key] || 0)}`
+                                  : row[key]?.toString() || '-'
                             })
                           ]
                         })
                       ]
                     })
                 )
-              ].filter(Boolean)
+              ]
             })
         )
       );
@@ -162,20 +172,6 @@ export const tableAnggaran = (data) => {
             new Paragraph({
               alignment: AlignmentType.RIGHT,
               children: [new TextRun({ text: `Rp. ${new Intl.NumberFormat('id-ID').format(GrandTotal)}` })]
-            })
-          ]
-        })
-      ]
-    }),
-
-    new TableRow({
-      children: [
-        new TableCell({
-          columnSpan: 5,
-          children: [
-            new Paragraph({
-              alignment: AlignmentType.CENTER,
-              children: [new TextRun({ text: '' })]
             })
           ]
         })

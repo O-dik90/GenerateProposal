@@ -12,8 +12,8 @@ import {
   TextRun,
   convertMillimetersToTwip
 } from 'docx';
+import { LampiranGambarAttach, LampiranGambarState } from './table-gambar';
 
-import { LampiranGambar } from './table-gambar';
 import { LampiranOrganisasi } from './table-organisasi';
 import { enqueueSnackbar } from 'notistack';
 import { lampiranIdentitas } from './lampiran-identitas';
@@ -101,8 +101,8 @@ const GenerateDocx = async ({ data }) => {
     ]
   });
 
-  const lampiranStatement = await LampiranGambar(ImageStatement);
-  const lampiranAttach = await LampiranGambar(ImageAttach);
+  const lampiranStatement = await LampiranGambarState(ImageStatement);
+  const lampiranAttach = await LampiranGambarAttach(ImageAttach);
 
   // Main document content
   const mainContent = [

@@ -10,28 +10,33 @@ const INIT_DATA = {
   unit_price: 0,
   volume: 0
 };
+
 export const tableAnggaran = (data = {}) => {
   console.log('anggaran', data);
 
+  const defaultData = [INIT_DATA];
+
+  const safeGet = (obj, path, defaultValue) => path.reduce((acc, key) => (acc && acc[key] !== undefined ? acc[key] : defaultValue), obj);
+
   const newData = [
     {
-      data: data?.materials || [INIT_DATA],
-      subtotal: (data?.cost?.materials?.belmawa || 0) + (data?.cost?.materials?.perguruan || 0),
+      data: safeGet(data, ['materials'], defaultData),
+      subtotal: safeGet(data, ['cost', 'materials', 'belmawa'], 0) + safeGet(data, ['cost', 'materials', 'perguruan'], 0),
       title: 'Belanja material (maksimal 60%)'
     },
     {
-      data: data?.transports || [INIT_DATA],
-      subtotal: (data?.cost?.transports?.belmawa || 0) + (data?.cost?.transports?.perguruan || 0),
+      data: safeGet(data, ['transports'], defaultData),
+      subtotal: safeGet(data, ['cost', 'transports', 'belmawa'], 0) + safeGet(data, ['cost', 'transports', 'perguruan'], 0),
       title: 'Belanja transportasi (maksimal 15%)'
     },
     {
-      data: data?.services || [INIT_DATA],
-      subtotal: (data?.cost?.services?.belmawa || 0) + (data?.cost?.services?.perguruan || 0),
+      data: safeGet(data, ['services'], defaultData),
+      subtotal: safeGet(data, ['cost', 'services', 'belmawa'], 0) + safeGet(data, ['cost', 'services', 'perguruan'], 0),
       title: 'Belanja jasa (maksimal 30%)'
     },
     {
-      data: data?.others || [INIT_DATA],
-      subtotal: (data?.cost?.others?.belmawa || 0) + (data?.cost?.others?.perguruan || 0),
+      data: safeGet(data, ['others'], defaultData),
+      subtotal: safeGet(data, ['cost', 'others', 'belmawa'], 0) + safeGet(data, ['cost', 'others', 'perguruan'], 0),
       title: 'Belanja lainnya (maksimal 15%)'
     }
   ];
@@ -60,7 +65,12 @@ export const tableAnggaran = (data = {}) => {
           new TableRow({
             children: [
               new TableCell({
-                children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: `${index + 1}` })] })]
+                children: [
+                  new Paragraph({
+                    alignment: AlignmentType.CENTER,
+                    children: [new TextRun({ text: `${index + 1}` })]
+                  })
+                ]
               }),
               new TableCell({
                 columnSpan: 4,
@@ -80,7 +90,12 @@ export const tableAnggaran = (data = {}) => {
         new TableRow({
           children: [
             new TableCell({
-              children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: `${index + 1}` })] })]
+              children: [
+                new Paragraph({
+                  alignment: AlignmentType.CENTER,
+                  children: [new TextRun({ text: `${index + 1}` })]
+                })
+              ]
             }),
             new TableCell({
               columnSpan: 4,
@@ -124,7 +139,7 @@ export const tableAnggaran = (data = {}) => {
                       ]
                     })
                 )
-              ]
+              ].filter(Boolean) // Remove null values
             })
         )
       );
@@ -145,7 +160,11 @@ export const tableAnggaran = (data = {}) => {
               children: [
                 new Paragraph({
                   alignment: AlignmentType.RIGHT,
-                  children: [new TextRun({ text: `Rp. ${new Intl.NumberFormat('id-ID').format(item.subtotal)}` })]
+                  children: [
+                    new TextRun({
+                      text: `Rp. ${new Intl.NumberFormat('id-ID').format(item.subtotal)}`
+                    })
+                  ]
                 })
               ]
             })
@@ -171,7 +190,11 @@ export const tableAnggaran = (data = {}) => {
           children: [
             new Paragraph({
               alignment: AlignmentType.RIGHT,
-              children: [new TextRun({ text: `Rp. ${new Intl.NumberFormat('id-ID').format(GrandTotal)}` })]
+              children: [
+                new TextRun({
+                  text: `Rp. ${new Intl.NumberFormat('id-ID').format(GrandTotal)}`
+                })
+              ]
             })
           ]
         })

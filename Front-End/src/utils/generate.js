@@ -27,7 +27,7 @@ const GenerateDocx = async ({ data }) => {
 
   const ImageStatement = images.filter((image) => image.file_type === 'STATEMENT');
   const ImageAttach = images.filter((image) => image.file_type === 'ATTACHMENT');
-  console.log('testing data', ImageStatement);
+  console.log('testing data', lampiran);
 
   // Helper to create paragraphs from an array
   const createParagraphsFromArray = (items, style = 'wellSpaced') =>
@@ -101,8 +101,8 @@ const GenerateDocx = async ({ data }) => {
     ]
   });
 
-  const lampiranStatement = await LampiranGambarState(ImageStatement);
-  const lampiranAttach = await LampiranGambarAttach(ImageAttach);
+  const lampiranStatement = ImageStatement && (await LampiranGambarState(ImageStatement ?? []));
+  const lampiranAttach = ImageAttach && (await LampiranGambarAttach(ImageAttach ?? []));
 
   // Main document content
   const mainContent = [
@@ -337,6 +337,7 @@ const GenerateDocx = async ({ data }) => {
       enqueueSnackbar('Berhasil memproses dokumen!', { variant: 'success' });
     })
     .catch((error) => {
+      console.log(error);
       enqueueSnackbar(`Gagal memproses dokumen! ${error.message}`, { variant: 'error' });
     });
 };

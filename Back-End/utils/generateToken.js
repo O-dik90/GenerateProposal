@@ -8,7 +8,7 @@ const VerifToken = () => {
   return Math.floor(100000 + Math.random() * 900000).toString()
 }
 const TokenSetCookie = (res, user) => {
-  console.log(`token: `, {user, ExpirationTime});
+  console.log(`token: `, {...user, ExpirationTime});
   const token = jwt.sign({ ...user, exp: ExpirationTime }, process.env.JWT_SECRET);
 
   res.cookie('token', token, {

@@ -42,10 +42,8 @@ const Identitas = () => {
   }, [dispatch, gender, role]);
 
   useEffect(() => {
-    if (id) {
-      dispatch(getLampiranProposalDetail({ id, bab_title: BAB_TITLE6 }));
-    }
-  }, [dispatch, id]);
+    dispatch(getLampiranProposalDetail({ id, bab_title: BAB_TITLE6 }));
+  }, []);
 
   useEffect(() => {
     if (!lampiran.length) return;
@@ -74,8 +72,10 @@ const Identitas = () => {
     delete: (item) => {
       setData((prevData) => {
         const updatedData = prevData.filter((entry) => entry.no !== item.no).map((entry, index) => ({ ...entry, no: index + 1 }));
+        dispatch(lampiranIdentitasAsync(updatedData));
         return updatedData;
       });
+
     },
 
     save: async () => {
@@ -88,10 +88,10 @@ const Identitas = () => {
 
         const res = await dispatch(updateLampiranProposalDetail({ id: Number(id), data: payload }));
 
-        if (res?.error) {
-          enqueueSnackbar('Gagal menyimpan', { variant: 'error' });
-        } else {
+        if (updateLampiranProposalDetail.fulfilled.match(res)) {
           enqueueSnackbar('Berhasil menyimpan', { variant: 'success' });
+        } else {
+          enqueueSnackbar('Gagal menyimpan', { variant: 'error' });
         }
       } catch (error) {
         enqueueSnackbar('Terjadi kesalahan saat menyimpan data', { variant: 'error' });

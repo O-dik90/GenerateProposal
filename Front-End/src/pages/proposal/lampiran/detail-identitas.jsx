@@ -1,19 +1,16 @@
 import { ACT_INIT, AWARD_INIT, COMMUNITY_INIT, COURSE_INIT, EDUCATION_INIT, RESEARCH_INIT } from './initial-data';
 import { Grid, Stack, Typography } from '@mui/material';
-import { getLampiranProposalDetail, lampiranIdentitasAsync } from 'store/slices/proposal';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { BAB_TITLE6 } from './identitas';
 import GenForm from 'components/general-form';
 import PropTypes from 'prop-types';
 import { TableForm } from 'components/table-form';
 import { initialFields } from './initial-form';
 import { lampiranColumns } from './initial-column';
-import { useParams } from 'react-router';
+import { lampiranIdentitasAsync } from 'store/slices/proposal';
 
 const DetailIdentitas = ({ data }) => {
-  const { id } = useParams();
   const dispatch = useDispatch();
   const { identitas } = useSelector((state) => state.app.proposal);
   const [detail, setDetail] = useState({
@@ -97,18 +94,7 @@ const DetailIdentitas = ({ data }) => {
   );
 
   useEffect(() => {
-    dispatch(lampiranIdentitasAsync([]));
-    if (id) {
-      dispatch(getLampiranProposalDetail({ id, bab_title: BAB_TITLE6 }));
-    }
-  }, [dispatch, id]);
-
-  useEffect(() => {
     dispatch(lampiranIdentitasAsync(identitas));
-
-    return () => {
-      dispatch(lampiranIdentitasAsync([]));
-    };
   }, [dispatch, identitas]);
 
   return (

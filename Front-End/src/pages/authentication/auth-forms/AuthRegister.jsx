@@ -59,7 +59,12 @@ export default function AuthRegister() {
           .finally(navigate('/login'));
       }
     } catch (error) {
-      setErrors({ submit: error.message });
+      if (error.response.status === 409) {
+        console.log(error)
+        setErrors({ submit: 'Email sudah terdaftar' });
+      } else {
+        setErrors({ submit: error.message });
+      }
     }
     setSubmitting(false);
   };
@@ -76,14 +81,14 @@ export default function AuthRegister() {
           role: 'user'
         }}
         validationSchema={Yup.object().shape({
-          name: Yup.string().max(255).required('Nama wajib di isi'),
-          email: Yup.string().email('Format email salah').max(255).required('Email wajib di isi'),
-          password: Yup.string().min(8, 'Minimal 8 karakter').max(255).required('Password wajib di isi'),
+          name: Yup.string().max(255).required('Nama wajib diisi'),
+          email: Yup.string().email('Format email salah').max(255).required('Email wajib diisi'),
+          password: Yup.string().min(8, 'Minimal 8 karakter').max(255).required('Password wajib diisi'),
           confPassword: Yup.string()
             .min(8, 'Minimal 8 karakter')
             .max(255)
             .oneOf([Yup.ref('password'), null], 'Password harus sama')
-            .required('Konfirrmasi password wajib di isi')
+            .required('Konfirrmasi password wajib diisi')
         })}
         onSubmit={handleSubmit}
       >
@@ -135,11 +140,11 @@ export default function AuthRegister() {
               </Grid>
               <Grid item xs={12}>
                 <Stack spacing={1}>
-                  <InputLabel htmlFor="password-signup">Password</InputLabel>
+                  <InputLabel htmlFor="password-signup">Password*</InputLabel>
                   <OutlinedInput
                     fullWidth
                     error={Boolean(touched.password && errors.password)}
-                    id="password-signup"
+                    id="password-login"
                     type={showPassword ? 'text' : 'password'}
                     value={values.password}
                     name="password"
@@ -185,11 +190,11 @@ export default function AuthRegister() {
               </Grid>
               <Grid item xs={12}>
                 <Stack spacing={1}>
-                  <InputLabel htmlFor="confPassword-signup">Konfirmasi Password</InputLabel>
+                  <InputLabel htmlFor="confPassword-signup">Konfirmasi Password*</InputLabel>
                   <OutlinedInput
                     fullWidth
                     error={Boolean(touched.confPassword && errors.confPassword)}
-                    id="confPassword-signup"
+                    id="confPassword-login"
                     type={showPassword1 ? 'text' : 'password'}
                     value={values.confPassword}
                     name="confPassword"

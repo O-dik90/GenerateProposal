@@ -70,8 +70,8 @@ export default function AuthLogin() {
     <Formik
       initialValues={{ email: '', password: '' }}
       validationSchema={Yup.object().shape({
-        email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
-        password: Yup.string().max(255).required('Password is required')
+        email: Yup.string().email('Penulisan email tidak benar').max(255).required('Email harus diisi'),
+        password: Yup.string().max(255).required('Password harus diisi')
       })}
       onSubmit={handleSubmit}
     >

@@ -46,6 +46,10 @@ axiosInstance.interceptors.response.use(
       sessionStorage.removeItem('user');
     } else if (error.response?.status === 404) {
       enqueueSnackbar('User tidak ditemukan', { variant: 'error' });
+    } else if (error.response?.status === 409) {
+      enqueueSnackbar('Gagal Daftar, email sudah terdaftar', { variant: 'warning' });
+    } else if (error.response?.status === 500) {
+      enqueueSnackbar('Server error', { variant: 'error' });
     } else {
       enqueueSnackbar(error.message, { variant: 'error' });
     }

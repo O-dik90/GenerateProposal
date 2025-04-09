@@ -23,32 +23,35 @@ const NODE_ENV = process.env.NODE_ENV || "development";
 const JWT_SECRET = process.env.JWT_SECRET;
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : [
-  'http://localhost:3000',
+    'https://ubaicorner.com',
+    'https://genproposal.ubaicorner.com',
+    'http://localhost:5000',
 ];
 
-// **Logger Configuration (Winston)**
+// ===== LOGGER CONFIGURATION =====
 const logger = winston.createLogger({
   level: 'info',
   format: winston.format.combine(
     winston.format.timestamp({
       format: () => moment().tz('Asia/Jakarta').format('YYYY-MM-DD HH:mm:ss')
     }),
-    winston.format.json()
+    winston.format.printf(({ timestamp, level, message }) => `${timestamp} [${level.toUpperCase()}] ${message}`)
   ),
   transports: [
     new winston.transports.Console(),
-    new winston.transports.File({ filename: 'server.log' })
+    new winston.transports.File({ filename: 'server.log' }),
   ]
 });
 
-// **Initialize Express**
+// ===== INIT EXPRESS =====
 const app = express();
 app.set("view engine", "ejs");
+app.set("trust proxy", 1);
 
-// **Session Store Configuration**
-const sessionStore = sequelizeStore(session.Store);
-const storeDB = new sessionStore({
-  db: db,
+// ===== SESSION STORE =====
+const SessionStore = sequelizeStore(session.Store);
+const storeDB = new SessionStore({
+  db,
   expiration: 2 * 60 * 60 * 1000,
   clearExpired: true,
 });
@@ -66,25 +69,7 @@ app.use(session({
   }
 }));
 
-app.use(passport.initialize());
-app.use(passport.session());
-app.use(cookieParser());
-
-// **CORS Configuration with Dynamic Origins**
-app.use(cors({
-  credentials: true,
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  allowedHeaders: "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-}));
-
-// **Enhanced Security Headers**
+// ===== SECURITY MIDDLEWARE =====
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
@@ -99,31 +84,34 @@ app.use(helmet({
   frameguard: { action: "deny" }
 }));
 
-// **Middleware**
+// ===== CORE MIDDLEWARE =====
+app.use(cors({
+  credentials: true,
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  allowedHeaders: "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+}));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use(cookieParser());
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(refreshJWT);
 app.use(autoLogoutMiddleware);
 
-// **Session Logging**
-storeDB.sync().then(() => {
-  logger.info('✅ Session store initialized.');
-});
-
-storeDB.on('session:destroy', (sid) => {
-  logger.warn(`🛑 Session Expired: ${sid}`);
-});
-
-storeDB.on('session:cleared', () => {
-  logger.warn(`⚠️ All expired sessions cleared.`);
-});
-
+// ===== LOG REQUESTS =====
 app.use((req, res, next) => {
-  logger.info(`🟢 Request: ${req.method} ${req.url} | User: ${req.user?.id || 'Guest'}`);
+  logger.info(`🟢 ${req.method} ${req.originalUrl} | User: ${req.user?.id || 'Guest'}`);
   next();
 });
 
-// **API Routes**
+// ===== ROUTES =====
 app.get(API_PATH, (req, res) => {
   res.status(200).json({ message: 'Welcome to REST API Genpro' });
 });
@@ -133,37 +121,46 @@ app.use(API_PATH, ProposalsRoute);
 app.use(API_PATH, ProposalAttachsRoute);
 app.use(API_PATH, AuthRoute);
 
-// **Database Connection & Sync**
-const syncDatabase = async () => {
+// ===== DATABASE & SESSION INIT =====
+const startServer = async () => {
   try {
     await db.authenticate();
-    logger.info('✅ Database connected.');
+    logger.info('✅ Database connected');
 
     if (NODE_ENV !== 'production') {
-      // Uncomment only in development mode
       await db.sync({ alter: false });
-      logger.info('✅ Tables synchronized.');
+      logger.info('✅ Tables synced');
     }
+
+    storeDB.sync().then(() => {
+      logger.info('✅ Session store initialized');
+    });
 
     app.listen(PORT, () => {
       logger.info(`🚀 Server running on port ${PORT}`);
     });
-  } catch (error) {
-    logger.error('❌ Database sync error:', error.message);
+
+  } catch (err) {
+    logger.error(`❌ Failed to start server: ${err.message}`);
   }
 };
 
-// **Error Handling**
+// ===== ERROR HANDLING =====
 app.use((err, req, res, next) => {
-  logger.error(`❌ Error: ${err.message}`);
+  logger.error(`❌ Error on ${req.method} ${req.originalUrl}: ${err.message}`);
   res.status(500).json({ error: "Internal Server Error" });
 });
 
-// **Graceful Shutdown**
+process.on('unhandledRejection', (reason) => {
+  logger.error(`🚨 Unhandled Rejection: ${reason}`);
+});
+process.on('uncaughtException', (err) => {
+  logger.error(`🔥 Uncaught Exception: ${err.message}`);
+});
 process.on('SIGINT', () => {
-  logger.warn(`🛑 Server shutting down...`);
+  logger.warn('🛑 Graceful shutdown...');
   process.exit();
 });
 
-// **Run Sync Function**
-syncDatabase();
+// ===== RUN =====
+startServer();

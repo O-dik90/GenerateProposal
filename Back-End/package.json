@@ -5,9 +5,10 @@
   "description": "Backend for generating proposals",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon index.js --watch . --ext js,json --ignore node_modules/",
-    "start": "node index.js",
+    "start": "NODE_ENV=production node index.js",
+    "start:debug": "NODE_ENV=production node --inspect index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint .",
     "prettier": "prettier --write ."
   },

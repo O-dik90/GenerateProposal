@@ -78,25 +78,25 @@ const ProposalTable = () => {
 
   useEffect(() => {
     const loadMasterData = async () => {
-      if (pkm.length <= 0) await dispatch(masterPkm({ name: 'PKM' }));
+      if (user && pkm.length <= 0) await dispatch(masterPkm({ name: 'PKM' }));
     };
 
     loadMasterData();
-  }, [dispatch, pkm]);
+  }, [dispatch, pkm, user]);
   useEffect(() => {
     const loadMasterData = async () => {
-      if (lomba.length <= 0) await dispatch(masterLomba({ name: 'LOMBA' }));
+      if (user && lomba.length <= 0) await dispatch(masterLomba({ name: 'LOMBA' }));
     };
 
     loadMasterData();
-  }, [dispatch, lomba]);
+  }, [dispatch, lomba, user]);
   useEffect(() => {
     const loadMasterData = async () => {
-      if (tahunLomba.length <= 0) await dispatch(masterTahunLomba({ name: 'TAHUN_LOMBA' }));
+      if (user && tahunLomba.length <= 0) await dispatch(masterTahunLomba({ name: 'TAHUN_LOMBA' }));
     };
 
     loadMasterData();
-  }, [dispatch, tahunLomba]);
+  }, [dispatch, tahunLomba, user]);
 
   const columns = [
     {

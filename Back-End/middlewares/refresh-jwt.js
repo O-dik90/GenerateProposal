@@ -13,14 +13,16 @@ const refreshJWT = (req, res, next) => {
 
       if (req.session.user) {
         console.log("✅ Session is active, refreshing JWT...");
-        
+
         const tokenPayload = {
           uuid: req.session.user.uuid,
           email: req.session.user.email,
           role: req.session.user.role,
         };
 
-        const newToken = jwt.sign(tokenPayload, process.env.JWT_SECRET, { expiresIn: "2h" });
+        const newToken = jwt.sign(tokenPayload, process.env.JWT_SECRET, {
+          expiresIn: "2h",
+        });
 
         res.cookie("token", newToken, {
           httpOnly: true,
@@ -28,20 +30,22 @@ const refreshJWT = (req, res, next) => {
           maxAge: 2 * 60 * 60 * 1000,
         });
 
-        req.user = req.session.user; // Attach user to request
-
-        return res.json({ message: "JWT refreshed successfully", token: newToken });
+        req.user = req.session.user;
+        return next();
       } else {
         console.warn("🔴 Session expired too, forcing re-login.");
         res.clearCookie("token");
-        req.session.destroy();
-        return res.status(401).json({ message: "Session expired. Please log in again." });
+        req.session.destroy(() => {
+          return res.status(401).json({ message: "Session expired. Please log in again." });
+        });
       }
     } else if (!err) {
-      req.user = decoded; // Attach user if JWT is still valid
+      req.user = decoded;
+      return next();
+    } else {
+      console.warn("🔴 Invalid token:", err.message);
+      return res.status(401).json({ message: "Invalid token" });
     }
-
-    next();
   });
 };
 

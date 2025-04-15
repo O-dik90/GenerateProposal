@@ -28,7 +28,7 @@ const ProposalDetail = () => {
         const rest = await dispatch(getMe());
 
         if (getMe.rejected.match(rest)) {
-          navigate('/login');
+          navigate('/');
         }
       }
     };

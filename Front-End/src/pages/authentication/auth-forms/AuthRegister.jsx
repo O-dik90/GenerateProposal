@@ -56,11 +56,11 @@ export default function AuthRegister() {
       if (res.meta.requestStatus === 'fulfilled') {
         Promise.resolve()
           .then(() => enqueueSnackbar('Registrasi berhasil, silahkan login', { variant: 'success' }))
-          .finally(navigate('/login'));
+          .finally(navigate('/'));
       }
     } catch (error) {
       if (error.response.status === 409) {
-        console.log(error)
+        console.log(error);
         setErrors({ submit: 'Email sudah terdaftar' });
       } else {
         setErrors({ submit: error.message });

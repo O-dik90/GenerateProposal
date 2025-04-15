@@ -5,6 +5,7 @@ import AuthWrapper from './AuthWrapper';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import config from 'config';
 import { useAuth } from 'pages/protect/authProvider';
 import { useEffect } from 'react';
 
@@ -16,7 +17,7 @@ export default function Login() {
 
   useEffect(() => {
     if (user) {
-      navigate('/');
+      navigate(config.defaultPath);
     }
   }, [navigate, user]);
   return (

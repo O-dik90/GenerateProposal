@@ -57,46 +57,35 @@ const ProposalTable = () => {
     { pkm, lomba, tahunLomba } = useSelector((state) => state.app.masterData);
 
   useEffect(() => {
-    const getUser = async () => {
+    const init = async () => {
       if (!user) {
         const rest = await dispatch(getMe());
 
         if (getMe.rejected.match(rest)) {
-          navigate('/login');
+          navigate('/');
+          return;
         }
       }
     };
 
-    getUser();
-  }, [dispatch, navigate, user]);
+    init();
+  }, [dispatch, user, navigate]);
 
   useEffect(() => {
-    if (user) {
-      dispatch(fetchProposal(user.uuid));
-    }
+    const initData = async () => {
+      if (user) {
+        const init = await dispatch(fetchProposal(user.uuid));
+
+        if (fetchProposal.fulfilled.match(init)) {
+          await dispatch(masterLomba({ name: 'TAHUN_LOMBA' }));
+          await dispatch(masterPkm({ name: 'PKM' }));
+          await dispatch(masterTahunLomba({ name: 'LOMBA' }));
+        }
+      }
+    };
+
+    initData();
   }, [dispatch, user]);
-
-  useEffect(() => {
-    const loadMasterData = async () => {
-      if (user && pkm.length <= 0) await dispatch(masterPkm({ name: 'PKM' }));
-    };
-
-    loadMasterData();
-  }, [dispatch, pkm, user]);
-  useEffect(() => {
-    const loadMasterData = async () => {
-      if (user && lomba.length <= 0) await dispatch(masterLomba({ name: 'LOMBA' }));
-    };
-
-    loadMasterData();
-  }, [dispatch, lomba, user]);
-  useEffect(() => {
-    const loadMasterData = async () => {
-      if (user && tahunLomba.length <= 0) await dispatch(masterTahunLomba({ name: 'TAHUN_LOMBA' }));
-    };
-
-    loadMasterData();
-  }, [dispatch, tahunLomba, user]);
 
   const columns = [
     {
@@ -200,7 +189,7 @@ const ProposalTable = () => {
             variant="outlined"
             color="primary"
             sx={{ marginLeft: 3 }}
-            onClick={() => navigate(`/proposal-table/${params.row.user_id}/${params.row.id}`)}
+            onClick={() => navigate(`/dashboard/proposal-table/${params.row.user_id}/${params.row.id}`)}
           >
             <ArrowRightOutlined />
           </IconButton>

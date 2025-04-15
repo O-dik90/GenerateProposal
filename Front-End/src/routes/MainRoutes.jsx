@@ -18,7 +18,7 @@ const ProposalDetail = Loadable(lazy(() => import('pages/proposal/detail')));
 // ==============================|| MAIN ROUTING ||============================== //
 
 const MainRoutes = {
-  path: '/',
+  path: '/dashboard',
   element: <Dashboard />,
   children: [
     // {
@@ -52,7 +52,7 @@ const MainRoutes = {
     //   element: <Typography />
     // },
     {
-      path: '/',
+      path: '/dashboard',
       element: <ProposalTable />
     },
     {

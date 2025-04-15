@@ -7,42 +7,55 @@ export const userLogin = createAsyncThunk('user/login', async (params, { rejectW
   try {
     const res = await axiosInstance.post(`/login`, params);
 
-    if (res) {
-      sessionStorage.setItem('user', JSON.stringify(res.data));
+    if (res.status === 200 && res.data) {
+      const user = res.data;
+
+      sessionStorage.setItem('user', JSON.stringify(user));
+
+      return res.data;
+    } else {
+      return rejectWithValue('Login failed: Invalid response');
     }
-    return res.data;
   } catch (error) {
-    if (error.response) {
-      return rejectWithValue(error);
-    }
+    const errorMessage = error.response?.data?.message || error.message || 'Something went wrong during login';
+    return rejectWithValue(errorMessage);
   }
 });
+
 export const getMe = createAsyncThunk('user/getMe', async (_, thunkAPI) => {
   try {
     const res = await axiosInstance.get(`/refresh-token`);
 
-    if (res.data) {
-      sessionStorage.setItem('user', JSON.stringify(res.data));
+    if (res.status === 200 && res.data) {
+      const user = res.data;
+
+      sessionStorage.setItem('user', JSON.stringify(user));
+
       return res.data;
     }
 
-    return thunkAPI.rejectWithValue('No data received');
+    return thunkAPI.rejectWithValue('No user data received');
   } catch (error) {
-    return thunkAPI.rejectWithValue(error.response?.data || error.message);
+    const errorMessage = error.response?.data?.message || error.message || 'Failed to refresh user data';
+    return thunkAPI.rejectWithValue(errorMessage);
   }
 });
 
-export const userLogout = createAsyncThunk('user/logout', async () => {
+export const userLogout = createAsyncThunk('user/logout', async (_, { rejectWithValue }) => {
   try {
     const res = await axiosInstance.delete(`/logout`);
-    if (res) {
+    if (res.status === 200) {
       sessionStorage.clear();
+      return res.data;
+    } else {
+      return rejectWithValue('Logout failed');
     }
-    return res.data;
   } catch (error) {
     console.error(error.message);
+    return rejectWithValue(error.response?.data?.message || error.message || 'Logout failed');
   }
 });
+
 const initialState = {
   user: null,
   loading: false,

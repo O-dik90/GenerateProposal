@@ -5,11 +5,10 @@ export const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const axiosInstance = axios.create({
   baseURL: API_URL,
-  timeout: 10000,
+  timeout: 5000,
   withCredentials: true
 });
 
-// Request Interceptor
 axiosInstance.interceptors.request.use(
   (config) => {
     try {
@@ -40,7 +39,7 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response?.status === 401) {
-      if (error.response.data?.msg === 'Invalid credentials' && window.location.pathname === '/login') {
+      if (error.response.data?.msg === 'Invalid credentials' && window.location.pathname === '/') {
         enqueueSnackbar('Email/kata sandi tidak cocok', { variant: 'error' });
       }
       sessionStorage.removeItem('user');

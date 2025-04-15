@@ -69,7 +69,7 @@ export default function Profile() {
     try {
       const res = await dispatch(userLogout());
       if (userLogout.fulfilled.match(res)) {
-        navigate('/login');
+        navigate('/');
       }
     } catch (error) {
       console.error(error);

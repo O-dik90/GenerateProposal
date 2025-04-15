@@ -4,9 +4,35 @@ const refreshJWT = (req, res, next) => {
   const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
 
   if (!token) {
-    return next();
+    if (req.session?.user) {
+      console.log("✅ Token missing but session is valid, regenerating token...");
+
+      const tokenPayload = {
+        uuid: req.session.user.uuid,
+        email: req.session.user.email,
+        role: req.session.user.role,
+      };
+
+      const newToken = jwt.sign(tokenPayload, process.env.JWT_SECRET, {
+        expiresIn: "2h",
+      });
+
+      res.cookie("token", newToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "Lax",
+        maxAge: 2 * 60 * 60 * 1000,
+        path: "/",
+      });
+
+      req.user = req.session.user;
+      res.setHeader("X-Token-Refreshed", "true");
+      return next();
+    }
+    return next(); // guest access
   }
 
+  // ✅ Token ada
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err && err.name === "TokenExpiredError") {
       console.warn("⚠️ JWT expired, checking session...");
@@ -31,6 +57,7 @@ const refreshJWT = (req, res, next) => {
         });
 
         req.user = req.session.user;
+        res.setHeader("X-Token-Refreshed", "true");
         return next();
       } else {
         console.warn("🔴 Session expired too, forcing re-login.");

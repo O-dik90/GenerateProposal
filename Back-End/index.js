@@ -102,12 +102,15 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(refreshJWT);
 app.use(autoLogoutMiddleware);
+app.use(refreshJWT);
 
 // ===== LOG REQUESTS =====
 app.use((req, res, next) => {
-  logger.info(`🟢 ${req.method} ${req.originalUrl} | User: ${req.user?.id || 'Guest'}`);
+  logger.info(`🟢 ${req.method} ${req.originalUrl} | User: ${req.session?.user?.email || 'Guest'}`);
+  logger.info(`🟢 Headers: ${JSON.stringify(req.headers)}`);
+  logger.info(`🟢 Params: ${JSON.stringify(req.params)}`);
+  logger.info(`🟢 Body: ${JSON.stringify(req.body)}`);
   next();
 });
 

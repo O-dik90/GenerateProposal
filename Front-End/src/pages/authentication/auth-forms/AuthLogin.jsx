@@ -43,7 +43,8 @@ export default function AuthLogin() {
 
       if (userLogin.fulfilled.match(res)) {
         enqueueSnackbar('Berhasil Masuk', { variant: 'success' });
-        navigate('/');
+        navigate('/dashboard', { replace: true });
+        window.location.reload();
       }
     } catch (error) {
       setErrors({ submit: error.message });
@@ -58,7 +59,7 @@ export default function AuthLogin() {
         const rest = await dispatch(getMe());
 
         if (getMe.fulfilled.match(rest)) {
-          navigate('/');
+          navigate('/dashboard');
         }
       }
     };

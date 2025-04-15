@@ -56,7 +56,7 @@ export default function DashboardDefault() {
 
   useEffect(() => {
     if (!user) {
-      navigate('/login');
+      navigate('/');
     }
   }, [navigate, user]);
   return (

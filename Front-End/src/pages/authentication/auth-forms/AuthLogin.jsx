@@ -71,8 +71,8 @@ export default function AuthLogin() {
     <Formik
       initialValues={{ email: '', password: '' }}
       validationSchema={Yup.object().shape({
-        email: Yup.string().email('Penulisan email tidak benar').max(255).required('Email harus diisi'),
-        password: Yup.string().max(255).required('Password harus diisi')
+        email: Yup.string().email('Penulisan email tidak benar').max(50).required('Email harus diisi'),
+        password: Yup.string().min(8).max(12).required('Password harus diisi')
       })}
       onSubmit={handleSubmit}
     >
@@ -89,9 +89,10 @@ export default function AuthLogin() {
                   name="email"
                   onBlur={handleBlur}
                   onChange={handleChange}
-                  placeholder="Enter email address"
+                  placeholder="Masukkan alamat email"
                   fullWidth
                   error={Boolean(touched.email && errors.email)}
+                  inputProps={{ maxLength: 50 }}
                 />
               </Stack>
               {touched.email && errors.email && <FormHelperText error>{errors.email}</FormHelperText>}
@@ -121,7 +122,8 @@ export default function AuthLogin() {
                       </IconButton>
                     </InputAdornment>
                   }
-                  placeholder="Enter password"
+                  placeholder="Masukkan Password"
+                  inputProps={{ maxLength: 12 }}
                 />
               </Stack>
               {touched.password && errors.password && <FormHelperText error>{errors.password}</FormHelperText>}

@@ -455,6 +455,7 @@ const ProposalTable = () => {
               onChange={handleChange}
               error={object.title === ''}
               helperText={object.title === '' ? 'Judul Proposal harus diisi, boleh belum fix' : ''}
+              inputProps={{ maxLength: 100 }}
             />
             <TextField
               required
@@ -472,6 +473,7 @@ const ProposalTable = () => {
               onChange={handleChange}
               error={object.description === ''}
               helperText={object.description === '' ? 'Deskripsi Singkat IDE harus diisi' : ''}
+              inputProps={{ maxLength: 1024 }}
             />
           </Box>
           <DialogActions>

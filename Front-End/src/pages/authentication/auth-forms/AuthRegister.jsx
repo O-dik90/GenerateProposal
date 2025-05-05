@@ -81,12 +81,12 @@ export default function AuthRegister() {
           role: 'user'
         }}
         validationSchema={Yup.object().shape({
-          name: Yup.string().max(255).required('Nama wajib diisi'),
-          email: Yup.string().email('Format email salah').max(255).required('Email wajib diisi'),
-          password: Yup.string().min(8, 'Minimal 8 karakter').max(255).required('Password wajib diisi'),
+          name: Yup.string().max(50).required('Nama wajib diisi'),
+          email: Yup.string().email('Format email salah').max(50).required('Email wajib diisi'),
+          password: Yup.string().min(8, 'Minimal 8 karakter').max(12).required('Password wajib diisi'),
           confPassword: Yup.string()
             .min(8, 'Minimal 8 karakter')
-            .max(255)
+            .max(12)
             .oneOf([Yup.ref('password'), null], 'Password harus sama')
             .required('Konfirrmasi password wajib diisi')
         })}
@@ -108,6 +108,7 @@ export default function AuthRegister() {
                     placeholder="Nama Pengguna"
                     fullWidth
                     error={Boolean(touched.name && errors.name)}
+                    inputProps={{ maxLength: 50 }}
                   />
                 </Stack>
                 {touched.name && errors.name && (
@@ -129,7 +130,7 @@ export default function AuthRegister() {
                     onBlur={handleBlur}
                     onChange={handleChange}
                     placeholder="pengguna@email.com"
-                    inputProps={{}}
+                    inputProps={{ maxLength: 50 }}
                   />
                 </Stack>
                 {touched.email && errors.email && (
@@ -153,6 +154,7 @@ export default function AuthRegister() {
                       handleChange(e);
                       changePassword(e.target.value);
                     }}
+                    inputProps={{ maxLength: 12 }}
                     endAdornment={
                       <InputAdornment position="end">
                         <IconButton
@@ -167,7 +169,6 @@ export default function AuthRegister() {
                       </InputAdornment>
                     }
                     placeholder="******"
-                    inputProps={{}}
                   />
                 </Stack>
                 {touched.password && errors.password && (
@@ -216,7 +217,7 @@ export default function AuthRegister() {
                       </InputAdornment>
                     }
                     placeholder="******"
-                    inputProps={{}}
+                    inputProps={{ maxLength: 12 }}
                   />
                 </Stack>
                 {touched.confPassword && errors.confPassword && (

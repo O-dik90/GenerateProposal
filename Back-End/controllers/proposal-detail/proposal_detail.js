@@ -5,7 +5,7 @@ const createProposalDetail = async (params) => {
   try {
     const proposalId = params.proposalId;
     if (!proposalId) {
-      throw new Error("proposalId is required");
+      throw new Error("proposal ID tidak ditemukan");
     }
 
     const jsonDataBAB1 = {
@@ -42,7 +42,7 @@ const createProposalDetail = async (params) => {
     );
 
     if (proposalDetail.length === 0) {
-      throw new Error("Failed to create proposal detail");
+      throw new Error("Gagal membuat detail proposal");
     }
 
     return true;
@@ -57,7 +57,7 @@ const updateProposalDetail = async (req, res) => {
     const { bab_title, json_data } = req.body;
 
     if (!proposal_id) {
-      return res.status(400).json({ msg: "Proposal ID is required" });
+      return res.status(400).json({ msg: "Proposal ID tidak ditemukan" });
     }
 
     let updatedProposal;
@@ -95,13 +95,13 @@ const updateProposalDetail = async (req, res) => {
     }
 
     if (updatedProposal[0] === 0) {
-      return res.status(404).json({ msg: "Failed to update proposal or proposal not found" });
+      return res.status(404).json({ msg: "Gagal perbaharui proposal atau proposal tidak ditemukan " });
     }
 
-    return res.status(200).json({ msg: "Proposal updated successfully" });
+    return res.status(200).json({ msg: "Berhasil perbaharui proposal" });
 
   } catch (error) {
-    console.error("Error updating proposal:", error);
+    console.error("Kesalah perbaharui proposal:", error);
     return res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -112,7 +112,7 @@ const getBabProposalDetail = async (req, res) => {
     const { proposal_id } = req.params;
     const { bab_title } = req.body;
     if (!proposal_id || !bab_title) {
-      return res.status(400).json({ msg: "params is empty" });
+      return res.status(400).json({ msg: "Parameter kosong" });
     }
     const proposals = await ProposalDetails.findAll({
       where: {
@@ -123,7 +123,7 @@ const getBabProposalDetail = async (req, res) => {
       }
     });
     if (proposals.length === 0) {
-      return res.status(200).json({ msg: "data not found", data: [] });
+      return res.status(200).json({ msg: "Data tidak ditemukan", data: [] });
     }
     return res.status(200).json(proposals);
   } catch (error) {

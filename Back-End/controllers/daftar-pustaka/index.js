@@ -15,7 +15,7 @@ const formatCitations = (citationData) => {
       lang: 'en',
     });
   } catch (error) {
-    return `Error formatting citation: ${error.message}`;
+    return `Kesalahan format: ${error.message}`;
   }
 };
 
@@ -33,7 +33,7 @@ const genCitations = async (req, res) => {
 
     if (!Array.isArray(citationsArray) || citationsArray.length === 0) {
       return res.status(400).json({
-        message: 'Invalid input. Please provide an array of citation data.',
+        message: 'Kesalahan input. Tolong sediakan data array.',
       });
     }
 
@@ -47,7 +47,7 @@ const genCitations = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
-      message: 'Server Error',
+      message: 'Kesalahan server',
       serverMessage: error.message,
     });
   }

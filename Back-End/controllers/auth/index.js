@@ -7,17 +7,17 @@ const login = async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ msg: "Email and password are required." });
+      return res.status(400).json({ msg: "Email dan password harus ada" });
     }
 
     const user = await Users.findOne({ where: { email: email.toLowerCase() } });
     if (!user) {
-      return res.status(404).json({ msg: "User not found" });
+      return res.status(404).json({ msg: "Pengguna tidak ditemukan" });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(401).json({ msg: "Invalid credentials" });
+      return res.status(401).json({ msg: "Kesalahan kredensial" });
     }
 
     // 🔥 Store user session (24 hours)
@@ -30,11 +30,11 @@ const login = async (req, res) => {
 
     req.session.save((err) => {
       if (err) {
-        console.error("Session save error:", err);
-        return res.status(500).json({ msg: "Session could not be saved" });
+        console.error("Gagal menyimpan sesi:", err);
+        return res.status(500).json({ msg: "Sesi tidak tersimpan" });
       }
 
-      console.log(`✅ Session saved: ${req.sessionID}`);
+      console.log(`✅ Sesi tersimpan: ${req.sessionID}`);
       const tokenPayload = {
         uuid: user.uuid,
         name: user.name,
@@ -51,28 +51,26 @@ const login = async (req, res) => {
     });
   } catch (error) {
     console.error("Login error:", error);
-    return res.status(500).json({ msg: "Internal server error" });
+    return res.status(500).json({ msg: "Kesalahan server" });
   }
 };
 
-
-
 const logOut = (req, res) => {
   if (!req.session) {
-    return res.status(400).json({ msg: "No active session found" });
+    return res.status(400).json({ msg: "Tidak ditemukan sesi sedang aktif" });
   }
 
   req.session.destroy((err) => {
     if (err) {
       console.error("Logout error:", err);
-      return res.status(500).json({ msg: "Logout failed" });
+      return res.status(500).json({ msg: "Gagal keluar" });
     }
 
     res.clearCookie("token", { httpOnly: true, secure: process.env.NODE_ENV === "production" });
     res.clearCookie("connect.sid", { path: "/" });
 
-    console.log(`✅ Session Destroyed: ${req.sessionID}`);
-    return res.status(200).json({ msg: "Successfully logged out" });
+    console.log(`✅ Sesi dihapus: ${req.sessionID}`);
+    return res.status(200).json({ msg: "Berhasil keluar" });
   });
 };
 

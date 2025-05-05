@@ -26,6 +26,7 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS
     'https://ubaicorner.com',
     'https://genproposal.ubaicorner.com',
     'http://localhost:5000',
+    'http://localhost:3000'
 ];
 
 // ===== LOGGER CONFIGURATION =====

@@ -10,7 +10,7 @@ const storage = multer.diskStorage({
       const proposalId = req.params.proposal_id || req.body.proposal_id;
 
       if (!proposalId) {
-        return cb(new Error('Proposal ID is required for file upload'));
+        return cb(new Error('Proposal ID tidak ditemukan'));
       }
 
       const uploadPath = path.join(__dirname, "../../public/", proposalId);
@@ -28,7 +28,7 @@ const storage = multer.diskStorage({
       const proposalId = req.params.proposal_id || req.body.proposal_id;
 
       if (!proposalId) {
-        return cb(new Error('Proposal ID is required for file naming'));
+        return cb(new Error('Proposal ID tidak ditemukan'));
       }
 
       const formattedDate = Date.now();
@@ -47,16 +47,16 @@ const upload = multer({
 const filesAdd = async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ success: false, message: 'No file uploaded' });
+      return res.status(400).json({ success: false, message: 'Tidak ditemukan file terunggah' });
     }
 
     if (!req.body.data) {
-      return res.status(400).json({ success: false, message: 'No data provided' });
+      return res.status(400).json({ success: false, message: 'Data tidak tersedia' });
     }
 
     const body = JSON.parse(req.body.data);
     if (!body.proposal_id) {
-      return res.status(400).json({ success: false, message: 'Proposal ID is required' });
+      return res.status(400).json({ success: false, message: 'Proposal ID tidak ditemukan' });
     }
 
     const file = await ProposalAttachs.create({
@@ -69,10 +69,10 @@ const filesAdd = async (req, res) => {
       title: req.file.originalname,
     });
 
-    return res.status(201).json({ success: true, message: 'File uploaded successfully', data:file });
+    return res.status(201).json({ success: true, message: 'Berhasil mengunggah file', data:file });
   } catch (error) {
     console.error("❌ Upload Error:", error);
-    return res.status(500).json({ success: false, message: 'File upload failed', error: error.message });
+    return res.status(500).json({ success: false, message: 'Gagal mengunggah file', error: error.message });
   }
 };
 
@@ -89,13 +89,13 @@ const filesGet = async (req, res) => {
     });
 
     if (!files || files.length === 0) {
-      return res.status(200).json({ success: false, message: 'No files found' });
+      return res.status(200).json({ success: false, message: 'File tidak ditemukan' });
     }
 
     return res.status(200).json({ success: true, files });
   } catch (error) {
     console.error("❌ Fetch Error:", error);
-    return res.status(500).json({ success: false, message: 'Error fetching files', error: error.message });
+    return res.status(500).json({ success: false, message: 'Kesalahan mengambil file', error: error.message });
   }
 };
 
@@ -105,7 +105,7 @@ const filesDelete = async (req, res) => {
 
     const fileToDelete = await ProposalAttachs.findByPk(id);
     if (!fileToDelete) {
-      return res.status(404).json({ success: false, message: 'File not found' });
+      return res.status(404).json({ success: false, message: 'File tidak ditemukan' });
     }
 
     await ProposalAttachs.destroy({ where: { id } });
@@ -114,19 +114,19 @@ const filesDelete = async (req, res) => {
       fs.unlinkSync(fileToDelete.file_path);
     }
 
-    return res.status(200).json({ success: true, message: 'File deleted successfully' });
+    return res.status(200).json({ success: true, message: 'Berhasil menghapus dile' });
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'Error deleting file', error: error.message });
+    return res.status(500).json({ success: false, message: 'Gagal menghapus file', error: error.message });
   }
 };
 
 const filesUpdate = async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ success: false, message: 'No file uploaded' });
+      return res.status(400).json({ success: false, message: 'File tidak ditemukan' });
     }
     if (!req.body.data) {
-      return res.status(400).json({ success: false, message: 'No data provided' });
+      return res.status(400).json({ success: false, message: 'Data tidak tersedia' });
     }
 
     const body = JSON.parse(req.body.data);
@@ -136,7 +136,7 @@ const filesUpdate = async (req, res) => {
 
     const existingFile = await ProposalAttachs.findByPk(body.id);
     if (!existingFile) {
-      return res.status(404).json({ success: false, message: 'File not found' });
+      return res.status(404).json({ success: false, message: 'File tidak ditemukan' });
     }
 
     const updatedFile = {
@@ -162,12 +162,12 @@ const fileDownloadAsBase64 = async (req, res) => {
     const id = req.params.item_id;
     const file = await ProposalAttachs.findByPk(id);
     if (!file) {
-      return res.status(404).json({ success: false, message: 'File not found' });
+      return res.status(404).json({ success: false, message: 'File tidak ditemukan' });
     }
 
     const filePath = path.join(__dirname, "../../public", file.file_path);
     if (!fs.existsSync(filePath)) {
-      return res.status(404).json({ success: false, message: 'File not found on server' });
+      return res.status(404).json({ success: false, message: 'File tidak ditemukan on server' });
     }
 
     const fileData = fs.readFileSync(filePath, { encoding: 'base64' });
@@ -178,7 +178,7 @@ const fileDownloadAsBase64 = async (req, res) => {
       mimetype: file.mimetype
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'Error downloading file', error: error.message });
+    return res.status(500).json({ success: false, message: 'Gagal mengunduh file', error: error.message });
   }
 };
 

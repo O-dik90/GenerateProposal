@@ -33,7 +33,7 @@ passport.use(
       console.log("payload:", payload);
       const user = await Users.findOne({ where: { uuid: payload.uuid  } });
       if (!user) {
-        console.log("User not found.");
+        console.log("Pengguna tidak ditemukan.");
         return done(null, false);
       }
 

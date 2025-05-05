@@ -9,7 +9,7 @@ const getProposals = async (req, res) => {
   try {
     const { user_id } = req.params;
     if (!user_id) {
-      return res.status(400).json({ msg: "params is empty" });
+      return res.status(400).json({ msg: "Parameter kosong" });
     }
     const proposals = await Proposals.findAll({
       include: [{
@@ -21,7 +21,7 @@ const getProposals = async (req, res) => {
       }
     });
     if (proposals.length === 0) {
-      return res.status(200).json({ msg: "data not found", data: [] });
+      return res.status(200).json({ msg: "Data tidak ditemukan", data: [] });
     }
     res.json(proposals);
   } catch (error) {
@@ -34,7 +34,7 @@ const getProposal = async (req, res) => {
     const { user_id } = req.params;
     const { id: proposal_id } = req.body;
     if (!user_id || !proposal_id) {
-      return res.status(400).json({ msg: "params is empty" });
+      return res.status(400).json({ msg: "Parameter kosong" });
     }
     const proposals = await Proposals.findAll({
       include: [{
@@ -58,7 +58,7 @@ const getProposal = async (req, res) => {
       }
     });
     if (proposals.length === 0) {
-      return res.status(200).json({ msg: "data not found", data: [] });
+      return res.status(200).json({ msg: "Data tidak ditemukan", data: [] });
     }
 
     const proposalsWithStatus = proposals.map(proposal => {
@@ -81,7 +81,7 @@ const createProposal = async (req, res) => {
     const { title, description, year, pkm_type, pkm_category, pkm_desc, pkm_belmawa, pkm_perguruan } = req.body;
 
     if (!title || !description) {
-      return res.status(400).json({ msg: "Please fill in all fields" });
+      return res.status(400).json({ msg: "Mohon diisi semua bagian" });
     }
 
     // ✅ Step 1: Create the Proposal
@@ -98,16 +98,16 @@ const createProposal = async (req, res) => {
     });
 
     if (!proposal) {
-      return res.status(500).json({ msg: "Failed to create proposal" });
+      return res.status(500).json({ msg: "Gagal membuat proposal" });
     }
 
     const detailResult = await createProposalDetail({ proposalId: proposal.id });
 
     if (detailResult !== true) {
-      return res.status(500).json({ msg: "Proposal created, but failed to create details: " + detailResult });
+      return res.status(500).json({ msg: "Gagal membuat detail proposal: " + detailResult });
     }
 
-    return res.status(201).json({ msg: "Proposal and details created successfully", proposal });
+    return res.status(201).json({ msg: "Proposal dan detail berhasil dibuat", proposal });
   } catch (error) {
     return res.status(500).json({ msg: error.message });
   }
@@ -117,7 +117,7 @@ const updateProposal = async (req, res) => {
   try {
     const { user_id } = req.params;
     if (!user_id) {
-      return res.status(400).json({ msg: "params is empty" });
+      return res.status(400).json({ msg: "Parameter kosong" });
     }
 
     const proposal = await Proposals.update(req.body, {
@@ -127,10 +127,10 @@ const updateProposal = async (req, res) => {
       }
     });
     if (proposal.length === 0) {
-      return res.status(404).json({ msg: "Failed to update proposal or proposal not found" });
+      return res.status(404).json({ msg: "Gagal perbaharui proposal atau proposal tidak ditemukan " });
     }
 
-    return res.status(200).json({ msg: "success update" });
+    return res.status(200).json({ msg: "Berhasil perbaharui" });
   } catch (error) {
     return res.status(500).json({ msg: error.message });
   }
@@ -142,14 +142,14 @@ const deleteProposal = async (req, res) => {
     const { item_id } = req.params;
 
     if (!item_id || item_id === undefined) {
-      return res.status(400).json({ msg: "Invalid or missing proposal ID" });
+      return res.status(400).json({ msg: "Kesalahan atau tidak ditemukan ID proposal" });
     }
 
     const proposal = await Proposals.findByPk(item_id, { transaction });
     console.log(proposal)
     if (!proposal) {
       await transaction.rollback();
-      return res.status(404).json({ msg: "Proposal not found" });
+      return res.status(404).json({ msg: "Proposal tidak ditemukan " });
     }
 
     await Promise.all([
@@ -161,10 +161,10 @@ const deleteProposal = async (req, res) => {
 
     await transaction.commit();
 
-    return res.status(200).json({ msg: "Proposal successfully deleted" });
+    return res.status(200).json({ msg: "Berhasil menghapus proposal" });
   } catch (error) {
     await transaction.rollback();
-    return res.status(500).json({ msg: `Error deleting proposal: ${error.message}` });
+    return res.status(500).json({ msg: `Gagal menghapus proposal: ${error.message}` });
   }
 };
 

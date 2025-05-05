@@ -29,10 +29,9 @@ const refreshJWT = (req, res, next) => {
       res.setHeader("X-Token-Refreshed", "true");
       return next();
     }
-    return next(); // guest access
+    return next();
   }
 
-  // ✅ Token ada
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err && err.name === "TokenExpiredError") {
       console.warn("⚠️ JWT expired, checking session...");

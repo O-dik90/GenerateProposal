@@ -6,7 +6,7 @@ const ListData = async (req, res) => {
   const { name } = req.body;
   try { 
     if (!name) {
-      return res.status(400).json({ msg: "params is empty" });
+      return res.status(400).json({ msg: "Parameter kosong" });
     }
     const result = await MasterData.findAll({
       attributes: ['id', 'name', 'init', 'description'],
@@ -18,7 +18,7 @@ const ListData = async (req, res) => {
     })
     
     if (result.length === 0) {
-      return res.status(200).json({ msg: "data not found", data: [] });
+      return res.status(200).json({ msg: "Data tidak ditemukan", data: [] });
     }
 
     return res.status(200).json(result);
@@ -31,7 +31,7 @@ const ListDapus = async (req, res) => {
   try {
     const { category } = req.body;
     if (!category) {
-      return res.status(400).json({ msg: "params is empty" });
+      return res.status(400).json({ msg: "Parameter kosong" });
     }
     const result = await MasterDapus.findAll({
       attributes: ['id', 'category','name', 'init', 'description'],
@@ -43,7 +43,7 @@ const ListDapus = async (req, res) => {
     })
     
     if (result.length === 0) {
-      return res.status(200).json({ msg: "data not found", data: [] });
+      return res.status(200).json({ msg: "Data tidak ditemukan", data: [] });
     }
 
     return res.status(200).json(result);

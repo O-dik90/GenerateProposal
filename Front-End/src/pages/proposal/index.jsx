@@ -77,9 +77,9 @@ const ProposalTable = () => {
         const init = await dispatch(fetchProposal(user.uuid));
 
         if (fetchProposal.fulfilled.match(init)) {
-          await dispatch(masterLomba({ name: 'TAHUN_LOMBA' }));
+          await dispatch(masterLomba({ name: 'LOMBA' }));
           await dispatch(masterPkm({ name: 'PKM' }));
-          await dispatch(masterTahunLomba({ name: 'LOMBA' }));
+          await dispatch(masterTahunLomba({ name: 'TAHUN_LOMBA' }));
         }
       }
     };

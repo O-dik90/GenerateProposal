@@ -1,21 +1,26 @@
 import { Grid, TextField, Typography } from '@mui/material';
-import React, { useEffect, useState } from 'react';
-import { getBabProposalDetail, updateBabProposalDetail } from 'store/slices/proposal';
+import React, { useEffect, useRef, useState } from 'react';
+import { getBabProposalDetail, updateBabProposalDetail, updateChangesAsync } from 'store/slices/proposal';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import TableGrid from 'components/table/TableGrid';
+import isEqual from 'lodash.isequal';
 import { useParams } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
+import { INIT_CHANGEDATA } from '../detail';
+import ConfirmDialog from 'components/dialog/ConfirmDialog';
+import PropTypes from 'prop-types';
 
 const INIT_LUARAN = [
   { no: 1, data: 'Laporan kemajuan', status: false },
   { no: 2, data: 'Laporan akhir', status: false }
 ];
 
-const Pendahuluan = () => {
+const Pendahuluan = ({ confirmSave }) => {
   const BAB_TITLE = 'BAB 1 PENDAHULUAN';
+  const originalDataRef = useRef(null);
   const { id } = useParams(),
     { enqueueSnackbar } = useSnackbar(),
     dispatch = useDispatch();
@@ -63,13 +68,15 @@ const Pendahuluan = () => {
     if (proposal_detail.length > 0 && BAB_TITLE === 'BAB 1 PENDAHULUAN') {
       const bab1 = JSON.parse(proposal_detail[0].json_data || '{}');
       if (bab1) {
-        setData({
-          latar_belakang: bab1.latar_belakang,
-          rumusan_masalah: bab1.rumusan_masalah === null ? [] : bab1.rumusan_masalah,
-          tujuan: bab1.tujuan === null ? [] : bab1.tujuan,
-          luaran: bab1.luaran === null ? INIT_LUARAN : bab1.luaran,
-          manfaat: bab1.manfaat === null ? [] : bab1.manfaat
-        });
+        const newData = {
+          latar_belakang: bab1.latar_belakang || '',
+          rumusan_masalah: bab1.rumusan_masalah || [],
+          tujuan: bab1.tujuan || [],
+          luaran: bab1.luaran || INIT_LUARAN,
+          manfaat: bab1.manfaat || []
+        };
+        setData(newData);
+        originalDataRef.current = newData;
       }
     }
     return () => {
@@ -83,7 +90,17 @@ const Pendahuluan = () => {
     };
   }, [proposal_detail]);
 
-  // Handler for adding a new item to a specific array
+  useEffect(() => {
+    if (originalDataRef.current !== null && Object.keys(data).length > 0 && !isEqual(data, originalDataRef.current)) {
+      dispatch(
+        updateChangesAsync({
+          ...INIT_CHANGEDATA,
+          changesData: true
+        })
+      );
+    }
+  }, [data, dispatch]);
+
   const handleRumusan = {
     onchange: (e) => {
       setRumusan({ ...rumusan, data: e.target.value });
@@ -248,6 +265,9 @@ const Pendahuluan = () => {
     }
   };
 
+  const handleCloseModal = () => {
+    dispatch(updateChangesAsync(INIT_CHANGEDATA));
+  };
   const handleSimpan = () => {
     try {
       dispatch(updateBabProposalDetail({ id: Number(id), data: { json_data: data, bab_title: 'BAB 1' } }));
@@ -255,6 +275,8 @@ const Pendahuluan = () => {
     } catch (error) {
       enqueueSnackbar('Gagal Menyimpan!', { variant: 'error' });
     }
+
+    handleCloseModal();
   };
 
   return (
@@ -415,8 +437,18 @@ const Pendahuluan = () => {
           Simpan Pendahuluan
         </Button>
       </Stack>
+      <ConfirmDialog
+        open={confirmSave}
+        title="Saving Data"
+        message="Apakah Anda yakin mengabaikan perubahan data?"
+        onClose={handleCloseModal}
+        onConfirm={handleSimpan}
+      />
     </>
   );
+};
+Pendahuluan.propTypes = {
+  confirmSave: PropTypes.bool.isRequired
 };
 
 export default Pendahuluan;

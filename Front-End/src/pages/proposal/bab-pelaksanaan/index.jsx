@@ -1,18 +1,23 @@
 import { Button, Grid, Stack, Typography } from '@mui/material';
-import React, { useCallback, useEffect, useState } from 'react';
-import { getBabProposalDetail, updateBabProposalDetail } from 'store/slices/proposal';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { getBabProposalDetail, updateBabProposalDetail, updateChangesAsync } from 'store/slices/proposal';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { Columns } from './initial-column';
+import ConfirmDialog from 'components/dialog/ConfirmDialog';
 import { FieldsData } from './initial-form';
 import GenForm from 'components/general-form';
+import { INIT_CHANGEDATA } from '../detail';
 import { PELAKSANAAN_INIT } from './initial-data';
+import PropTypes from 'prop-types';
 import { TableForm } from 'components/table-form';
+import isEqual from 'lodash.isequal';
 import { useParams } from 'react-router';
 import { useSnackbar } from 'notistack';
 
-const Pelaksanaan = () => {
+const Pelaksanaan = ({ confirmSave }) => {
   const BAB_TITLE3 = 'BAB 3 TAHAP PELAKSANAAN';
+  const originalDataRef = useRef(null);
   const { id } = useParams();
   const { proposal_detail } = useSelector((state) => state.app.proposal),
     dispatch = useDispatch(),
@@ -23,6 +28,10 @@ const Pelaksanaan = () => {
   const resetFormObject = useCallback((key) => {
     setFormObject((prev) => ({ ...prev, [key]: PELAKSANAAN_INIT }));
   }, []);
+
+  const handleCloseModal = () => {
+    dispatch(updateChangesAsync(INIT_CHANGEDATA));
+  };
 
   const handleFormSubmit = useCallback(
     (values, key) => {
@@ -81,6 +90,7 @@ const Pelaksanaan = () => {
       } catch {
         enqueueSnackbar('Terjadi error', { variant: 'error' });
       }
+      handleCloseModal();
     }
   };
 
@@ -99,13 +109,27 @@ const Pelaksanaan = () => {
     if (proposal_detail?.length > 0 && BAB_TITLE3) {
       const bab3 = JSON.parse(proposal_detail[0].json_data || '[]');
       if (Array.isArray(bab3)) {
-        setData({ pelaksanaan: bab3 });
+        const newData = { pelaksanaan: bab3 };
+        setData(newData);
+
+        originalDataRef.current = newData;
       }
     }
     return () => {
       setData([]);
     };
   }, [proposal_detail]);
+
+  useEffect(() => {
+    if (originalDataRef.current !== null && Object.keys(data).length > 0 && !isEqual(data, originalDataRef.current)) {
+      dispatch(
+        updateChangesAsync({
+          ...INIT_CHANGEDATA,
+          changesData: true
+        })
+      );
+    }
+  }, [data, dispatch]);
   return (
     <>
       <Typography variant="h4" gutterBottom>
@@ -145,8 +169,20 @@ const Pelaksanaan = () => {
           Simpan Pelaksanaan
         </Button>
       </Stack>
+
+      <ConfirmDialog
+        open={confirmSave}
+        title={`${BAB_TITLE3}`}
+        message="Simpan perubahan data?"
+        onClose={handleCloseModal}
+        onConfirm={handlePelaksanan.save}
+      />
     </>
   );
+};
+
+Pelaksanaan.propTypes = {
+  confirmSave: PropTypes.bool.isRequired
 };
 
 export default Pelaksanaan;

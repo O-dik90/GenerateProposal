@@ -108,10 +108,7 @@ app.use(refreshJWT);
 
 // ===== LOG REQUESTS =====
 app.use((req, res, next) => {
-  logger.info(`🟢 ${req.method} ${req.originalUrl} | User: ${req.session?.user?.email || 'Guest'}`);
-  logger.info(`🟢 Headers: ${JSON.stringify(req.headers)}`);
-  logger.info(`🟢 Params: ${JSON.stringify(req.params)}`);
-  logger.info(`🟢 Body: ${JSON.stringify(req.body)}`);
+  logger.info(`🟢 ${req.method} ${req.originalUrl} | User: ${req.session?.user?.name || 'Guest'}`);
   next();
 });
 

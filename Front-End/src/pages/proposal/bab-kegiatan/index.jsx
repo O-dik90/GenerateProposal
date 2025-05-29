@@ -1,20 +1,25 @@
 import { BIAYA_INIT, KEGIATAN_INIT, dataBiaya } from './initial-data';
 import { Button, Grid, Stack, Typography } from '@mui/material';
-import React, { useCallback, useEffect, useState } from 'react';
-import { getBabProposalDetail, getLampiranProposalDetail, updateBabProposalDetail } from 'store/slices/proposal';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { getBabProposalDetail, getLampiranProposalDetail, updateBabProposalDetail, updateChangesAsync } from 'store/slices/proposal';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { BAB_TITLE6 } from '../lampiran/identitas';
 import { Columns } from './initial-column';
+import ConfirmDialog from 'components/dialog/ConfirmDialog';
 import { FieldsData } from './initial-form';
 import GenForm from 'components/general-form';
+import { INIT_CHANGEDATA } from '../detail';
+import PropTypes from 'prop-types';
 import { TableForm } from 'components/table-form';
+import { isEqual } from 'lodash';
 import { useParams } from 'react-router';
 import { useSnackbar } from 'notistack';
 
 const BAB_TITLE4 = 'BAB 4 BIAYA DAN JADWAL KEGIATAN';
 
-const Kegiatan = () => {
+const Kegiatan = ({ confirmSave }) => {
+  const originalDataRef = useRef(null);
   const { id } = useParams();
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
@@ -28,6 +33,10 @@ const Kegiatan = () => {
     biaya: [],
     kegiatan: []
   });
+
+  const handleCloseModal = () => {
+    dispatch(updateChangesAsync(INIT_CHANGEDATA));
+  };
 
   const resetFormState = useCallback((key) => {
     setObject((prev) => ({ ...prev, [key]: key === 'kegiatan' ? KEGIATAN_INIT : {} }));
@@ -58,6 +67,8 @@ const Kegiatan = () => {
       } catch {
         enqueueSnackbar('Terjadi error', { variant: 'error' });
       }
+
+      handleCloseModal();
     }
   };
 
@@ -113,11 +124,23 @@ const Kegiatan = () => {
         }
         return prev;
       });
+      originalDataRef.current = isBab4Array;
     } catch (error) {
       console.error('Error parsing proposal_detail JSON:', error);
       setData({ biaya: [], kegiatan: [] });
     }
   }, [proposal_detail, lampiran]);
+
+  useEffect(() => {
+    if (originalDataRef.current !== null && Object.keys(data).length > 0 && !isEqual(data.kegiatan, originalDataRef.current)) {
+      dispatch(
+        updateChangesAsync({
+          ...INIT_CHANGEDATA,
+          changesData: true
+        })
+      );
+    }
+  }, [data, dispatch]);
 
   return (
     <>
@@ -168,8 +191,19 @@ const Kegiatan = () => {
           Simpan Kegiatan
         </Button>
       </Stack>
+
+      <ConfirmDialog
+        open={confirmSave}
+        title={`${BAB_TITLE4}`}
+        message="Simpan perubahan data?"
+        onClose={handleCloseModal}
+        onConfirm={handleKegiatan.save}
+      />
     </>
   );
+};
+Kegiatan.propTypes = {
+  confirmSave: PropTypes.bool.isRequired
 };
 
 export default Kegiatan;

@@ -9,16 +9,30 @@ import { SuratPernyataan } from './surat-pernyataan';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
+import { useDispatch, useSelector } from 'react-redux';
+import { INIT_CHANGEDATA } from '../detail';
+import { updateChangesAsync } from 'store/slices/proposal';
 
 const Lampiran = () => {
+  const dispatch = useDispatch();
   const [value, setValue] = useState('L1');
+  const { status } = useSelector((state) => state.app.proposal);
 
   const handleChange = (event, newValue) => {
-    setValue(newValue);
+    if (status.changesData) {
+      dispatch(
+        updateChangesAsync({
+          ...INIT_CHANGEDATA,
+          confirmData: true
+        })
+      );
+    } else {
+      setValue(newValue);
+    }
   };
 
   const tabs = [
-    { label: 'Identitas', code: 'L1', component: <Identitas /> },
+    { label: 'Identitas', code: 'L1', component: <Identitas confirmSave={status.confirmData} /> },
     { label: 'Anggaran', code: 'L2', component: <Anggaran /> },
     { label: 'Susunan Tim', code: 'L3', component: <StrukturOrganisasi /> },
     { label: 'Surat Pernyataan', code: 'L4', component: <SuratPernyataan /> },

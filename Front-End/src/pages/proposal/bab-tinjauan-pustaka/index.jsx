@@ -1,18 +1,23 @@
 import { Button, Grid, Stack, Typography } from '@mui/material';
-import React, { useCallback, useEffect, useState } from 'react';
-import { getBabProposalDetail, updateBabProposalDetail } from 'store/slices/proposal';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { getBabProposalDetail, updateBabProposalDetail, updateChangesAsync } from 'store/slices/proposal';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { Columns } from './initial-column';
+import ConfirmDialog from 'components/dialog/ConfirmDialog';
 import { FieldsData } from './initial-form';
 import GenForm from 'components/general-form';
+import { INIT_CHANGEDATA } from '../detail';
+import PropTypes from 'prop-types';
 import { TINJAUAN_INIT } from './initial-data';
 import { TableForm } from 'components/table-form';
+import isEqual from 'lodash.isequal';
 import { useParams } from 'react-router';
 import { useSnackbar } from 'notistack';
 
-const Tinjauan = () => {
+const Tinjauan = ({ confirmSave }) => {
   const BAB_TITLE2 = 'BAB 2 TINJAUAN PUSTAKA';
+  const originalDataRef = useRef(null);
   const dispatch = useDispatch();
   const { id } = useParams();
   const { enqueueSnackbar } = useSnackbar();
@@ -41,6 +46,10 @@ const Tinjauan = () => {
     },
     [formObject, resetFormObject]
   );
+
+  const handleCloseModal = () => {
+    dispatch(updateChangesAsync(INIT_CHANGEDATA));
+  };
 
   const handleTinjauan = {
     edit: (key) => (item) => {
@@ -83,6 +92,7 @@ const Tinjauan = () => {
       } catch {
         enqueueSnackbar('Terjadi error', { variant: 'error' });
       }
+      handleCloseModal();
     }
   };
 
@@ -102,7 +112,10 @@ const Tinjauan = () => {
       const bab2 = JSON.parse(proposal_detail[0].json_data || '[]');
 
       if (Array.isArray(bab2)) {
-        setData({ tinjauan: bab2 });
+        const newData = { tinjauan: bab2 };
+        setData(newData);
+
+        originalDataRef.current = newData;
       } else {
         setData([]);
       }
@@ -111,6 +124,17 @@ const Tinjauan = () => {
       setData([]);
     };
   }, [proposal_detail]);
+
+  useEffect(() => {
+    if (originalDataRef.current !== null && Object.keys(data).length > 0 && !isEqual(data, originalDataRef.current)) {
+      dispatch(
+        updateChangesAsync({
+          ...INIT_CHANGEDATA,
+          changesData: true
+        })
+      );
+    }
+  }, [data, dispatch]);
 
   return (
     <>
@@ -152,8 +176,19 @@ const Tinjauan = () => {
           Simpan Tinjauan Pustaka
         </Button>
       </Stack>
+      <ConfirmDialog
+        open={confirmSave}
+        title={`${BAB_TITLE2}`}
+        message="Simpan perubahan data?"
+        onClose={handleCloseModal}
+        onConfirm={handleTinjauan.save}
+      />
     </>
   );
+};
+
+Tinjauan.propTypes = {
+  confirmSave: PropTypes.bool.isRequired
 };
 
 export default Tinjauan;

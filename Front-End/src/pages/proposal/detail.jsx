@@ -1,5 +1,6 @@
 import { Box, Tab, Tabs } from '@mui/material';
 import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Dapus from './daftar-pustaka';
 import Kegiatan from './bab-kegiatan';
@@ -11,10 +12,9 @@ import TabContext from '@mui/lab/TabContext';
 import TabPanel from '@mui/lab/TabPanel';
 import Tinjauan from './bab-tinjauan-pustaka';
 import { getMe } from 'store/slices/auth';
-import { useAuth } from 'pages/protect/authProvider';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import { updateChangesAsync } from 'store/slices/proposal';
+import { useAuth } from 'pages/protect/authProvider';
+import { useNavigate } from 'react-router-dom';
 
 export const INIT_CHANGEDATA = {
   changesData: false,
@@ -42,8 +42,7 @@ const ProposalDetail = () => {
   }, [dispatch, navigate, user]);
 
   const handleChange = (e, newValue) => {
-    console.log(status.changesData);
-
+    // console.log(status.changesData);
     if (status.changesData) {
       dispatch(
         updateChangesAsync({
@@ -58,10 +57,10 @@ const ProposalDetail = () => {
 
   const tabs = [
     { label: 'Pendahuluan', value: '1', component: <Pendahuluan confirmSave={status.confirmData} /> },
-    { label: 'Tinjauan Pustaka', value: '2', component: <Tinjauan /> },
-    { label: 'Pelaksanaan', value: '3', component: <Pelaksanaan /> },
-    { label: 'Kegiatan', value: '4', component: <Kegiatan /> },
-    { label: 'Daftar Pustaka', value: '5', component: <Dapus /> },
+    { label: 'Tinjauan Pustaka', value: '2', component: <Tinjauan confirmSave={status.confirmData} /> },
+    { label: 'Pelaksanaan', value: '3', component: <Pelaksanaan confirmSave={status.confirmData} /> },
+    { label: 'Kegiatan', value: '4', component: <Kegiatan confirmSave={status.confirmData} /> },
+    { label: 'Daftar Pustaka', value: '5', component: <Dapus confirmSave={status.confirmData} /> },
     { label: 'Lampiran', value: '6', component: <Lampiran /> }
   ];
 

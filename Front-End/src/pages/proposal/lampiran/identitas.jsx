@@ -1,6 +1,6 @@
 import { Box, Button, Grid, List, ListItem, MenuItem, Select, Stack, Typography } from '@mui/material';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { getLampiranProposalDetail, lampiranIdentitasAsync, updateLampiranProposalDetail } from 'store/slices/proposal';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { getLampiranProposalDetail, lampiranIdentitasAsync, updateChangesAsync, updateLampiranProposalDetail } from 'store/slices/proposal';
 import { masterGender, masterLampiranRole } from 'store/slices/master-data';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -12,26 +12,29 @@ import { initialFields } from './initial-form';
 import { lampiranColumns } from './initial-column';
 import { useParams } from 'react-router';
 import { useSnackbar } from 'notistack';
+import ConfirmDialog from 'components/dialog/ConfirmDialog';
+import { INIT_CHANGEDATA } from '../detail';
+import PropTypes from 'prop-types';
+import { isEqual } from 'lodash';
 
 export const BAB_TITLE6 = 'LAMPIRAN';
 
-const Identitas = () => {
+const Identitas = ({ confirmSave }) => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
-
+  const originalDataRef = useRef(null);
   const { gender, role } = useSelector((state) => state.app.masterData);
   const { lampiran, identitas } = useSelector((state) => state.app.proposal);
-
   const [object, setObject] = useState(ID_INIT);
-  const [data, setData] = useState([]);
   const [open, setOpen] = useState(false);
+  const data = useMemo(() => identitas || [], [identitas]);
 
   const roleOptions = useMemo(() => role || [], [role]);
 
-  useEffect(() => {
-    setData(identitas ?? []);
-  }, [identitas]);
+  const handleCloseModal = () => {
+    dispatch(updateChangesAsync(INIT_CHANGEDATA));
+  };
 
   useEffect(() => {
     const fetchMasterData = async () => {
@@ -43,20 +46,33 @@ const Identitas = () => {
 
   useEffect(() => {
     dispatch(getLampiranProposalDetail({ id, bab_title: BAB_TITLE6 }));
-  }, []);
+  }, [dispatch, id]);
 
   useEffect(() => {
     if (!lampiran.length) return;
 
     try {
       const parsedData = JSON.parse(lampiran[0]?.json_data || '{}');
-      if (Array.isArray(parsedData.identitas)) {
+      console.log(parsedData);
+
+      if (Array.isArray(parsedData.identitas) && parsedData.identitas !== null) {
         dispatch(lampiranIdentitasAsync(parsedData.identitas));
+        originalDataRef.current = parsedData.identitas;
+      } else {
+        dispatch(lampiranIdentitasAsync([]));
+        originalDataRef.current = [];
       }
     } catch (error) {
       console.error('Error parsing JSON data:', error.message);
     }
   }, [dispatch, lampiran]);
+
+  useEffect(() => {
+    if (originalDataRef.current && Array.isArray(data)) {
+      const hasChanged = !isEqual(data, originalDataRef.current);
+      dispatch(updateChangesAsync({ ...INIT_CHANGEDATA, changesData: hasChanged }));
+    }
+  }, [data, dispatch]);
 
   const handlePersonal = {
     edit: (item) => {
@@ -70,12 +86,8 @@ const Identitas = () => {
     },
 
     delete: (item) => {
-      setData((prevData) => {
-        const updatedData = prevData.filter((entry) => entry.no !== item.no).map((entry, index) => ({ ...entry, no: index + 1 }));
-        dispatch(lampiranIdentitasAsync(updatedData));
-        return updatedData;
-      });
-
+      const updatedData = data.filter((entry) => entry.no !== item.no).map((entry, index) => ({ ...entry, no: index + 1 }));
+      dispatch(lampiranIdentitasAsync(updatedData));
     },
 
     save: async () => {
@@ -90,6 +102,9 @@ const Identitas = () => {
 
         if (updateLampiranProposalDetail.fulfilled.match(res)) {
           enqueueSnackbar('Berhasil menyimpan', { variant: 'success' });
+
+          originalDataRef.current = [...data];
+          dispatch(updateChangesAsync({ ...INIT_CHANGEDATA, changesData: false }));
         } else {
           enqueueSnackbar('Gagal menyimpan', { variant: 'error' });
         }
@@ -97,6 +112,8 @@ const Identitas = () => {
         enqueueSnackbar('Terjadi kesalahan saat menyimpan data', { variant: 'error' });
         console.error('Save Error:', error);
       }
+
+      handleCloseModal();
     },
 
     detail: (item) => {
@@ -132,70 +149,80 @@ const Identitas = () => {
 
   const handleForm = useCallback(
     (values) => {
-      if (!Array.isArray(data)) return [];
+      if (!Array.isArray(data)) return;
 
       if (object?.status) {
         const updatedEntries = data.map((entry) => (entry.no === object.no ? { ...entry, ...values, status: false } : entry));
-
         dispatch(lampiranIdentitasAsync(updatedEntries));
       } else {
         const newEntry = { ...values, no: data.length + 1 };
         const newEntries = [...data, newEntry];
-
         dispatch(lampiranIdentitasAsync(newEntries));
-        return newEntries;
       }
       setObject(ID_INIT);
     },
-    [data, dispatch, object.no, object?.status]
+    [data, dispatch, object]
   );
 
   return (
-    <Stack direction="column" spacing={2}>
-      <Typography variant="h5" gutterBottom>
-        Detail Identitas
-      </Typography>
-      <Select
-        id="role_person"
-        displayEmpty
-        disabled={object.status}
-        value={object.role_person || ''}
-        onChange={(e) => setObject((prev) => ({ ...prev, role_person: e.target.value }))}
-        sx={{ width: '15rem' }}
-      >
-        <MenuItem disabled value="">
-          <em>Pilih Keanggotaan</em>
-        </MenuItem>
-        {roleOptions?.map((item) => (
-          <MenuItem key={item.id} value={item.init}>
-            {item.init}
+    <>
+      <Stack direction="column" spacing={2}>
+        <Typography variant="h5" gutterBottom>
+          Detail Identitas
+        </Typography>
+        <Select
+          id="role_person"
+          displayEmpty
+          disabled={object.status}
+          value={object.role_person || ''}
+          onChange={(e) => setObject((prev) => ({ ...prev, role_person: e.target.value }))}
+          sx={{ width: '15rem' }}
+        >
+          <MenuItem disabled value="">
+            <em>Pilih Keanggotaan</em>
           </MenuItem>
-        ))}
-      </Select>
-      <Grid item xs={12} sx={{ marginY: 1 }}>
-        {object.role_person && (
-          <GenForm
-            formFields={initialFields.personal}
-            buttonDisable={open}
-            onSubmit={handleForm}
-            titleButton={object.status ? 'Update Data Personal' : 'Tambah Data Personal'}
-            initialValuesUpdate={object}
-          />
-        )}
-      </Grid>
-      <TableForm
-        columns={lampiranColumns.personal(handlePersonal.edit, handlePersonal.delete, handlePersonal.reset, object.no)}
-        rows={data}
-        expand
-        detail={handlePersonal.detail}
-      />
-      <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 4 }}>
-        <Button variant="contained" color="success" onClick={handlePersonal.save}>
-          Simpan Detail
-        </Button>
+          {roleOptions?.map((item) => (
+            <MenuItem key={item.id} value={item.init}>
+              {item.init}
+            </MenuItem>
+          ))}
+        </Select>
+        <Grid item xs={12} sx={{ marginY: 1 }}>
+          {object.role_person && (
+            <GenForm
+              formFields={initialFields.personal}
+              buttonDisable={open}
+              onSubmit={handleForm}
+              titleButton={object.status ? 'Update Data Personal' : 'Tambah Data Personal'}
+              initialValuesUpdate={object}
+            />
+          )}
+        </Grid>
+        <TableForm
+          columns={lampiranColumns.personal(handlePersonal.edit, handlePersonal.delete, handlePersonal.reset, object.no)}
+          rows={data}
+          expand
+          detail={handlePersonal.detail}
+        />
+        <Stack direction="row" spacing={2} justifyContent="center" sx={{ mt: 4 }}>
+          <Button variant="contained" color="success" onClick={handlePersonal.save}>
+            Simpan Detail
+          </Button>
+        </Stack>
       </Stack>
-    </Stack>
+      <ConfirmDialog
+        open={confirmSave}
+        title={`${BAB_TITLE6} - Identitas`}
+        message="Simpan perubahan data?"
+        onClose={handleCloseModal}
+        onConfirm={handlePersonal.save}
+      />
+    </>
   );
+};
+
+Identitas.propTypes = {
+  confirmSave: PropTypes.bool.isRequired
 };
 
 export { Identitas };

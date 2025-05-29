@@ -1,17 +1,22 @@
 import { AUTHOR_INIT, BOOK_INIT, JOURNAL_INIT, URL_INIT } from './initial-data';
 import { Button, Grid, MenuItem, Select, Stack, Typography } from '@mui/material';
-import React, { useEffect, useState } from 'react';
-import { getBabProposalDetail, updateBabProposalDetail } from 'store/slices/proposal';
+import React, { useEffect, useRef, useState } from 'react';
+import { getBabProposalDetail, updateBabProposalDetail, updateChangesAsync } from 'store/slices/proposal';
 import { masterDapusRef, masterDapusStyle } from 'store/slices/master-data';
 import { useDispatch, useSelector } from 'react-redux';
 
+import ConfirmDialog from 'components/dialog/ConfirmDialog';
 import { Fields } from './initial-column';
 import { GeneralForm } from 'components/form/GeneralForm';
+import PropTypes from 'prop-types';
 import TableGrid from 'components/table/TableGrid';
+import { isEqual } from 'lodash';
 import { useParams } from 'react-router';
 import { useSnackbar } from 'notistack';
+import { INIT_CHANGEDATA } from '../detail';
 
-const Dapus = () => {
+const Dapus = ({ confirmSave }) => {
+  const originalDataRef = useRef(null);
   const BAB_TITLE5 = 'DAFTAR PUSTAKA';
   const { proposal_detail } = useSelector((state) => state.app.proposal);
   const { style, reference } = useSelector((state) => state.app.masterData.dapus);
@@ -60,6 +65,10 @@ const Dapus = () => {
         break;
     }
     return newErrors;
+  };
+
+  const handleCloseModal = () => {
+    dispatch(updateChangesAsync(INIT_CHANGEDATA));
   };
 
   const handleAuthor = {
@@ -317,6 +326,8 @@ const Dapus = () => {
         setAuthor({ object: AUTHOR_INIT, data: [] });
         setErrors({});
       }
+
+      handleCloseModal();
     }
   };
   useEffect(() => {
@@ -345,12 +356,24 @@ const Dapus = () => {
       const bab5 = JSON.parse(proposal_detail[0].json_data || '[]');
       if (Array.isArray(bab5)) {
         setData(bab5);
+        originalDataRef.current = bab5;
       }
     }
     return () => {
       setData([]);
     };
   }, [proposal_detail]);
+
+  useEffect(() => {
+    if (originalDataRef.current !== null && Object.keys(data).length > 0 && !isEqual(data, originalDataRef.current)) {
+      dispatch(
+        updateChangesAsync({
+          ...INIT_CHANGEDATA,
+          changesData: true
+        })
+      );
+    }
+  }, [data, dispatch]);
 
   return (
     <>
@@ -493,8 +516,20 @@ const Dapus = () => {
           Simpan Pustaka
         </Button>
       </Stack>
+
+      <ConfirmDialog
+        open={confirmSave}
+        title={`${BAB_TITLE5}`}
+        message="Simpan perubahan data?"
+        onClose={handleCloseModal}
+        onConfirm={handlePustaka.save}
+      />
     </>
   );
+};
+
+Dapus.propTypes = {
+  confirmSave: PropTypes.bool.isRequired
 };
 
 export default Dapus;

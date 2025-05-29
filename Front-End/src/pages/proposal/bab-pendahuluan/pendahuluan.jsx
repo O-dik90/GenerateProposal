@@ -4,14 +4,14 @@ import { getBabProposalDetail, updateBabProposalDetail, updateChangesAsync } fro
 import { useDispatch, useSelector } from 'react-redux';
 
 import Button from '@mui/material/Button';
+import ConfirmDialog from 'components/dialog/ConfirmDialog';
+import { INIT_CHANGEDATA } from '../detail';
+import PropTypes from 'prop-types';
 import Stack from '@mui/material/Stack';
 import TableGrid from 'components/table/TableGrid';
 import isEqual from 'lodash.isequal';
 import { useParams } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
-import { INIT_CHANGEDATA } from '../detail';
-import ConfirmDialog from 'components/dialog/ConfirmDialog';
-import PropTypes from 'prop-types';
 
 const INIT_LUARAN = [
   { no: 1, data: 'Laporan kemajuan', status: false },
@@ -439,8 +439,8 @@ const Pendahuluan = ({ confirmSave }) => {
       </Stack>
       <ConfirmDialog
         open={confirmSave}
-        title="Saving Data"
-        message="Apakah Anda yakin mengabaikan perubahan data?"
+        title={`${BAB_TITLE}`}
+        message="Simpan perubahan data?"
         onClose={handleCloseModal}
         onConfirm={handleSimpan}
       />

@@ -1,26 +1,34 @@
 import { Button, Stack } from '@mui/material';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { updateChangesAsync, updateLampiranProposalDetail } from 'store/slices/proposal';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { BAB_TITLE6 } from './identitas';
+import ConfirmDialog from 'components/dialog/ConfirmDialog';
 import GenForm from 'components/general-form';
+import { INIT_CHANGEDATA } from '../detail';
+import PropTypes from 'prop-types';
 import { STRUCTURE_INIT } from './initial-data';
 import { TableForm } from 'components/table-form';
+import { isEqual } from 'lodash';
 import { structureColumns } from './initial-column';
 import { structureFields } from './initial-form';
-import { updateLampiranProposalDetail } from 'store/slices/proposal';
 import { useParams } from 'react-router';
 import { useSnackbar } from 'notistack';
 
-const StrukturOrganisasi = () => {
+const StrukturOrganisasi = ({ confirmSave }) => {
   const { id } = useParams();
   const dispatch = useDispatch();
+  const originalDataRef = useRef(null);
   const { enqueueSnackbar } = useSnackbar();
   const { lampiran } = useSelector((state) => state.app.proposal);
 
   const [object, setObject] = useState(STRUCTURE_INIT);
   const [data, setData] = useState([]);
 
+  const handleCloseModal = () => {
+    dispatch(updateChangesAsync(INIT_CHANGEDATA));
+  };
   const handleForm = useCallback(
     (values) => {
       setData((prevData) => {
@@ -72,6 +80,8 @@ const StrukturOrganisasi = () => {
         console.error('Error saving proposal:', error);
         enqueueSnackbar('Gagal menyimpan data pustaka', { variant: 'error' });
       }
+
+      handleCloseModal();
     }
   };
 
@@ -86,8 +96,10 @@ const StrukturOrganisasi = () => {
 
       if (Array.isArray(bab6?.organisasi)) {
         setData((prev) => (JSON.stringify(prev) !== JSON.stringify(bab6.organisasi) ? bab6.organisasi : prev));
+        originalDataRef.current = bab6.organisasi;
       } else {
         setData([]);
+        originalDataRef.current = [];
       }
     } catch (error) {
       console.error('Error parsing JSON data:', error);
@@ -96,6 +108,13 @@ const StrukturOrganisasi = () => {
 
     return () => setData([]);
   }, [lampiran]);
+
+  useEffect(() => {
+    if (originalDataRef.current && Array.isArray(data)) {
+      const hasChanged = !isEqual(data, originalDataRef.current);
+      dispatch(updateChangesAsync({ ...INIT_CHANGEDATA, changesData: hasChanged }));
+    }
+  }, [data, dispatch]);
 
   return (
     <>
@@ -119,8 +138,19 @@ const StrukturOrganisasi = () => {
           Simpan Detail
         </Button>
       </Stack>
+      <ConfirmDialog
+        open={confirmSave}
+        title={`${BAB_TITLE6} - Susunan Tim`}
+        message="Simpan perubahan data?"
+        onClose={handleCloseModal}
+        onConfirm={handleStructure.save}
+      />
     </>
   );
+};
+
+StrukturOrganisasi.propTypes = {
+  confirmSave: PropTypes.bool.isRequired
 };
 
 export { StrukturOrganisasi };

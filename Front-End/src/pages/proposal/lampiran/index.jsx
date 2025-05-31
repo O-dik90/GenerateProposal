@@ -1,16 +1,16 @@
 import { Box, Grid, Tab, Typography } from '@mui/material';
 import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { Anggaran } from './anggaran';
 import { FilePendukung } from './file-pendukung';
+import { INIT_CHANGEDATA } from '../detail';
 import { Identitas } from './identitas';
 import { StrukturOrganisasi } from './struktur-organisasi';
 import { SuratPernyataan } from './surat-pernyataan';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import { useDispatch, useSelector } from 'react-redux';
-import { INIT_CHANGEDATA } from '../detail';
 import { updateChangesAsync } from 'store/slices/proposal';
 
 const Lampiran = () => {
@@ -33,8 +33,8 @@ const Lampiran = () => {
 
   const tabs = [
     { label: 'Identitas', code: 'L1', component: <Identitas confirmSave={status.confirmData} /> },
-    { label: 'Anggaran', code: 'L2', component: <Anggaran /> },
-    { label: 'Susunan Tim', code: 'L3', component: <StrukturOrganisasi /> },
+    { label: 'Anggaran', code: 'L2', component: <Anggaran confirmSave={status.confirmData} /> },
+    { label: 'Susunan Tim', code: 'L3', component: <StrukturOrganisasi confirmSave={status.confirmData} /> },
     { label: 'Surat Pernyataan', code: 'L4', component: <SuratPernyataan /> },
     { label: 'File Pendukung', code: 'L5', component: <FilePendukung /> }
   ];

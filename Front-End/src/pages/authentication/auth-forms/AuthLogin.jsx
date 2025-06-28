@@ -81,7 +81,7 @@ export default function AuthLogin() {
           <Grid container spacing={3}>
             <Grid item xs={12}>
               <Stack spacing={1}>
-                <InputLabel htmlFor="email-login">Email Address</InputLabel>
+                <InputLabel htmlFor="email-login">Alamat Email</InputLabel>
                 <OutlinedInput
                   id="email-login"
                   type="email"
@@ -99,7 +99,7 @@ export default function AuthLogin() {
             </Grid>
             <Grid item xs={12}>
               <Stack spacing={1}>
-                <InputLabel htmlFor="password-login">Password</InputLabel>
+                <InputLabel htmlFor="password-login">Kata Sandi</InputLabel>
                 <OutlinedInput
                   fullWidth
                   error={Boolean(touched.password && errors.password)}

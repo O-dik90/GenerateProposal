@@ -16,8 +16,8 @@ const ProposalDetails = db.define('proposal_details', {
       key: 'id'
     },
     validate: {
-      notEmpty: { msg: "Proposal ID is required" },
-      isInt: { msg: "Proposal ID must be an integer" }
+      notEmpty: { msg: "Proposal ID wajib diisi" },
+      isInt: { msg: "Proposal ID harus berupa angka" }
     }
   },
   bab_title: {

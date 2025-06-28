@@ -16,7 +16,7 @@ const Proposals = db.define('proposals', {
       key: 'uuid'
     },
     validate: {
-      notEmpty: { msg: "User ID is required" },
+      notEmpty: { msg: "User ID wajib diisi" },
       isUUID: 4
     }
   },
@@ -25,7 +25,7 @@ const Proposals = db.define('proposals', {
     allowNull: false,
     validate: {
       notEmpty: { msg: "Title cannot be empty" },
-      len: { args: [3, 512], msg: "Title must be between 3 and 500 characters" }
+      len: { args: [3, 512], msg: "Judul minimal 3 dan maksimal 500 karakter" }
     }
   },
   description: {
@@ -33,38 +33,33 @@ const Proposals = db.define('proposals', {
     allowNull: false,
     validate: {
       notEmpty: { msg: "Description cannot be empty" },
-      len: { args: [10, 512], msg: "Description must be between 3 and 500 characters" }
+      len: { args: [3, 512], msg: "Deskripsi minimal 3 dan maksimal 500 karakter" }
     }
   },
   year: {
     type: DataTypes.STRING(4),
     allowNull: false,
     validate: {
-      notEmpty: { msg: "Year cannot be empty" },
+      notEmpty: { msg: "Tahun tidak boleh kosong" },
     }
   },
   pkm_type: {
     type: DataTypes.STRING(10),
     allowNull: false,
     validate: {
-      notEmpty: { msg: "PKM Type cannot be empty" },
-      len: { args: [1, 10], msg: "PKM Type must be between 3 and 500 characters" }
+      notEmpty: { msg: "tipe PKM tidak boleh kosong" }
     }
   },
   pkm_category: {
     type: DataTypes.STRING(20),
     allowNull: false,
     validate: {
-      notEmpty: { msg: "PKM Category cannot be empty" },
-      len: { args: [1, 20], msg: "PKM Category must be between 3 and 500 characters" }
+      notEmpty: { msg: "kategory PKM tidak boleh kosong" }
     }
   },
   pkm_desc: {
     type: DataTypes.STRING(500),
-    allowNull: true,
-    validate: {
-      len: { args: [1, 500], msg: "PKM Description must be between 3 and 500 characters" }
-    }
+    allowNull: true
   },
   pkm_belmawa: {
     type: DataTypes.DECIMAL(18, 2),

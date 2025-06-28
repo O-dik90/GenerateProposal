@@ -131,7 +131,7 @@ const filesUpdate = async (req, res) => {
 
     const body = JSON.parse(req.body.data);
     if (!body.proposal_id) {
-      return res.status(400).json({ success: false, message: 'Proposal ID and File ID are required' });
+      return res.status(400).json({ success: false, message: 'Proposal ID dan File ID wajib diisi' });
     }
 
     const existingFile = await ProposalAttachs.findByPk(body.id);
@@ -151,9 +151,9 @@ const filesUpdate = async (req, res) => {
 
     await ProposalAttachs.update(updatedFile, { where: { id: body.id } });
 
-    return res.status(200).json({ success: true, message: 'File updated successfully', file: updatedFile });
+    return res.status(200).json({ success: true, message: 'File berhasil diupdate', file: updatedFile });
   } catch (error) {
-    return res.status(500).json({ success: false, message: 'File update failed', error: error.message });
+    return res.status(500).json({ success: false, message: 'File gagal diupdate', error: error.message });
   }
 };
 

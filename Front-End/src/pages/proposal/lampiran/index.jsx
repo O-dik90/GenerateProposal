@@ -54,7 +54,18 @@ const Lampiran = () => {
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
               <TabList onChange={handleChange} aria-label="lampiran tabs">
                 {tabs?.map((item) => (
-                  <Tab key={item.code} label={item.label} value={item.code} aria-controls={`tabpanel-${item.code}`} />
+                  <Tab
+                    key={item.code}
+                    label={item.label}
+                    value={item.code}
+                    aria-controls={`tabpanel-${item.code}`}
+                    sx={(theme) => ({
+                      '&.Mui-selected': {
+                        backgroundColor: theme.palette.primary.main,
+                        color: theme.palette.primary.contrastText
+                      }
+                    })}
+                  />
                 ))}
               </TabList>
             </Box>

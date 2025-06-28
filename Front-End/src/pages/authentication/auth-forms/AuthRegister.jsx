@@ -119,7 +119,7 @@ export default function AuthRegister() {
               </Grid>
               <Grid item xs={12}>
                 <Stack spacing={1}>
-                  <InputLabel htmlFor="email-signup">Email Address*</InputLabel>
+                  <InputLabel htmlFor="email-signup">Alamat Email*</InputLabel>
                   <OutlinedInput
                     fullWidth
                     error={Boolean(touched.email && errors.email)}
@@ -141,7 +141,7 @@ export default function AuthRegister() {
               </Grid>
               <Grid item xs={12}>
                 <Stack spacing={1}>
-                  <InputLabel htmlFor="password-signup">Password*</InputLabel>
+                  <InputLabel htmlFor="password-signup">Kata Sandi*</InputLabel>
                   <OutlinedInput
                     fullWidth
                     error={Boolean(touched.password && errors.password)}
@@ -191,7 +191,7 @@ export default function AuthRegister() {
               </Grid>
               <Grid item xs={12}>
                 <Stack spacing={1}>
-                  <InputLabel htmlFor="confPassword-signup">Konfirmasi Password*</InputLabel>
+                  <InputLabel htmlFor="confPassword-signup">Konfirmasi Kata Sandi*</InputLabel>
                   <OutlinedInput
                     fullWidth
                     error={Boolean(touched.confPassword && errors.confPassword)}

@@ -76,9 +76,27 @@ const ProposalDetail = () => {
             bgcolor: 'background.paper'
           }}
         >
-          <Tabs value={page} onChange={handleChange} variant="scrollable" scrollButtons="auto" aria-label="Proposal Detail Tabs">
+          <Tabs
+            value={page}
+            onChange={handleChange}
+            variant="scrollable"
+            scrollButtons="auto"
+            aria-label="Proposal Detail Tabs"
+            textColor="primary"
+            indicatorColor="primary"
+          >
             {tabs.map((tab) => (
-              <Tab key={tab.value} label={tab.label} value={tab.value} />
+              <Tab
+                key={tab.value}
+                label={tab.label}
+                value={tab.value}
+                sx={(theme) => ({
+                  '&.Mui-selected': {
+                    backgroundColor: theme.palette.primary.main,
+                    color: theme.palette.primary.contrastText
+                  }
+                })}
+              />
             ))}
           </Tabs>
         </Box>

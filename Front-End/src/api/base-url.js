@@ -48,7 +48,7 @@ axiosInstance.interceptors.response.use(
     } else if (error.response?.status === 409) {
       enqueueSnackbar('Gagal Daftar, email sudah terdaftar', { variant: 'warning' });
     } else if (error.response?.status === 500) {
-      enqueueSnackbar('Server error', { variant: 'error' });
+      enqueueSnackbar(error.response.data?.msg, { variant: 'error' });
     } else {
       enqueueSnackbar(error.message, { variant: 'error' });
     }

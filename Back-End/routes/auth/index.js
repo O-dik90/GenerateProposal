@@ -14,7 +14,7 @@ router.get('/refresh-token', refreshJWT, (req, res) => {
       token: req.cookies.token
     });
   }
-  return res.status(401).json({ message: "Unauthorized" });
+  return res.status(401).json({ message: "Sesi tidak valid" });
 });
 
 module.exports = router 

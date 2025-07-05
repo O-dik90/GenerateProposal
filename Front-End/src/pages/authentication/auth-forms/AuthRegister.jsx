@@ -83,10 +83,10 @@ export default function AuthRegister() {
         validationSchema={Yup.object().shape({
           name: Yup.string().max(50).required('Nama wajib diisi'),
           email: Yup.string().email('Format email salah').max(50).required('Email wajib diisi'),
-          password: Yup.string().min(8, 'Minimal 8 karakter').max(12).required('Password wajib diisi'),
+          password: Yup.string().min(8, 'Minimal 8 karakter').max(16).required('Password wajib diisi'),
           confPassword: Yup.string()
             .min(8, 'Minimal 8 karakter')
-            .max(12)
+            .max(16)
             .oneOf([Yup.ref('password'), null], 'Password harus sama')
             .required('Konfirrmasi password wajib diisi')
         })}
@@ -154,7 +154,7 @@ export default function AuthRegister() {
                       handleChange(e);
                       changePassword(e.target.value);
                     }}
-                    inputProps={{ maxLength: 12 }}
+                    inputProps={{ maxLength: 16 }}
                     endAdornment={
                       <InputAdornment position="end">
                         <IconButton

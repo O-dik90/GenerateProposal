@@ -63,14 +63,14 @@ const logOut = (req, res) => {
   req.session.destroy((err) => {
     if (err) {
       console.error("Logout error:", err);
-      return res.status(500).json({ msg: "Gagal keluar" });
+      return res.status(500).json({ msg: "Gagal keluar halaman" });
     }
 
     res.clearCookie("token", { httpOnly: true, secure: process.env.NODE_ENV === "production" });
     res.clearCookie("connect.sid", { path: "/" });
 
     console.log(`✅ Sesi dihapus: ${req.sessionID}`);
-    return res.status(200).json({ msg: "Berhasil keluar" });
+    return res.status(200).json({ msg: "Berhasil keluar halaman" });
   });
 };
 

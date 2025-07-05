@@ -39,8 +39,11 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response?.status === 401) {
-      if (error.response.data?.msg === 'Invalid credentials' && window.location.pathname === '/') {
+      console.log(error.response.data);
+      if (error.response.data?.msg === 'Kesalahan kredensial' && window.location.pathname === '/') {
         enqueueSnackbar('Email/kata sandi tidak cocok', { variant: 'error' });
+      } else {
+        enqueueSnackbar('Sesi berakhir, silahkan login kembali', { variant: 'error' });
       }
       sessionStorage.removeItem('user');
     } else if (error.response?.status === 404) {
@@ -50,7 +53,7 @@ axiosInstance.interceptors.response.use(
     } else if (error.response?.status === 500) {
       enqueueSnackbar(error.response.data?.msg, { variant: 'error' });
     } else {
-      enqueueSnackbar(error.message, { variant: 'error' });
+      enqueueSnackbar('Terjadi kesalahan: ' + error.message, { variant: 'error' });
     }
 
     return Promise.reject(error);
